@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "F9hpdnfUBUY=",
+  "dgSpecHash": "qAd6S8H1SDY=",
   "success": true,
-  "projectFilePath": "C:\\Users\\hienc\\OneDrive\\Máy tính\\Test\\Webfilm\\Film_website.csproj",
+  "projectFilePath": "C:\\Users\\hienc\\Downloads\\New folder\\Webfilm\\Film_website.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\hienc\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\hienc\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",

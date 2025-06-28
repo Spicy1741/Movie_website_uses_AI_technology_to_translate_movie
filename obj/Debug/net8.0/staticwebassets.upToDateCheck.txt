@@ -63,8 +63,12 @@ wwwroot\lib\jquery\dist\jquery.min.js
 wwwroot\lib\jquery\dist\jquery.min.map
 wwwroot\lib\jquery\LICENSE.txt
 wwwroot\uploads\movies\09d01e3f-f884-439f-82d9-77f1ef46333d.jpg
+wwwroot\uploads\movies\394c761f-e70a-4ede-9533-36593cad2a5d.mp4
 wwwroot\uploads\movies\5989461e-9ae5-4246-b5ab-877d869d3978.webp
 wwwroot\uploads\movies\909489be-3763-45a7-b7fb-31beddccef85.mp4
+wwwroot\uploads\movies\9f43d0a1-351e-4bb2-9157-0cd0f221f2ba.srt
+wwwroot\uploads\movies\9f43d0a1-351e-4bb2-9157-0cd0f221f2ba.vtt
 wwwroot\uploads\movies\a6eef24b-4a5b-43d8-975f-de1f20bee863.mp4
 wwwroot\uploads\movies\bb366e59-6fd9-4e96-a76e-c0e7e21323e4.png
 wwwroot\uploads\movies\dfa98c61-e794-4419-9629-5e90a5cb35e9.mp4
+wwwroot\uploads\movies\e7e9212e-3913-48f7-be92-3bf5b834c160.jpg
