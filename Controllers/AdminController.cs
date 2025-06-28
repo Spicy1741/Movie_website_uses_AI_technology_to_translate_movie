@@ -137,11 +137,10 @@ namespace Film_website.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddMovie(Movie movie, IFormFile movieFile, IFormFile thumbnailFile)
+        public async Task<IActionResult> AddMovie(Movie movie, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
         {
             if (!ModelState.IsValid)
             {
-                // Ghi log các lỗi ModelState để debug
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
                 TempData["Error"] = "Invalid input: " + string.Join("; ", errors);
                 return View(movie);
@@ -149,7 +148,7 @@ namespace Film_website.Controllers
 
             try
             {
-                await _movieService.AddMovieAsync(movie, movieFile, thumbnailFile);
+                await _movieService.AddMovieAsync(movie, movieFile, thumbnailFile, subtitleFile);
                 TempData["Success"] = "Movie added successfully!";
                 return RedirectToAction("ManageMovies");
             }
@@ -171,11 +170,11 @@ namespace Film_website.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditMovie(Movie movie, IFormFile movieFile, IFormFile thumbnailFile)
+        public async Task<IActionResult> EditMovie(Movie movie, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
         {
             if (ModelState.IsValid)
             {
-                await _movieService.UpdateMovieAsync(movie, movieFile, thumbnailFile);
+                await _movieService.UpdateMovieAsync(movie, movieFile, thumbnailFile, subtitleFile);
                 TempData["Success"] = "Movie updated successfully!";
                 return RedirectToAction("ManageMovies");
             }

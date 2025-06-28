@@ -4,6 +4,7 @@ using Film_website.Repositories;
 using Film_website.Repositories.Interfaces;
 using Film_website.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,6 +69,35 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".srt"] = "text/plain; charset=utf-8";
+provider.Mappings[".vtt"] = "text/vtt; charset=utf-8";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider,
+    OnPrepareResponse = context =>
+    {
+        var file = context.File;
+        var response = context.Context.Response;
+        if (file.Name.EndsWith(".srt") || file.Name.EndsWith(".vtt"))
+        {
+            response.Headers["Access-Control-Allow-Origin"] = "*";
+            response.Headers["Access-Control-Allow-Methods"] = "GET";
+            response.Headers["Access-Control-Allow-Headers"] = "Content-Type";
+
+            if (file.Name.EndsWith(".srt"))
+            {
+                response.Headers["Content-Type"] = "text/plain; charset=utf-8";
+            }
+            else if (file.Name.EndsWith(".vtt"))
+            {
+                response.Headers["Content-Type"] = "text/vtt; charset=utf-8";
+            }
+
+        }
+    }
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -76,6 +106,19 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = context =>
+    {
+        var path = context.File.Name;
+        if (path.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
+        {
+            context.Context.Response.Headers.Add("Content-Type", "text/vtt; charset=utf-8");
+            // Add CORS headers if needed
+            context.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+        }
+    }
+});
 
 app.MapControllerRoute(
     name: "default",

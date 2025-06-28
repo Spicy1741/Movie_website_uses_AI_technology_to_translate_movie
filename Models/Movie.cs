@@ -23,6 +23,7 @@ namespace Film_website.Models
 
         public string? FilePath { get; set; } // Path to movie file
         public string? ThumbnailPath { get; set; } // Path to thumbnail
+        public string? SubtitlePath { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
     }
