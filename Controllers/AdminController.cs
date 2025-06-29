@@ -174,7 +174,18 @@ namespace Film_website.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _movieService.UpdateMovieAsync(movie, movieFile, thumbnailFile, subtitleFile);
+                // Fetch the tracked entity from the database
+                var existingMovie = await _movieService.GetMovieByIdAsync(movie.Id);
+                if (existingMovie == null)
+                    return NotFound();
+
+                // Update only the properties that are editable
+                existingMovie.Title = movie.Title;
+                existingMovie.Description = movie.Description;
+                existingMovie.Genre = movie.Genre;
+                existingMovie.ReleaseYear = movie.ReleaseYear;
+
+                await _movieService.UpdateMovieAsync(existingMovie, movieFile, thumbnailFile, subtitleFile);
                 TempData["Success"] = "Movie updated successfully!";
                 return RedirectToAction("ManageMovies");
             }

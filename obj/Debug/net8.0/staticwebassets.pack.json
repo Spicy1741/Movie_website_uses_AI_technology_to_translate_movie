@@ -269,8 +269,16 @@
       "PackagePath": "staticwebassets\\uploads\\movies\\0ba6deb0-9d6e-4e96-9701-46994440dc80.mp4"
     },
     {
-      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\125270b8-2dcd-4d65-a8ac-2b35017fa468.jpg",
-      "PackagePath": "staticwebassets\\uploads\\movies\\125270b8-2dcd-4d65-a8ac-2b35017fa468.jpg"
+      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\0f7e1872-2b35-4723-92c2-3a171f755099.mp4",
+      "PackagePath": "staticwebassets\\uploads\\movies\\0f7e1872-2b35-4723-92c2-3a171f755099.mp4"
+    },
+    {
+      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\0fc990eb-b3eb-49e8-bf20-f71b92791fe1.srt",
+      "PackagePath": "staticwebassets\\uploads\\movies\\0fc990eb-b3eb-49e8-bf20-f71b92791fe1.srt"
+    },
+    {
+      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\0fc990eb-b3eb-49e8-bf20-f71b92791fe1.vtt",
+      "PackagePath": "staticwebassets\\uploads\\movies\\0fc990eb-b3eb-49e8-bf20-f71b92791fe1.vtt"
     },
     {
       "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\1ac313aa-c559-4032-8e1a-061b7d0348bd.jpg",
@@ -285,10 +293,6 @@
       "PackagePath": "staticwebassets\\uploads\\movies\\56f9ce96-18df-46d4-b100-07e74909f32d.vtt"
     },
     {
-      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\980df5ec-7470-4357-877d-e1f7901de84d.mp4",
-      "PackagePath": "staticwebassets\\uploads\\movies\\980df5ec-7470-4357-877d-e1f7901de84d.mp4"
-    },
-    {
       "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\aaf0079b-56e8-4914-a1a9-1891fbed38f0.jpg",
       "PackagePath": "staticwebassets\\uploads\\movies\\aaf0079b-56e8-4914-a1a9-1891fbed38f0.jpg"
     },
@@ -297,12 +301,8 @@
       "PackagePath": "staticwebassets\\uploads\\movies\\cd044316-c166-4436-8e10-79078f81a6f3.mp4"
     },
     {
-      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\dddbf7de-10e8-43af-b270-dd26f58b5dc9.srt",
-      "PackagePath": "staticwebassets\\uploads\\movies\\dddbf7de-10e8-43af-b270-dd26f58b5dc9.srt"
-    },
-    {
-      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\dddbf7de-10e8-43af-b270-dd26f58b5dc9.vtt",
-      "PackagePath": "staticwebassets\\uploads\\movies\\dddbf7de-10e8-43af-b270-dd26f58b5dc9.vtt"
+      "Id": "C:\\Users\\ADMIN\\OneDrive\\Máy tính\\test\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\d2547e4b-405d-419e-afa8-2f77e4cc21cd.jpg",
+      "PackagePath": "staticwebassets\\uploads\\movies\\d2547e4b-405d-419e-afa8-2f77e4cc21cd.jpg"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Film_website.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
