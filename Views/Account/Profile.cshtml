@@ -16,7 +16,11 @@
                     <!-- Profile Header -->
                     <div class="profile-header">
                         <div class="profile-avatar">
-                            @if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
+                            @if (!string.IsNullOrEmpty(Model.AvatarPath))
+                            {
+                                <img src="@Model.AvatarPath" alt="Avatar" class="avatar-image" />
+                            }
+                            else if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
                             {
                                 @(Model.FirstName.Substring(0, 1).ToUpper())
                                 @(Model.LastName.Substring(0, 1).ToUpper())
@@ -27,11 +31,19 @@
                             }
                         </div>
                         <h1 class="profile-title">@Model.FirstName @Model.LastName</h1>
-                        <p class="profile-subtitle"> Profile</p>
+                        <p class="profile-subtitle">User Profile</p>
                     </div>
 
                     <!-- Profile Body -->
                     <div class="profile-body">
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                @TempData["SuccessMessage"]
+                            </div>
+                        }
+
                         <!-- Personal Information Section -->
                         <div class="info-section slide-in-left">
                             <h3 class="section-title">
@@ -49,6 +61,14 @@
 
                             <div class="info-item">
                                 <span class="info-label">
+                                    <i class="fas fa-at me-2"></i>
+                                    Tên hiển thị:
+                                </span>
+                                <span class="info-value">@Model.DisplayUserName</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
                                     <i class="fas fa-envelope me-2"></i>
                                     Email:
                                 </span>
@@ -58,94 +78,49 @@
                             <div class="info-item">
                                 <span class="info-label">
                                     <i class="fas fa-calendar-alt me-2"></i>
-                                    Ngày tạo:
+                                    Ngày tham gia:
                                 </span>
                                 <span class="info-value">@Model.CreatedAt.ToString("dd/MM/yyyy")</span>
                             </div>
-
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <div class="info-item">
-                                    <span class="info-label">
-                                        <i class="fas fa-shield-alt me-2"></i>
-                                        Vai trò:
-                                    </span>
-                                    <span class="info-value">
-                                        <span class="badge bg-warning text-dark">Administrator</span>
-                                    </span>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="info-item">
-                                    <span class="info-label">
-                                        <i class="fas fa-user-tag me-2"></i>
-                                        Vai trò:
-                                    </span>
-                                    <span class="info-value">
-                                        <span class="badge bg-info">User</span>
-                                    </span>
-                                </div>
-                            }
                         </div>
 
-                        <!-- Account Statistics -->
-                        <div class="info-section">
+                        <!-- Account Status Section -->
+                        <div class="info-section slide-in-right">
                             <h3 class="section-title">
-                                <i class="fas fa-chart-bar"></i>
-                                Thống kê tài khoản
+                                <i class="fas fa-shield-alt"></i>
+                                Trạng thái tài khoản
                             </h3>
 
-                            <div class="profile-stats">
-                                <div class="stat-card">
-                                    <span class="stat-number">
-                                        <i class="fas fa-play-circle"></i>
-                                        0
-                                    </span>
-                                    <span class="stat-label">Phim đã xem</span>
-                                </div>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Trạng thái:
+                                </span>
+                                <span class="info-value status @(Model.IsActive ? "active" : "inactive")">
+                                    @(Model.IsActive ? "Hoạt động" : "Không hoạt động")
+                                </span>
+                            </div>
 
-                                <div class="stat-card">
-                                    <span class="stat-number">
-                                        <i class="fas fa-heart"></i>
-                                        0
-                                    </span>
-                                    <span class="stat-label">Yêu thích</span>
-                                </div>
-
-                                <div class="stat-card">
-                                    <span class="stat-number">
-                                        <i class="fas fa-clock"></i>
-                                        @((DateTime.Now - Model.CreatedAt).Days)
-                                    </span>
-                                    <span class="stat-label">Ngày thành viên</span>
-                                </div>
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-envelope-check me-2"></i>
+                                    Email xác thực:
+                                </span>
+                                <span class="info-value status @(Model.EmailConfirmed ? "verified" : "unverified")">
+                                    @(Model.EmailConfirmed ? "Đã xác thực" : "Chưa xác thực")
+                                </span>
                             </div>
                         </div>
 
-                        <!-- Account Actions -->
+                        <!-- Action Buttons -->
                         <div class="profile-actions">
-                            <a href="#" class="action-btn" onclick="editProfile()">
+                            <a asp-action="EditProfile" class="action-btn primary">
                                 <i class="fas fa-edit"></i>
-                                Chỉnh sửa
+                                Chỉnh sửa hồ sơ
                             </a>
-
-                            <a href="#" class="action-btn secondary" onclick="changePassword()">
-                                <i class="fas fa-lock"></i>
-                                Đổi mật khẩu
-                            </a>
-
-                            @if (User.IsInRole("Admin"))
-                            {
-                                <a asp-controller="Admin" asp-action="Index" class="action-btn">
-                                    <i class="fas fa-cogs"></i>
-                                    Quản trị
-                                </a>
-                            }
-
-                            <a asp-controller="Home" asp-action="Index" class="action-btn secondary">
-                                <i class="fas fa-home"></i>
-                                Trang chủ
+                            <a asp-controller="Movie" asp-action="Index" class="action-btn secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Quay lại trang chủ
                             </a>
                         </div>
                     </div>
@@ -217,5 +192,27 @@
 
     .bg-info {
         background: linear-gradient(45deg, #3b82f6, #2563eb) !important;
+    }
+
+    .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .alert-success {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #10b981;
     }
 </style>
