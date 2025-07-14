@@ -58,11 +58,10 @@
                     <!-- Search bar with improved proportions -->
                     @if (User.Identity!.IsAuthenticated)
                     {
-                        <div class="search-container">
-                            <div class="search-input-group">
-                                <i class="fas fa-search search-icon"></i>
-                                <input type="text" class="form-control search-input" placeholder="Tìm kiếm phim..." id="searchInput">
-                            </div>
+                        <div class="search-icon-container">
+                            <a href="@Url.Action("Search", "Movie")" class="search-icon-link" title="Search Movies">
+                                <i class="fas fa-search"></i>
+                            </a>
                         </div>
                     }
 
