@@ -1,0 +1,362 @@
+﻿@model Film_website.Models.ViewModels.EditProfileViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ sơ";
+}
+
+<!-- Link to the profile CSS -->
+<link rel="stylesheet" href="~/css/profile-styles.css" asp-append-version="true" />
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bungee&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<div class="profile-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="profile-card fade-in">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
+                        <div class="profile-avatar" id="avatarPreview">
+                            @if (!string.IsNullOrEmpty(Model.CurrentAvatarPath))
+                            {
+                                <img src="@Model.CurrentAvatarPath" alt="Avatar" class="avatar-image" />
+                            }
+                            else if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
+                            {
+                                @(Model.FirstName.Substring(0, 1).ToUpper())
+                                @(Model.LastName.Substring(0, 1).ToUpper())
+                            }
+                            else
+                            {
+                                <i class="fas fa-user"></i>
+                            }
+                        </div>
+                        <h1 class="profile-title">Chỉnh sửa hồ sơ</h1>
+                        <p class="profile-subtitle">Cập nhật thông tin cá nhân</p>
+                    </div>
+
+                    <!-- Profile Body -->
+                    <div class="profile-body">
+                        <form asp-action="EditProfile" method="post" enctype="multipart/form-data" class="profile-form">
+                            @if (TempData["SuccessMessage"] != null)
+                            {
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle"></i>
+                                    @TempData["SuccessMessage"]
+                                </div>
+                            }
+
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <!-- Personal Information Section -->
+                            <div class="info-section slide-in-left">
+                                <h3 class="section-title">
+                                    <i class="fas fa-id-card"></i>
+                                    Thông tin cá nhân
+                                </h3>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label asp-for="FirstName" class="form-label">
+                                            <i class="fas fa-user me-2"></i>
+                                            Tên
+                                        </label>
+                                        <input asp-for="FirstName" class="form-control profile-input" />
+                                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="LastName" class="form-label">
+                                            <i class="fas fa-user me-2"></i>
+                                            Họ
+                                        </label>
+                                        <input asp-for="LastName" class="form-control profile-input" />
+                                        <span asp-validation-for="LastName" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label asp-for="DisplayUserName" class="form-label">
+                                        <i class="fas fa-at me-2"></i>
+                                        Tên hiển thị
+                                    </label>
+                                    <input asp-for="DisplayUserName" class="form-control profile-input" />
+                                    <span asp-validation-for="DisplayUserName" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Avatar Section -->
+                            <div class="info-section slide-in-right">
+                                <h3 class="section-title">
+                                    <i class="fas fa-image"></i>
+                                    Ảnh đại diện
+                                </h3>
+
+                                <div class="avatar-upload-section">
+                                    <div class="current-avatar-display">
+                                        @if (!string.IsNullOrEmpty(Model.CurrentAvatarPath))
+                                        {
+                                            <div class="current-avatar-container">
+                                                <img src="@Model.CurrentAvatarPath" alt="Current Avatar" class="current-avatar-img" />
+                                                <p class="avatar-label">Ảnh hiện tại</p>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label asp-for="AvatarFile" class="form-label">
+                                            <i class="fas fa-upload me-2"></i>
+                                            Tải lên ảnh mới
+                                        </label>
+                                        <input asp-for="AvatarFile" type="file" class="form-control-file" accept="image/*" onchange="previewAvatar(event)" />
+                                        <small class="form-text text-muted">
+                                            Chấp nhận: JPG, JPEG, PNG, GIF. Kích thước tối đa: 5MB
+                                        </small>
+                                        <span asp-validation-for="AvatarFile" class="text-danger"></span>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(Model.CurrentAvatarPath))
+                                    {
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input asp-for="RemoveAvatar" type="checkbox" class="form-check-input" />
+                                                <label asp-for="RemoveAvatar" class="form-check-label">
+                                                    <i class="fas fa-trash me-2"></i>
+                                                    Xóa ảnh đại diện hiện tại
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="profile-actions">
+                                <button type="submit" class="action-btn primary">
+                                    <i class="fas fa-save"></i>
+                                    Lưu thay đổi
+                                </button>
+                                <a asp-action="Profile" class="action-btn secondary">
+                                    <i class="fas fa-times"></i>
+                                    Hủy bỏ
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS for edit profile -->
+<style>
+    .avatar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .avatar-upload-section {
+        background: var(--medium-gray);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
+    .current-avatar-display {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .current-avatar-container {
+        text-align: center;
+    }
+
+    .current-avatar-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid var(--primary-red);
+        margin-bottom: 0.5rem;
+    }
+
+    .avatar-label {
+        color: var(--text-gray);
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .profile-form {
+        width: 100%;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        color: var(--primary-red);
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .profile-input, .form-control-file {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--light-black);
+        border: 2px solid var(--light-gray);
+        border-radius: 8px;
+        color: var(--white);
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .profile-input:focus, .form-control-file:focus {
+        border-color: var(--primary-red);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+    }
+
+    .form-control-file {
+        padding: 0.5rem;
+        cursor: pointer;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(220, 38, 38, 0.1);
+        border-radius: 8px;
+        border: 1px solid rgba(220, 38, 38, 0.3);
+    }
+
+    .form-check-input {
+        margin-right: 0.75rem;
+        scale: 1.2;
+        accent-color: var(--primary-red);
+    }
+
+    .form-check-label {
+        color: var(--white);
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .profile-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--light-gray);
+    }
+
+    .action-btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .action-btn.primary {
+        background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+        color: var(--white);
+    }
+
+    .action-btn.primary:hover {
+        background: linear-gradient(135deg, var(--light-red), var(--primary-red));
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+    }
+
+    .action-btn.secondary {
+        background: var(--medium-gray);
+        color: var(--white);
+        border: 2px solid var(--light-gray);
+    }
+
+    .action-btn.secondary:hover {
+        background: var(--light-gray);
+        border-color: var(--text-gray);
+        color: var(--white);
+        text-decoration: none;
+    }
+
+    .alert {
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .alert-success {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        color: #10b981;
+    }
+
+    .alert-danger {
+        background: rgba(220, 38, 38, 0.1);
+        border: 1px solid rgba(220, 38, 38, 0.3);
+        color: #ef4444;
+    }
+
+    media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .profile-actions {
+            flex-direction: column;
+        }
+
+        .action-btn {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+</style>
+
+<script>
+    function previewAvatar(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('avatarPreview');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="avatar-image" />`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
