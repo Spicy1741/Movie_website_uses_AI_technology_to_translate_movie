@@ -1,4 +1,5 @@
 ﻿using Film_website.Models;
+using Film_website.Models.ViewModels;
 using Film_website.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -371,34 +372,37 @@ namespace Film_website.Controllers
         [HttpGet]
         public IActionResult AddMovie()
         {
-            return View(new Movie());
+            return View(new AddMovieViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddMovie(Movie movie, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
+        public async Task<IActionResult> AddMovie(AddMovieViewModel viewModel, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                TempData["Error"] = "Invalid input: " + string.Join("; ", errors);
-                return View(movie);
-            }
+                try
+                {
+                    // Convert ViewModel to Movie entity
+                    var movie = viewModel.ToMovie();
 
-            try
-            {
-                await _movieService.AddMovieAsync(movie, movieFile, thumbnailFile, subtitleFile);
-                TempData["Success"] = "Movie added successfully!";
-                return RedirectToAction("ManageMovies");
+                    // Add the movie using the service
+                    await _movieService.AddMovieAsync(movie, movieFile, thumbnailFile, subtitleFile);
+
+                    TempData["Success"] = "Movie added successfully with selected categories!";
+                    return RedirectToAction("ManageMovies");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error adding movie");
+                    TempData["Error"] = $"Error adding movie: {ex.Message}";
+                    return View(viewModel);
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error adding movie");
-                TempData["Error"] = $"Error adding movie: {ex.Message}";
-                return View(movie);
-            }
+            return View(viewModel);
         }
 
+        // Also update the EditMovie methods to handle categories
         [HttpGet]
         public async Task<IActionResult> EditMovie(int id)
         {
@@ -407,7 +411,20 @@ namespace Film_website.Controllers
                 var movie = await _movieService.GetMovieByIdAsync(id);
                 if (movie == null)
                     return NotFound();
-                return View(movie);
+
+                // Convert Movie to ViewModel for editing
+                var viewModel = new AddMovieViewModel
+                {
+                    Title = movie.Title,
+                    Description = movie.Description,
+                    Genre = movie.Genre,
+                    ReleaseYear = movie.ReleaseYear
+                };
+
+                // Set categories from existing movie
+                viewModel.SetCategoriesFromMovie(movie);
+
+                return View("EditMovie", viewModel); // You'll need to create EditMovie.cshtml similar to AddMovie
             }
             catch (Exception ex)
             {
@@ -418,26 +435,39 @@ namespace Film_website.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditMovie(Movie movie, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
+        public async Task<IActionResult> EditMovie(int id, AddMovieViewModel viewModel, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
         {
             if (ModelState.IsValid)
             {
-                // Fetch the tracked entity from the database
-                var existingMovie = await _movieService.GetMovieByIdAsync(movie.Id);
-                if (existingMovie == null)
-                    return NotFound();
+                try
+                {
+                    // Fetch the existing movie
+                    var existingMovie = await _movieService.GetMovieByIdAsync(id);
+                    if (existingMovie == null)
+                        return NotFound();
 
-                // Update only the properties that are editable
-                existingMovie.Title = movie.Title;
-                existingMovie.Description = movie.Description;
-                existingMovie.Genre = movie.Genre;
-                existingMovie.ReleaseYear = movie.ReleaseYear;
+                    // Update the movie properties
+                    existingMovie.Title = viewModel.Title;
+                    existingMovie.Description = viewModel.Description;
+                    existingMovie.Genre = viewModel.Genre;
+                    existingMovie.ReleaseYear = viewModel.ReleaseYear;
 
-                await _movieService.UpdateMovieAsync(existingMovie, movieFile, thumbnailFile, subtitleFile);
-                TempData["Success"] = "Movie updated successfully!";
-                return RedirectToAction("ManageMovies");
+                    // Update categories
+                    existingMovie.SetCategoriesFromList(viewModel.GetSelectedCategories());
+                    existingMovie.UpdatedAt = DateTime.UtcNow;
+
+                    await _movieService.UpdateMovieAsync(existingMovie, movieFile, thumbnailFile, subtitleFile);
+                    TempData["Success"] = "Movie updated successfully with categories!";
+                    return RedirectToAction("ManageMovies");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error updating movie");
+                    TempData["Error"] = $"Error updating movie: {ex.Message}";
+                    return View(viewModel);
+                }
             }
-            return View(movie);
+            return View(viewModel);
         }
 
         [HttpPost]

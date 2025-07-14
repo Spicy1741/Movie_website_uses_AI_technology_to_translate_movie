@@ -114,19 +114,33 @@
                             <div class="table-header">
                                 <span>TITLE</span>
                                 <span>GENRE</span>
+                                <span>CATEGORIES</span>
                                 <span>RELEASE YEAR</span>
                                 <span>ACTIONS</span>
                             </div>
                             @foreach (var movie in Model)
                             {
                                 <div class="table-row">
-                                    <span>@movie.Title</span>
-                                    <span>@movie.Genre</span>
+                                    <span class="movie-title">@movie.Title</span>
+                                    <span class="movie-genre">@movie.Genre</span>
+                                    <span class="movie-categories">
+                                        @if (!string.IsNullOrEmpty(movie.Categories))
+                                        {
+                                            @foreach (var category in movie.GetCategoriesList())
+                                            {
+                                                <span class="category-badge">@category</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="no-categories">No categories</span>
+                                        }
+                                    </span>
                                     <span>@movie.ReleaseYear</span>
                                     <span class="actions">
                                         <a href="@Url.Action("ViewMovie", "Admin", new { id = movie.Id })" class="mini-btn view-btn">👀 VIEW</a>
                                         <a href="@Url.Action("EditMovie", "Admin", new { id = movie.Id })" class="mini-btn edit">✏️</a>
-                                        <form asp-action="DeleteMovie" asp-route-id="@movie.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                                        <form asp-action="DeleteMovie" asp-route-id="@movie.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this movie?')">
                                             <button type="submit" class="mini-btn delete">🗑️</button>
                                         </form>
                                     </span>
@@ -1172,6 +1186,62 @@
         .form-control-file {
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
+        }
+
+        .movie-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-width: 200px;
+        }
+
+        .category-badge {
+            background: var(--primary-red);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .no-categories {
+            color: #666;
+            font-style: italic;
+            font-size: 12px;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr 1fr 1.5fr;
+            gap: 15px;
+            padding: 15px 20px;
+            background: var(--primary-red);
+            color: white;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 2fr 1fr 1.5fr;
+            gap: 15px;
+            padding: 15px 20px;
+            border-bottom: 1px solid #333;
+            align-items: center;
+        }
+
+            .table-row:hover {
+                background: var(--medium-gray);
+            }
+
+        .movie-title {
+            font-weight: bold;
+            color: white;
+        }
+
+        .movie-genre {
+            color: var(--text-light);
         }
     </style>
 </body>

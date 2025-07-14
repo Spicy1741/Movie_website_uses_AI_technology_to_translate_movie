@@ -24,7 +24,31 @@ namespace Film_website.Models
         public string? FilePath { get; set; } // Path to movie file
         public string? ThumbnailPath { get; set; } // Path to thumbnail
         public string? SubtitlePath { get; set; }
+
+        // New property for categories - stored as comma-separated string
+        [StringLength(500, ErrorMessage = "Categories cannot exceed 500 characters")]
+        public string? Categories { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+
+        // Helper method to get categories as a list
+        public List<string> GetCategoriesList()
+        {
+            if (string.IsNullOrEmpty(Categories))
+                return new List<string>();
+
+            return Categories.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                           .Select(c => c.Trim())
+                           .ToList();
+        }
+
+        // Helper method to set categories from a list
+        public void SetCategoriesFromList(List<string> categories)
+        {
+            Categories = categories != null && categories.Any()
+                ? string.Join(",", categories.Where(c => !string.IsNullOrWhiteSpace(c)))
+                : null;
+        }
     }
 }

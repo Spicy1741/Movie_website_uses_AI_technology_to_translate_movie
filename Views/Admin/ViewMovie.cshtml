@@ -104,11 +104,34 @@
                                 <h3>@Model.Title</h3>
                                 <p><strong>Genre:</strong> @Model.Genre</p>
                                 <p><strong>Release Year:</strong> @Model.ReleaseYear</p>
+
+                                <!-- Display Categories -->
+                                @if (!string.IsNullOrEmpty(Model.Categories))
+                                {
+                                    <div class="movie-categories-section">
+                                        <strong>Categories:</strong>
+                                        <div class="category-tags">
+                                            @foreach (var category in Model.GetCategoriesList())
+                                            {
+                                                <span class="category-tag">@category</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
                                 <p><strong>Description:</strong> @Model.Description</p>
                                 @if (!string.IsNullOrEmpty(Model.SubtitlePath))
                                 {
                                     <p><strong>Subtitles:</strong> Available</p>
                                 }
+
+                                <div class="movie-metadata">
+                                    <p><strong>Added:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                                    @if (Model.UpdatedAt.HasValue)
+                                    {
+                                        <p><strong>Last Updated:</strong> @Model.UpdatedAt.Value.ToString("MMM dd, yyyy")</p>
+                                    }
+                                </div>
                             </div>
                         </div>
                         <div class="movie-player">
@@ -918,6 +941,59 @@
 
             ::-webkit-scrollbar-thumb:hover {
                 background: linear-gradient(180deg, var(--light-red), var(--primary-red));
+            }
+
+        .movie-categories-section {
+            margin: 15px 0;
+        }
+
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .category-tag {
+            background: var(--primary-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .movie-metadata {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+            .movie-metadata p {
+                color: #999;
+                font-size: 14px;
+                margin: 5px 0;
+            }
+
+        .movie-info {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+            .movie-info h3 {
+                color: var(--primary-red);
+                margin-bottom: 15px;
+                font-size: 24px;
+            }
+
+            .movie-info p {
+                margin: 10px 0;
+                line-height: 1.6;
+            }
+
+            .movie-info strong {
+                color: var(--primary-red);
             }
     </style>
 </body>
