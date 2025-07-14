@@ -2,17 +2,20 @@
 using Film_website.Models.ViewModels;
 using Film_website.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 public class AccountController : Controller
 {
     private readonly UserService _userService;
     private readonly ILogger<AccountController> _logger;
+    private readonly UserManager<User> _userManager;
 
-    public AccountController(UserService userService, ILogger<AccountController> logger)
+    public AccountController(UserService userService, ILogger<AccountController> logger, UserManager<User> userManager)
     {
         _userService = userService;
         _logger = logger;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -209,4 +212,140 @@ public class AccountController : Controller
 
         return View(model);
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> EditProfile()
+    {
+        var user = await _userService.GetUserByEmailOrUserNameAsync(User.Identity!.Name!);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var model = new EditProfileViewModel
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            DisplayUserName = user.DisplayUserName,
+            CurrentAvatarPath = user.AvatarPath
+        };
+
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userService.GetUserByEmailOrUserNameAsync(User.Identity!.Name!);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Update user information
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.DisplayUserName = model.DisplayUserName;
+
+        // Handle avatar upload
+        if (model.AvatarFile != null)
+        {
+            // Delete old avatar if exists
+            if (!string.IsNullOrEmpty(user.AvatarPath))
+            {
+                var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarPath.TrimStart('/'));
+                if (System.IO.File.Exists(oldAvatarPath))
+                {
+                    System.IO.File.Delete(oldAvatarPath);
+                }
+            }
+
+            // Save new avatar
+            var avatarPath = await SaveAvatarAsync(model.AvatarFile, user.Id);
+            user.AvatarPath = avatarPath;
+        }
+        else if (model.RemoveAvatar && !string.IsNullOrEmpty(user.AvatarPath))
+        {
+            // Remove current avatar
+            var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarPath.TrimStart('/'));
+            if (System.IO.File.Exists(oldAvatarPath))
+            {
+                System.IO.File.Delete(oldAvatarPath);
+            }
+            user.AvatarPath = null;
+        }
+
+        // Update user in database
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            TempData["SuccessMessage"] = "Hồ sơ của bạn đã được cập nhật thành công!";
+            return RedirectToAction("Profile");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            model.CurrentAvatarPath = user.AvatarPath;
+            return View(model);
+        }
+    }
+
+    private async Task<string> SaveAvatarAsync(IFormFile avatarFile, string userId)
+    {
+        try
+        {
+            // Validate file type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var fileExtension = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(fileExtension))
+            {
+                throw new InvalidOperationException("Only image files (jpg, jpeg, png, gif) are allowed.");
+            }
+
+            // Validate file size (max 5MB)
+            if (avatarFile.Length > 5 * 1024 * 1024)
+            {
+                throw new InvalidOperationException("File size cannot exceed 5MB.");
+            }
+
+            // Create uploads directory if it doesn't exist
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+            if (!Directory.Exists(uploadsDir))
+            {
+                Directory.CreateDirectory(uploadsDir);
+            }
+
+            // Generate unique filename
+            var fileName = $"{userId}_{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadsDir, fileName);
+
+            // Save file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await avatarFile.CopyToAsync(stream);
+            }
+
+            // Return relative path for storage in database
+            return $"/uploads/avatars/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving avatar file for user {UserId}", userId);
+            throw;
+        }
+    }
+
 }
