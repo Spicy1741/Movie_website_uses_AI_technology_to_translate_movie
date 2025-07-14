@@ -18,6 +18,7 @@ namespace Film_website.Models.ViewModels
         [Required(ErrorMessage = "Release Year is required")]
         [Range(1900, 2030, ErrorMessage = "Release Year must be between 1900 and 2030")]
         public int ReleaseYear { get; set; }
+        public int Id { get; set; } 
 
         // Category selection properties
         public bool IsNewRelease { get; set; }

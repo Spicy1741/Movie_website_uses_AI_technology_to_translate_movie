@@ -26,18 +26,6 @@ namespace Film_website.Controllers
                 // Create a view model with categorized movies
                 var viewModel = new HomePageViewModel
                 {
-                    // Get the latest 6 movies for "New this week"
-                    NewMovies = allMovies
-                        .OrderByDescending(m => m.CreatedAt)
-                        .Take(6)
-                        .ToList(),
-
-                    // Get 6 random movies for "High Score" (you can modify this logic)
-                    HighScoreMovies = allMovies
-                        .OrderBy(m => Guid.NewGuid()) // Random order
-                        .Take(6)
-                        .ToList(),
-
                     // Get a featured movie for the hero section (latest movie)
                     FeaturedMovie = allMovies
                         .OrderByDescending(m => m.CreatedAt)
@@ -46,6 +34,57 @@ namespace Film_website.Controllers
                     // Total count for statistics
                     TotalMoviesCount = allMovies.Count
                 };
+
+                // Organize movies by their assigned categories
+                var moviesByCategory = new Dictionary<string, List<Movie>>();
+                var availableCategories = new HashSet<string>();
+
+                foreach (var movie in allMovies)
+                {
+                    var categories = movie.GetCategoriesList();
+
+                    if (categories.Any())
+                    {
+                        foreach (var category in categories)
+                        {
+                            if (!moviesByCategory.ContainsKey(category))
+                            {
+                                moviesByCategory[category] = new List<Movie>();
+                            }
+
+                            moviesByCategory[category].Add(movie);
+                            availableCategories.Add(category);
+                        }
+                    }
+                    else
+                    {
+                        // For movies without categories, add them to "Feature Films" as default
+                        const string defaultCategory = "Feature Films";
+                        if (!moviesByCategory.ContainsKey(defaultCategory))
+                        {
+                            moviesByCategory[defaultCategory] = new List<Movie>();
+                        }
+                        moviesByCategory[defaultCategory].Add(movie);
+                        availableCategories.Add(defaultCategory);
+                    }
+                }
+
+                // Limit movies per category to 6 for better performance and UI
+                foreach (var category in moviesByCategory.Keys.ToList())
+                {
+                    moviesByCategory[category] = moviesByCategory[category]
+                        .OrderByDescending(m => m.CreatedAt)
+                        .Take(6)
+                        .ToList();
+                }
+
+                // Sort categories by priority
+                var sortedCategories = availableCategories
+                    .OrderBy(cat => viewModel.GetCategoryPriority(cat))
+                    .ToList();
+
+                viewModel.MoviesByCategory = moviesByCategory;
+                viewModel.AvailableCategories = sortedCategories;
 
                 return View(viewModel);
             }
@@ -56,8 +95,8 @@ namespace Film_website.Controllers
                 // Return empty view model in case of error
                 var emptyViewModel = new HomePageViewModel
                 {
-                    NewMovies = new List<Movie>(),
-                    HighScoreMovies = new List<Movie>(),
+                    MoviesByCategory = new Dictionary<string, List<Movie>>(),
+                    AvailableCategories = new List<string>(),
                     FeaturedMovie = null,
                     TotalMoviesCount = 0
                 };
