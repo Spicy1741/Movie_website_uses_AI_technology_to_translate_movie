@@ -48,13 +48,16 @@ namespace Film_website.Controllers
             }
         }
 
-        // Optional: Add a search action
+
         [HttpGet]
-        public async Task<IActionResult> Search(string query)
+        public async Task<IActionResult> Search(string query = "")
         {
+            ViewBag.SearchQuery = query;
+
             if (string.IsNullOrWhiteSpace(query))
             {
-                return RedirectToAction("Index");
+                ViewBag.ResultCount = 0;
+                return View(new List<Movie>());
             }
 
             try
@@ -66,16 +69,15 @@ namespace Film_website.Controllers
                     m.Description.Contains(query, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
 
-                ViewBag.SearchQuery = query;
                 ViewBag.ResultCount = searchResults.Count;
-
-                return View("Index", searchResults);
+                return View(searchResults);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error searching movies with query: {Query}", query);
                 ViewBag.ErrorMessage = "Unable to search movies at this time.";
-                return View("Index", new List<Movie>());
+                ViewBag.ResultCount = 0;
+                return View(new List<Movie>());
             }
         }
     }
