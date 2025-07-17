@@ -44,53 +44,6 @@
                         <p>This EPIC adventure will be available soon!</p>
                     </div>
                 }
-
-                <!-- Video Controls -->
-                <div class="custom-controls" id="customControls">
-                    <div class="progress-container">
-                        <div class="progress-bar" id="progressBar">
-                            <div class="progress-filled" id="progressFilled"></div>
-                        </div>
-                        <div class="time-display">
-                            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
-                        </div>
-                    </div>
-                    
-                    <div class="controls-row">
-                        <div class="left-controls">
-                            <button class="control-btn" onclick="togglePlay()" id="playBtn">
-                                <i class="fas fa-play"></i>
-                            </button>
-                            <button class="control-btn" onclick="skipBackward()">
-                                <i class="fas fa-backward"></i> 10s
-                            </button>
-                            <button class="control-btn" onclick="skipForward()">
-                                <i class="fas fa-forward"></i> 10s
-                            </button>
-                            <div class="volume-control">
-                                <button class="control-btn" onclick="toggleMute()" id="volumeBtn">
-                                    <i class="fas fa-volume-up"></i>
-                                </button>
-                                <div class="volume-slider">
-                                    <input type="range" min="0" max="100" value="70" id="volumeSlider">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="right-controls">
-                            @if (!string.IsNullOrEmpty(Model.SubtitlePath))
-                            {
-                                <button class="control-btn" onclick="toggleSubtitles()" id="subtitleToggle">
-                                    <i class="fas fa-closed-captioning"></i>
-                                </button>
-                            }
-                            <button class="control-btn" onclick="changeSpeed()" id="speedBtn">1x</button>
-                            <button class="control-btn" onclick="toggleFullscreen()">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -171,7 +124,7 @@
         <!-- Comments Section -->
         <section class="comments-section-details" data-movie-id="@Model.Id">
             <div class="comments-container">
-                <h3>💬 HERO REVIEWS 💬 <span class="comment-count">(@commentCount)</span></h3>
+                <h3>💬  REVIEWS 💬 <span class="comment-count">(@commentCount)</span></h3>
 
                 @if (User.Identity.IsAuthenticated)
                 {
@@ -199,7 +152,7 @@
                                 }
                                 @userInitials
                             </div>
-                            <textarea placeholder="Share your EPIC thoughts about this LEGENDARY movie..." 
+                            <textarea placeholder="Share your thoughts about this movie..." 
                                       id="newComment" 
                                       class="comment-textarea"
                                       rows="3" 
@@ -280,7 +233,7 @@
                     else
                     {
                         <div class="no-comments-message">
-                            <p>🎬 Be the first to share your EPIC thoughts about this movie! 🎬</p>
+                            <p>🎬 Be the first to share your thoughts about this movie! 🎬</p>
                         </div>
                     }
                 </div>
@@ -378,22 +331,6 @@
             font-family: 'Bangers', cursive;
             font-size: 2rem;
             letter-spacing: 2px;
-        }
-
-        /* Custom Video Controls */
-        .custom-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            padding: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .video-container:hover .custom-controls {
-            opacity: 1;
         }
 
         .progress-container {
