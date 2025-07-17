@@ -1,883 +1,371 @@
 ﻿@model Film_website.Models.Movie
 @{
-    ViewData["Title"] = $"Watch {Model.Title}";
+    ViewData["Title"] = Model.Title;
+    var comments = ViewBag.Comments as List<Film_website.Models.Comment> ?? new List<Film_website.Models.Comment>();
+    var commentCount = ViewBag.CommentCount ?? 0;
 }
 
-<div class="movie-details-container">
-    <!-- Header with back button -->
-    <div class="details-header">
-        <button class="back-btn" onclick="history.back()">
-            <i class="fas fa-arrow-left"></i>
-            Back
-        </button>
-        <h1>@Model.Title</h1>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Film Website</title>
+    <meta name="movie-id" content="@Model.Id" />
+    @Html.AntiForgeryToken()
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bungee&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
 
-    <!-- Movie Player Section -->
-    <div class="movie-player-section">
-        @if (!string.IsNullOrEmpty(Model.FilePath))
-        {
+<body>
+    <div class="movie-details-container">
+        <!-- Video Section -->
+        <section class="video-section">
             <div class="video-container">
-                <video id="moviePlayer" preload="metadata" data-subtitle-path="@Model.SubtitlePath" poster="@Model.ThumbnailPath">
-                    <source src="@Model.FilePath" type="video/mp4">
+                <video id="moviePlayer" controls preload="metadata" data-subtitle-path="@Model.SubtitlePath">
+                    @if (!string.IsNullOrEmpty(Model.FilePath))
+                    {
+                        <source src="@Model.FilePath" type="video/mp4">
+                    }
                     @if (!string.IsNullOrEmpty(Model.SubtitlePath))
                     {
-                        <track src="@Model.SubtitlePath"
-                               kind="subtitles"
-                               srclang="en"
-                               label="English"
-                               id="subtitleTrack">
+                        <track src="@Model.SubtitlePath" kind="subtitles" srclang="en" label="English" id="subtitleTrack">
                     }
-                    <p>
-                        Your browser does not support the video tag.
-                        <a href="@Model.FilePath" download>Download the movie</a> instead.
-                    </p>
+                    Your browser does not support the video tag.
                 </video>
 
-                <!-- Custom Video Controls -->
+                @if (string.IsNullOrEmpty(Model.FilePath))
+                {
+                    <div class="no-video-message">
+                        <i class="fas fa-film fa-4x"></i>
+                        <h3>🎬 COMING SOON 🎬</h3>
+                        <p>This EPIC adventure will be available soon!</p>
+                    </div>
+                }
+
+                <!-- Video Controls -->
                 <div class="custom-controls" id="customControls">
                     <div class="progress-container">
                         <div class="progress-bar" id="progressBar">
-                            <div class="progress-fill" id="progressFill"></div>
-                            <div class="progress-thumb" id="progressThumb"></div>
+                            <div class="progress-filled" id="progressFilled"></div>
+                        </div>
+                        <div class="time-display">
+                            <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
                         </div>
                     </div>
-
+                    
                     <div class="controls-row">
                         <div class="left-controls">
-                            <button class="control-btn play-btn" id="playBtn">
+                            <button class="control-btn" onclick="togglePlay()" id="playBtn">
                                 <i class="fas fa-play"></i>
                             </button>
-                            <button class="control-btn" id="skipBackBtn">
-                                <i class="fas fa-step-backward"></i>
+                            <button class="control-btn" onclick="skipBackward()">
+                                <i class="fas fa-backward"></i> 10s
                             </button>
-                            <button class="control-btn" id="skipForwardBtn">
-                                <i class="fas fa-step-forward"></i>
+                            <button class="control-btn" onclick="skipForward()">
+                                <i class="fas fa-forward"></i> 10s
                             </button>
-                            <button class="control-btn volume-btn" id="volumeBtn">
-                                <i class="fas fa-volume-up"></i>
-                            </button>
-                            <div class="volume-container">
-                                <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="100">
-                            </div>
-                            <div class="time-display">
-                                <span id="currentTime">0:00</span>
-                                <span class="time-separator">/</span>
-                                <span id="totalTime">0:00</span>
+                            <div class="volume-control">
+                                <button class="control-btn" onclick="toggleMute()" id="volumeBtn">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                                <div class="volume-slider">
+                                    <input type="range" min="0" max="100" value="70" id="volumeSlider">
+                                </div>
                             </div>
                         </div>
 
                         <div class="right-controls">
                             @if (!string.IsNullOrEmpty(Model.SubtitlePath))
                             {
-                                <button class="control-btn subtitle-toggle" id="subtitleToggle" title="Toggle Subtitles">
+                                <button class="control-btn" onclick="toggleSubtitles()" id="subtitleToggle">
                                     <i class="fas fa-closed-captioning"></i>
                                 </button>
                             }
-                            <button class="control-btn" id="settingsBtn" title="Settings">
-                                <i class="fas fa-cog"></i>
-                            </button>
-                            <button class="control-btn" id="pipBtn" title="Picture in Picture">
-                                <i class="fas fa-external-link-alt"></i>
-                            </button>
-                            <button class="control-btn" id="fullscreenBtn" title="Fullscreen">
+                            <button class="control-btn" onclick="changeSpeed()" id="speedBtn">1x</button>
+                            <button class="control-btn" onclick="toggleFullscreen()">
                                 <i class="fas fa-expand"></i>
                             </button>
                         </div>
                     </div>
                 </div>
+            </div>
+        </section>
 
-                <!-- Settings Panel -->
-                <div class="settings-panel" id="settingsPanel">
-                    <div class="settings-group">
-                        <label>Playback Speed</label>
-                        <select id="speedSelect">
-                            <option value="0.5">0.5x</option>
-                            <option value="0.75">0.75x</option>
-                            <option value="1" selected>1x</option>
-                            <option value="1.25">1.25x</option>
-                            <option value="1.5">1.5x</option>
-                            <option value="2">2x</option>
-                        </select>
-                    </div>
-                    <div class="settings-group">
-                        <label>Quality</label>
-                        <select id="qualitySelect">
-                            <option value="auto" selected>Auto</option>
-                            <option value="1080p">1080p</option>
-                            <option value="720p">720p</option>
-                            <option value="480p">480p</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Loading Indicator -->
-                <div class="loading-indicator" id="loadingIndicator">
-                    <div class="spinner"></div>
-                </div>
-
-                <!-- Play Overlay -->
-                <div class="play-overlay" id="playOverlay">
-                    <button class="play-overlay-btn" id="playOverlayBtn">
-                        <i class="fas fa-play"></i>
-                    </button>
+        <!-- Movie Info Section -->
+        <section class="movie-info-section">
+            <div class="details-header">
+                <h1>@Model.Title</h1>
+                <div class="movie-meta">
+                    <span class="genre-tag">@Model.Genre</span>
+                    <span class="year-badge">@Model.ReleaseYear</span>
+                    <span class="rating-badge">⭐ EPIC</span>
                 </div>
             </div>
-        }
-        else
-        {
-            <div class="no-video-message">
-                <i class="fas fa-film fa-3x"></i>
-                <h3>Video not available</h3>
-                <p>This movie doesn't have a video file uploaded yet.</p>
-            </div>
-        }
-    </div>
 
-    <!-- Movie Information -->
-    <div class="movie-info-section">
-        <div class="movie-metadata">
-            <div class="metadata-grid">
-                <div class="metadata-item">
-                    <span class="metadata-label">Genre:</span>
-                    <span class="metadata-value genre-tag">@Model.Genre</span>
-                </div>
-                <div class="metadata-item">
-                    <span class="metadata-label">Release Year:</span>
-                    <span class="metadata-value">@Model.ReleaseYear</span>
-                </div>
-                <div class="metadata-item">
-                    <span class="metadata-label">Added:</span>
-                    <span class="metadata-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</span>
-                </div>
-                @if (Model.UpdatedAt.HasValue)
-                {
+            <div class="movie-metadata">
+                <div class="metadata-grid">
                     <div class="metadata-item">
-                        <span class="metadata-label">Updated:</span>
-                        <span class="metadata-value">@Model.UpdatedAt.Value.ToString("MMM dd, yyyy")</span>
+                        <div class="metadata-label">Genre:</div>
+                        <div class="metadata-value">
+                            <span class="genre-tag">@Model.Genre</span>
+                        </div>
                     </div>
-                }
-                @if (!string.IsNullOrEmpty(Model.SubtitlePath))
-                {
+                    
                     <div class="metadata-item">
-                        <span class="metadata-label">Subtitles:</span>
-                        <span class="metadata-value subtitle-available">
-                            <i class="fas fa-check-circle"></i>
-                            Available
-                        </span>
+                        <div class="metadata-label">Release Year:</div>
+                        <div class="metadata-value">@Model.ReleaseYear</div>
                     </div>
-                }
+                    
+                    <div class="metadata-item">
+                        <div class="metadata-label">Added:</div>
+                        <div class="metadata-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</div>
+                    </div>
+                    
+                    <div class="metadata-item">
+                        <div class="metadata-label">Subtitles:</div>
+                        <div class="metadata-value">
+                            @if (!string.IsNullOrEmpty(Model.SubtitlePath))
+                            {
+                                <span class="subtitle-available">
+                                    <i class="fas fa-check"></i> Available
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="subtitle-unavailable">
+                                    <i class="fas fa-times"></i> Not Available
+                                </span>
+                            }
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
 
-        <div class="movie-description">
-            <h3>Description</h3>
-            <p>@Model.Description</p>
-        </div>
+            <div class="movie-description">
+                <h3><i class="fas fa-film"></i> Description</h3>
+                <p>@Model.Description</p>
+            </div>
 
-        <!-- Action Buttons -->
-        <div class="movie-actions">
-            @if (!string.IsNullOrEmpty(Model.FilePath))
-            {
-                <button class="action-btn primary" onclick="scrollToPlayer()">
-                    <i class="fas fa-play"></i>
-                    Watch Now
+            <div class="movie-actions">
+                <button class="action-btn primary" onclick="playMovie()">
+                    <i class="fas fa-play"></i> WATCH NOW
                 </button>
                 @if (!string.IsNullOrEmpty(Model.SubtitlePath))
                 {
-                    <button class="action-btn subtitle" onclick="toggleSubtitlesFromAction()">
-                        <i class="fas fa-closed-captioning"></i>
-                        Toggle Subtitles
+                    <button class="action-btn subtitle" onclick="toggleSubtitles()">
+                        <i class="fas fa-closed-captioning"></i> TOGGLE SUBTITLES
                     </button>
                 }
-            }
-            <a href="@Url.Action("Index", "Home")" class="action-btn secondary">
-                <i class="fas fa-home"></i>
-                Back to Movies
-            </a>
-        </div>
-    </div>
-</div>
+                <button class="action-btn secondary" onclick="addToFavorites()">
+                    <i class="fas fa-heart"></i> ADD TO FAVORITES
+                </button>
+                <a href="@Url.Action("Index", "Movie")" class="action-btn">
+                    <i class="fas fa-arrow-left"></i> BACK TO MOVIES
+                </a>
+            </div>
+        </section>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const video = document.getElementById('moviePlayer');
-        const playBtn = document.getElementById('playBtn');
-        const playOverlay = document.getElementById('playOverlay');
-        const playOverlayBtn = document.getElementById('playOverlayBtn');
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-        const progressThumb = document.getElementById('progressThumb');
-        const currentTimeEl = document.getElementById('currentTime');
-        const totalTimeEl = document.getElementById('totalTime');
-        const volumeBtn = document.getElementById('volumeBtn');
-        const volumeSlider = document.getElementById('volumeSlider');
-        const fullscreenBtn = document.getElementById('fullscreenBtn');
-        const pipBtn = document.getElementById('pipBtn');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsPanel = document.getElementById('settingsPanel');
-        const speedSelect = document.getElementById('speedSelect');
-        const subtitleToggle = document.getElementById('subtitleToggle');
-        const customControls = document.getElementById('customControls');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const skipBackBtn = document.getElementById('skipBackBtn');
-        const skipForwardBtn = document.getElementById('skipForwardBtn');
+        <!-- Comments Section -->
+        <section class="comments-section-details" data-movie-id="@Model.Id">
+            <div class="comments-container">
+                <h3>💬 HERO REVIEWS 💬 <span class="comment-count">(@commentCount)</span></h3>
 
-        if (!video) return;
-
-        let isPlaying = false;
-        let isDragging = false;
-        let controlsTimeout;
-        let subtitlesEnabled = false;
-
-        // Initialize
-        function init() {
-            video.volume = volumeSlider.value / 100;
-            updateVolumeIcon();
-            setupEventListeners();
-            showControls();
-
-            // Auto-hide controls after 3 seconds
-            resetControlsTimeout();
-        }
-
-        function setupEventListeners() {
-            // Play/Pause
-            playBtn.addEventListener('click', togglePlay);
-            playOverlayBtn.addEventListener('click', togglePlay);
-            video.addEventListener('click', togglePlay);
-
-            // Skip buttons
-            skipBackBtn.addEventListener('click', () => skipTime(-10));
-            skipForwardBtn.addEventListener('click', () => skipTime(10));
-
-            // Progress bar
-            progressBar.addEventListener('mousedown', startDrag);
-            progressBar.addEventListener('click', seek);
-            document.addEventListener('mousemove', drag);
-            document.addEventListener('mouseup', endDrag);
-
-            // Volume
-            volumeBtn.addEventListener('click', toggleMute);
-            volumeSlider.addEventListener('input', updateVolume);
-
-            // Fullscreen
-            fullscreenBtn.addEventListener('click', toggleFullscreen);
-
-            // Picture in Picture
-            if (pipBtn && 'pictureInPictureEnabled' in document) {
-                pipBtn.addEventListener('click', togglePiP);
-            } else if (pipBtn) {
-                pipBtn.style.display = 'none';
-            }
-
-            // Settings
-            settingsBtn.addEventListener('click', toggleSettings);
-            speedSelect.addEventListener('change', changeSpeed);
-
-            // Subtitles
-            if (subtitleToggle) {
-                subtitleToggle.addEventListener('click', toggleSubtitles);
-            }
-
-            // Video events
-            video.addEventListener('loadedmetadata', onLoadedMetadata);
-            video.addEventListener('timeupdate', onTimeUpdate);
-            video.addEventListener('play', onPlay);
-            video.addEventListener('pause', onPause);
-            video.addEventListener('ended', onEnded);
-            video.addEventListener('waiting', () => showLoading());
-            video.addEventListener('canplay', () => hideLoading());
-
-            // Controls visibility
-            video.addEventListener('mousemove', showControls);
-            customControls.addEventListener('mousemove', showControls);
-            document.addEventListener('mousemove', resetControlsTimeout);
-
-            // Keyboard shortcuts
-            document.addEventListener('keydown', handleKeyboard);
-        }
-
-        function togglePlay() {
-            if (video.paused) {
-                video.play();
-            } else {
-                video.pause();
-            }
-        }
-
-        function skipTime(seconds) {
-            video.currentTime += seconds;
-        }
-
-        function onPlay() {
-            isPlaying = true;
-            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playOverlay.style.display = 'none';
-        }
-
-        function onPause() {
-            isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-play"></i>';
-            if (video.currentTime > 0) {
-                showControls();
-            }
-        }
-
-        function onEnded() {
-            isPlaying = false;
-            playBtn.innerHTML = '<i class="fas fa-replay"></i>';
-            playOverlay.style.display = 'flex';
-            showControls();
-        }
-
-        function onLoadedMetadata() {
-            totalTimeEl.textContent = formatTime(video.duration);
-            // Auto-enable subtitles
-            enableSubtitles();
-        }
-
-        function onTimeUpdate() {
-            if (!isDragging) {
-                updateProgress();
-            }
-            currentTimeEl.textContent = formatTime(video.currentTime);
-        }
-
-        function updateProgress() {
-            const progress = (video.currentTime / video.duration) * 100;
-            progressFill.style.width = `${progress}%`;
-            progressThumb.style.left = `${progress}%`;
-        }
-
-        function startDrag(e) {
-            isDragging = true;
-            seek(e);
-        }
-
-        function drag(e) {
-            if (isDragging) {
-                seek(e);
-            }
-        }
-
-        function endDrag() {
-            isDragging = false;
-        }
-
-        function seek(e) {
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (e.clientX - rect.left) / rect.width;
-            const time = percent * video.duration;
-            video.currentTime = Math.max(0, Math.min(time, video.duration));
-            updateProgress();
-        }
-
-        function updateVolume() {
-            video.volume = volumeSlider.value / 100;
-            updateVolumeIcon();
-        }
-
-        function toggleMute() {
-            if (video.muted) {
-                video.muted = false;
-                volumeSlider.value = video.volume * 100;
-            } else {
-                video.muted = true;
-            }
-            updateVolumeIcon();
-        }
-
-        function updateVolumeIcon() {
-            const icon = volumeBtn.querySelector('i');
-            if (video.muted || video.volume === 0) {
-                icon.className = 'fas fa-volume-mute';
-            } else if (video.volume < 0.5) {
-                icon.className = 'fas fa-volume-down';
-            } else {
-                icon.className = 'fas fa-volume-up';
-            }
-        }
-
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                video.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        function togglePiP() {
-            if (document.pictureInPictureElement) {
-                document.exitPictureInPicture();
-            } else {
-                video.requestPictureInPicture().catch(err => {
-                    console.log(`Error attempting to enable PiP: ${err.message}`);
-                });
-            }
-        }
-
-        function toggleSettings() {
-            settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function changeSpeed() {
-            video.playbackRate = parseFloat(speedSelect.value);
-        }
-
-        function toggleSubtitles() {
-            const tracks = video.textTracks;
-            if (tracks.length === 0) return;
-
-            const track = tracks[0];
-            if (track.mode === 'showing') {
-                track.mode = 'hidden';
-                subtitleToggle.classList.remove('active');
-                subtitlesEnabled = false;
-            } else {
-                track.mode = 'showing';
-                subtitleToggle.classList.add('active');
-                subtitlesEnabled = true;
-            }
-        }
-
-        function enableSubtitles() {
-            const tracks = video.textTracks;
-            if (tracks.length > 0) {
-                tracks[0].mode = 'showing';
-                if (subtitleToggle) {
-                    subtitleToggle.classList.add('active');
-                    subtitlesEnabled = true;
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <!-- Comment Form -->
+                    <div class="comment-form">
+                        <div class="comment-input-container">
+                            <div class="user-avatar">
+                                @{
+                                    var userInitials = "U";
+                                    var userService = Context.RequestServices.GetService(typeof(Film_website.Services.UserService)) as Film_website.Services.UserService;
+                                    if (userService != null && User.Identity.Name != null)
+                                    {
+                                        var currentUser = await userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                                        if (currentUser != null)
+                                        {
+                                            userInitials = "";
+                                            if (!string.IsNullOrEmpty(currentUser.FirstName))
+                                                userInitials += currentUser.FirstName[0].ToString().ToUpper();
+                                            if (!string.IsNullOrEmpty(currentUser.LastName))
+                                                userInitials += currentUser.LastName[0].ToString().ToUpper();
+                                            if (string.IsNullOrEmpty(userInitials))
+                                                userInitials = "U";
+                                        }
+                                    }
+                                }
+                                @userInitials
+                            </div>
+                            <textarea placeholder="Share your EPIC thoughts about this LEGENDARY movie..." 
+                                      id="newComment" 
+                                      class="comment-textarea"
+                                      rows="3" 
+                                      maxlength="1000"></textarea>
+                        </div>
+                        <div class="comment-actions">
+                            <button class="action-btn secondary" onclick="cancelComment()">❌ CANCEL</button>
+                            <button class="action-btn primary" onclick="addComment()">💥 POST REVIEW</button>
+                        </div>
+                        <div class="comment-help-text">
+                            <small>Share your thoughts! Maximum 1000 characters.</small>
+                        </div>
+                    </div>
                 }
-            }
+                else
+                {
+                    <!-- Login Prompt -->
+                    <div class="login-prompt">
+                        <p>🦸 <a href="@Url.Action("Login", "Account")">Login</a> or <a href="@Url.Action("Register", "Account")">Register</a> to share your EPIC thoughts! 🦸</p>
+                    </div>
+                }
+
+                <!-- Comments List -->
+                <div class="comments-list" id="commentsList">
+                    @if (comments.Any())
+                    {
+                        @foreach (var comment in comments)
+                        {
+                            var userCommentInitials = "U";
+                            if (!string.IsNullOrEmpty(comment.User.FirstName))
+                                userCommentInitials = comment.User.FirstName[0].ToString().ToUpper();
+                            if (!string.IsNullOrEmpty(comment.User.LastName))
+                                userCommentInitials += comment.User.LastName[0].ToString().ToUpper();
+                            if (userCommentInitials == "U" && !string.IsNullOrEmpty(comment.User.LastName))
+                                userCommentInitials = comment.User.LastName[0].ToString().ToUpper();
+
+                            var timeAgo = GetTimeAgo(comment.CreatedAt);
+                            var editedText = comment.IsEdited ? " (edited)" : "";
+                            var canEdit = User.Identity.IsAuthenticated && User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == comment.UserId;
+                            var canDelete = canEdit || User.IsInRole("Admin");
+
+                            <div class="comment-item" data-comment-id="@comment.Id">
+                                <div class="comment-header">
+                                    <div class="comment-avatar">@userCommentInitials</div>
+                                    <div class="comment-info">
+                                        <div class="comment-author">@comment.User.DisplayUserName</div>
+                                        <div class="comment-time">@timeAgo@editedText</div>
+                                    </div>
+                                    @if (canEdit || canDelete)
+                                    {
+                                        <div class="comment-options">
+                                            <button class="comment-option-btn" onclick="toggleCommentOptions(@comment.Id)">⋮</button>
+                                            <div class="comment-options-menu" id="options-@comment.Id" style="display: none;">
+                                                @if (canEdit)
+                                                {
+                                                    <button onclick="editComment(@comment.Id)">Edit</button>
+                                                }
+                                                @if (canDelete)
+                                                {
+                                                    <button onclick="deleteComment(@comment.Id)" class="delete-option">Delete</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="comment-content" id="content-@comment.Id">
+                                    @comment.Content
+                                </div>
+                                <div class="comment-actions-inline">
+                                    <button class="comment-action-btn" onclick="likeComment(@comment.Id)" id="like-btn-@comment.Id">
+                                        👍 <span id="like-count-@comment.Id">@comment.LikeCount</span>
+                                    </button>
+                                    <button class="comment-action-btn" onclick="replyComment(@comment.Id)">↩ Reply</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-comments-message">
+                            <p>🎬 Be the first to share your EPIC thoughts about this movie! 🎬</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Load More Comments -->
+                <div class="load-more-container">
+                    <button class="action-btn secondary load-more-btn" onclick="loadMoreComments()" style="display: @(comments.Count >= 10 ? "block" : "none")">⚡ LOAD MORE HERO REVIEWS ⚡</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/js/movie-comments.js"></script>
+
+    <style>
+        /* Root Variables */
+        :root {
+            --primary-red: #ff1744;
+            --dark-red: #d50000;
+            --light-black: #1a1a1a;
+            --medium-gray: #2d2d2d;
+            --light-gray: #404040;
+            --text-gray: #b0b0b0;
+            --white: #ffffff;
+            --success-green: #4caf50;
+            --warning-orange: #ff9800;
+            --error-red: #f44336;
         }
 
-        function showControls() {
-            customControls.classList.add('visible');
-            resetControlsTimeout();
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        function hideControls() {
-            if (isPlaying) {
-                customControls.classList.remove('visible');
-            }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 50%, #0f0f0f 100%);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
         }
 
-        function resetControlsTimeout() {
-            clearTimeout(controlsTimeout);
-            controlsTimeout = setTimeout(hideControls, 3000);
+        /* Movie Details Container */
+        .movie-details-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        function showLoading() {
-            loadingIndicator.style.display = 'flex';
+        /* Video Section */
+        .video-section {
+            margin-bottom: 3rem;
         }
 
-        function hideLoading() {
-            loadingIndicator.style.display = 'none';
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        function handleKeyboard(e) {
-            switch (e.code) {
-                case 'Space':
-                    e.preventDefault();
-                    togglePlay();
-                    break;
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    skipTime(-10);
-                    break;
-                case 'ArrowRight':
-                    e.preventDefault();
-                    skipTime(10);
-                    break;
-                case 'ArrowUp':
-                    e.preventDefault();
-                    video.volume = Math.min(1, video.volume + 0.1);
-                    volumeSlider.value = video.volume * 100;
-                    updateVolumeIcon();
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    video.volume = Math.max(0, video.volume - 0.1);
-                    volumeSlider.value = video.volume * 100;
-                    updateVolumeIcon();
-                    break;
-                case 'KeyF':
-                    e.preventDefault();
-                    toggleFullscreen();
-                    break;
-                case 'KeyM':
-                    e.preventDefault();
-                    toggleMute();
-                    break;
-            }
-        }
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
-
-        // Initialize the player
-        init();
-    });
-
-    // Utility functions
-    function scrollToPlayer() {
-        document.getElementById('moviePlayer').scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
-    }
-
-    function toggleSubtitlesFromAction() {
-        const subtitleToggle = document.getElementById('subtitleToggle');
-        if (subtitleToggle) {
-            subtitleToggle.click();
-        }
-    }
-</script>
-
-<style>
-    /* Movie Details Page Styles */
-    .movie-details-container {
-        min-height: 100vh;
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        color: white;
-        padding: 2rem;
-    }
-
-    .details-header {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        max-width: 1200px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .back-btn {
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        color: white;
-        padding: 0.75rem 1rem;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(-2px);
-        }
-
-    .details-header h1 {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0;
-        background: linear-gradient(45deg, #fff, #ff1744);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    /* Video Player Styles */
-    .movie-player-section {
-        max-width: 1200px;
-        margin: 0 auto 3rem auto;
-    }
-
-    .video-container {
-        position: relative;
-        width: 100%;
-        background: #000;
-        border-radius: 15px;
-        overflow: hidden;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    }
-
-    #moviePlayer {
-        width: 100%;
-        height: auto;
-        min-height: 400px;
-        display: block;
-        cursor: pointer;
-    }
-
-    /* Custom Video Controls */
-    .custom-controls {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-        padding: 20px;
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-        z-index: 10;
-    }
-
-        .custom-controls.visible {
-            transform: translateY(0);
-        }
-
-    .progress-container {
-        margin-bottom: 15px;
-    }
-
-    .progress-bar {
-        height: 4px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 2px;
-        position: relative;
-        cursor: pointer;
-        transition: height 0.2s ease;
-    }
-
-        .progress-bar:hover {
-            height: 6px;
-        }
-
-    .progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #ff1744, #ff5983);
-        border-radius: 2px;
-        position: relative;
-        transition: width 0.1s ease;
-    }
-
-    .progress-thumb {
-        width: 12px;
-        height: 12px;
-        background: #ff1744;
-        border-radius: 50%;
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.3);
-    }
-
-    .progress-bar:hover .progress-thumb {
-        opacity: 1;
-    }
-
-    .controls-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .left-controls,
-    .right-controls {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .control-btn {
-        background: transparent;
-        border: none;
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-    }
-
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.1);
-        }
-
-        .control-btn.active {
-            background: rgba(255, 23, 68, 0.8);
-        }
-
-    .play-btn {
-        width: 50px;
-        height: 50px;
-        background: rgba(255, 23, 68, 0.9);
-        font-size: 20px;
-    }
-
-        .play-btn:hover {
-            background: rgba(255, 23, 68, 1);
-        }
-
-    .volume-container {
-        display: flex;
-        align-items: center;
-        margin-left: 5px;
-    }
-
-    .volume-slider {
-        width: 80px;
-        height: 4px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 2px;
-        outline: none;
-        cursor: pointer;
-        -webkit-appearance: none;
-    }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 12px;
-            height: 12px;
-            background: #ff1744;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .volume-slider::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            background: #ff1744;
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-        }
-
-    .time-display {
-        color: white;
-        font-family: 'Courier New', monospace;
-        font-size: 14px;
-        margin-left: 15px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-
-    .time-separator {
-        opacity: 0.7;
-    }
-
-    /* Settings Panel */
-    .settings-panel {
-        position: absolute;
-        bottom: 70px;
-        right: 20px;
-        background: rgba(0, 0, 0, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        padding: 20px;
-        min-width: 200px;
-        display: none;
-        z-index: 20;
-    }
-
-    .settings-group {
-        margin-bottom: 15px;
-    }
-
-        .settings-group:last-child {
-            margin-bottom: 0;
-        }
-
-        .settings-group label {
-            display: block;
-            color: white;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .settings-group select {
+        #moviePlayer {
             width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
+            height: auto;
+            min-height: 400px;
+            display: block;
         }
 
-    /* Loading Indicator */
-    .loading-indicator {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        display: none;
-        z-index: 15;
-    }
-
-    .spinner {
-        width: 40px;
-        height: 40px;
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-top: 4px solid #ff1744;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-    }
-
-    keyframes spin {
-        0%
-
-    {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-
-    }
-
-    /* Play Overlay */
-    .play-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 5;
-    }
-
-    .play-overlay-btn {
-        width: 80px;
-        height: 80px;
-        background: rgba(255, 23, 68, 0.9);
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 30px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-        .play-overlay-btn:hover {
-            background: rgba(255, 23, 68, 1);
-            transform: scale(1.1);
+        .no-video-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            background: var(--medium-gray);
+            color: var(--text-gray);
+            text-align: center;
+            padding: 3rem;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
         }
-
-    /* No Video Message */
-    .no-video-message {
-        text-align: center;
-        padding: 4rem 2rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        border: 2px dashed rgba(255, 255, 255, 0.2);
-    }
 
         .no-video-message i {
             color: rgba(255, 255, 255, 0.3);
@@ -887,103 +375,229 @@
         .no-video-message h3 {
             margin: 1rem 0;
             color: rgba(255, 255, 255, 0.7);
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
+            letter-spacing: 2px;
         }
 
-    /* Movie Info Section */
-    .movie-info-section {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+        /* Custom Video Controls */
+        .custom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
 
-    .movie-metadata {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        .video-container:hover .custom-controls {
+            opacity: 1;
+        }
 
-    .metadata-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-    }
+        .progress-container {
+            margin-bottom: 1rem;
+        }
 
-    .metadata-item {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
 
-    .metadata-label {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 500;
-    }
+        .progress-filled {
+            height: 100%;
+            background: var(--primary-red);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
 
-    .metadata-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
+        .time-display {
+            color: white;
+            font-size: 0.9rem;
+            text-align: center;
+        }
 
-    .genre-tag {
-        background: linear-gradient(45deg, #ff1744, #d50000);
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        display: inline-block;
-        max-width: fit-content;
-    }
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .subtitle-available {
-        color: #4caf50;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
+        .left-controls, .right-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-    .movie-description {
-        background: rgba(255, 255, 255, 0.05);
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .volume-slider input {
+            width: 80px;
+        }
+
+        /* Movie Info Section */
+        .movie-info-section {
+            margin-bottom: 3rem;
+        }
+
+        .details-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .details-header h1 {
+            font-family: 'Bangers', cursive;
+            font-size: 3rem;
+            color: var(--primary-red);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .movie-meta {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .genre-tag, .year-badge, .rating-badge {
+            background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .movie-metadata {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metadata-label {
+            font-size: 0.9rem;
+            color: var(--text-gray);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metadata-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .subtitle-available {
+            color: var(--success-green);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subtitle-unavailable {
+            color: var(--error-red);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .movie-description {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
         .movie-description h3 {
             margin-bottom: 1rem;
-            color: #ff1744;
+            color: var(--primary-red);
             font-size: 1.5rem;
+            font-family: 'Bungee', cursive;
         }
 
-    .movie-actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
+        .movie-description p {
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
 
-    .action-btn {
-        background: linear-gradient(45deg, #424242, #2d2d2d);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        color: white;
-        padding: 1rem 2rem;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 1rem;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+        /* Action Buttons */
+        .movie-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, var(--medium-gray), var(--light-gray));
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
         .action-btn.primary {
-            background: linear-gradient(45deg, #ff1744, #d50000);
-            border-color: #ff1744;
+            background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(45deg, var(--medium-gray), var(--light-gray));
+            border-color: var(--light-gray);
         }
 
         .action-btn.subtitle {
@@ -997,7 +611,7 @@
         }
 
         .action-btn.primary:hover {
-            background: linear-gradient(45deg, #ff5983, #ff1744);
+            background: linear-gradient(45deg, #ff5983, var(--primary-red));
             box-shadow: 0 8px 25px rgba(255, 23, 68, 0.5);
         }
 
@@ -1006,76 +620,713 @@
             box-shadow: 0 8px 25px rgba(156, 39, 176, 0.4);
         }
 
-    /* Enhanced subtitle styling */
-    video::cue {
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        font-size: 18px;
-        font-family: Arial, sans-serif;
-        text-shadow: 1px 1px 2px black;
-        padding: 4px 8px;
-        border-radius: 4px;
-        line-height: 1.4;
+        /* Comments Section */
+        .comments-section-details {
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comments-container h3 {
+            color: var(--primary-red);
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            font-family: 'Bangers', cursive;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .comment-count {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+        }
+
+        /* Comment Form */
+        .comment-form {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 23, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .comment-form:hover {
+            border-color: rgba(255, 23, 68, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .comment-input-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--primary-red), #ff5722);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(255, 23, 68, 0.3);
+        }
+
+        .comment-textarea {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 10px rgba(255, 23, 68, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .comment-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .comment-help-text {
+            margin-top: 0.5rem;
+            text-align: right;
+        }
+
+        .comment-help-text small {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        /* Login Prompt */
+        .login-prompt {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border: 2px solid rgba(255, 23, 68, 0.3);
+        }
+
+        .login-prompt p {
+            color: white;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .login-prompt a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .login-prompt a:hover {
+            color: #ff5722;
+            text-decoration: underline;
+        }
+
+        /* Comment Items */
+        .comment-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .comment-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 23, 68, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, var(--primary-red), #ff5722);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .comment-info {
+            flex: 1;
+        }
+
+        .comment-author {
+            color: var(--primary-red);
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .comment-time {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+        }
+
+        .comment-content {
+            color: white;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            word-wrap: break-word;
+        }
+
+        /* Comment Options */
+        .comment-options {
+            position: relative;
+        }
+
+        .comment-option-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .comment-option-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .comment-options-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            min-width: 120px;
+            z-index: 10;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .comment-options-menu button {
+            display: block;
+            width: 100%;
+            background: none;
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .comment-options-menu button:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .comment-options-menu button.delete-option {
+            color: #ff4444;
+        }
+
+        .comment-options-menu button.delete-option:hover {
+            background: rgba(255, 68, 68, 0.2);
+        }
+
+        /* Comment Actions */
+        .comment-actions-inline {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .comment-action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comment-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .comment-action-btn.liked {
+            background: rgba(255, 23, 68, 0.3);
+            border-color: var(--primary-red);
+            color: var(--primary-red);
+        }
+
+        /* Edit Comment */
+        .edit-comment-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .edit-comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary-red);
+            box-shadow: 0 0 10px rgba(255, 23, 68, 0.3);
+        }
+
+        .edit-comment-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 12px;
+            border-radius: 8px;
+        }
+
+        /* No Comments Message */
+        .no-comments-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        /* Loading States */
+        .comments-loading {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
+        /* Load More Button */
+        .load-more-container {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .load-more-btn {
+            background: linear-gradient(45deg, var(--medium-gray), var(--light-gray));
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            animation: slideInFromRight 0.3s ease-out;
+        }
+
+        .notification-success {
+            background: rgba(34, 197, 94, 0.9);
+            border: 1px solid #22c55e;
+        }
+
+        .notification-error {
+            background: rgba(220, 38, 38, 0.9);
+            border: 1px solid #dc2626;
+        }
+
+        .notification-warning {
+            background: rgba(245, 158, 11, 0.9);
+            border: 1px solid #f59e0b;
+        }
+
+        .notification-info {
+            background: rgba(59, 130, 246, 0.9);
+            border: 1px solid #3b82f6;
+        }
+
+        .notification button {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            line-height: 1;
+        }
+
+        @@keyframes slideInFromRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @@media (max-width: 768px) {
+            .movie-details-container {
+                padding: 1rem;
+            }
+
+            .details-header h1 {
+                font-size: 2rem;
+            }
+
+            .movie-meta {
+                justify-content: center;
+            }
+
+            .metadata-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .movie-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-btn {
+                min-width: 200px;
+                justify-content: center;
+            }
+
+            .comment-input-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .comment-actions {
+                justify-content: center;
+            }
+
+            .comments-section-details {
+                padding: 1rem;
+            }
+
+            .comment-item {
+                padding: 1rem;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .left-controls, .right-controls {
+                justify-content: center;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .details-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .movie-meta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .comment-form {
+                padding: 1rem;
+            }
+
+            .comment-textarea {
+                min-height: 60px;
+            }
+
+            .user-avatar, .comment-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+        }
+    </style>
+
+<!-- Anti-Forgery Token -->
+@Html.AntiForgeryToken()
+<meta name="movie-id" content="@Model.Id" />
+
+<!-- Scripts -->
+<script src="~/js/movie-comments.js"></script>
+
+<script>
+    // Helper function for time ago calculation
+    @{
+        string GetTimeAgo(DateTime date)
+        {
+            var timeSpan = DateTime.UtcNow - date;
+
+            if (timeSpan.TotalDays > 365)
+                return $"{(int)(timeSpan.TotalDays / 365)} year{((int)(timeSpan.TotalDays / 365) > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalDays > 30)
+                return $"{(int)(timeSpan.TotalDays / 30)} month{((int)(timeSpan.TotalDays / 30) > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalDays > 1)
+                return $"{(int)timeSpan.TotalDays} day{((int)timeSpan.TotalDays > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalHours > 1)
+                return $"{(int)timeSpan.TotalHours} hour{((int)timeSpan.TotalHours > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalMinutes > 1)
+                return $"{(int)timeSpan.TotalMinutes} minute{((int)timeSpan.TotalMinutes > 1 ? "s" : "")} ago";
+
+            return "just now";
+        }
     }
 
-    /* Responsive Design */
-    media (max-width: 768px) {
-        .movie-details-container
-
-    {
-        padding: 1rem;
+    // Existing movie player functions
+    function playMovie() {
+        const video = document.getElementById('moviePlayer');
+        if (video) {
+            video.play();
+        }
     }
 
-    .details-header h1 {
-        font-size: 2rem;
+    function toggleSubtitles() {
+        const video = document.getElementById('moviePlayer');
+        if (video && video.textTracks.length > 0) {
+            const track = video.textTracks[0];
+            track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
+        }
     }
+               // Video Player Functions
+            let video = document.getElementById('moviePlayer');
+            let isPlaying = false;
+            let controlsTimeout;
 
-    .controls-row {
-        flex-direction: column;
-        gap: 10px;
-    }
+            function playMovie() {
+                if (video) {
+                    video.play();
+                    updatePlayButton();
+                }
+            }
 
-    .left-controls,
-    .right-controls {
-        justify-content: center;
-    }
+            function togglePlay() {
+                if (video) {
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                    updatePlayButton();
+                }
+            }
 
-    .volume-slider {
-        width: 60px;
-    }
+            function updatePlayButton() {
+                const playBtn = document.getElementById('playBtn');
+                if (playBtn) {
+                    if (video.paused) {
+                        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        isPlaying = false;
+                    } else {
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        isPlaying = true;
+                    }
+                }
+            }
 
-    .settings-panel {
-        right: 10px;
-        left: 10px;
-        width: auto;
-    }
+            function skipBackward() {
+                if (video) {
+                    video.currentTime = Math.max(0, video.currentTime - 10);
+                }
+            }
 
-    video::cue {
-        font-size: 16px;
-        padding: 3px 6px;
-    }
+            function skipForward() {
+                if (video) {
+                    video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                }
+            }
 
-    .movie-actions {
-        flex-direction: column;
-        align-items: center;
-    }
+            function toggleMute() {
+                if (video) {
+                    video.muted = !video.muted;
+                    updateVolumeButton();
+                }
+            }
 
-    .action-btn {
-        min-width: 200px;
-    }
+            function updateVolumeButton() {
+                const volumeBtn = document.getElementById('volumeBtn');
+                if (volumeBtn) {
+                    if (video.muted || video.volume === 0) {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    } else if (video.volume < 0.5) {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
+                    } else {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    }
+                }
+            }
 
-    }
+            function toggleSubtitles() {
+                if (video && video.textTracks.length > 0) {
+                    const track = video.textTracks[0];
+                    track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
 
-    /* Fullscreen styles */
-    .video-container:-webkit-full-screen {
-        border-radius: 0;
-    }
+                    const subtitleToggle = document.getElementById('subtitleToggle');
+                    if (subtitleToggle) {
+                        if (track.mode === 'showing') {
+                            subtitleToggle.style.background = 'rgba(255, 23, 68, 0.3)';
+                        } else {
+                            subtitleToggle.style.background = 'rgba(255, 255, 255, 0.2)';
+                        }
+                    }
+                }
+            }
 
-    .video-container:-moz-full-screen {
-        border-radius: 0;
-    }
+            function changeSpeed() {
+                const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+                const currentSpeed = video.playbackRate;
+                const currentIndex = speeds.indexOf(currentSpeed);
+                const nextIndex = (currentIndex + 1) % speeds.length;
 
-    .video-container:fullscreen {
-        border-radius: 0;
-    }
-</style>
+                video.playbackRate = speeds[nextIndex];
+
+                const speedBtn = document.getElementById('speedBtn');
+                if (speedBtn) {
+                    speedBtn.textContent = speeds[nextIndex] + 'x';
+                }
+            }
+
+            function toggleFullscreen() {
+                if (video) {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    } else if (video.webkitRequestFullscreen) {
+                        video.webkitRequestFullscreen();
+                    } else if (video.msRequestFullscreen) {
+                        video.msRequestFullscreen();
+                    }
+                }
+            }
+
+            function addToFavorites() {
+                showNotification('Added to favorites! ❤️', 'success');
+            }
+
+            // Video event listeners
+            if (video) {
+                video.addEventListener('loadedmetadata', function() {
+                    updateDuration();
+                });
+
+                video.addEventListener('timeupdate', function() {
+                    updateProgress();
+                    updateCurrentTime();
+                });
+
+                video.addEventListener('play', updatePlayButton);
+                video.addEventListener('pause', updatePlayButton);
+                video.addEventListener('volumechange', updateVolumeButton);
+
+                // Volume slider
+                const volumeSlider = document.getElementById('volumeSlider');
+                if (volumeSlider) {
+                    volumeSlider.addEventListener('input', function() {
+                        video.volume = this.value / 100;
+                    });
+                }
+
+                // Progress bar
+                const progressBar = document.querySelector('.progress-bar');
+                if (progressBar) {
+                    progressBar.addEventListener('click', function(e) {
+                        const rect = this.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const width = rect.width;
+                        const percentage = clickX / width;
+                        video.currentTime = percentage * video.duration;
+                    });
+                }
+            }
+
+            function updateDuration() {
+                const durationElement = document.getElementById('duration');
+                if (durationElement && video.duration) {
+                    durationElement.textContent = formatTime(video.duration);
+                }
+            }
+
+            function updateCurrentTime() {
+                const currentTimeElement = document.getElementById('currentTime');
+                if (currentTimeElement) {
+                    currentTimeElement.textContent = formatTime(video.currentTime);
+                }
+            }
+
+            function updateProgress() {
+                const progressFilled = document.getElementById('progressFilled');
+                if (progressFilled && video.duration) {
+                    const percentage = (video.currentTime / video.duration) * 100;
+                    progressFilled.style.width = percentage + '%';
+                }
+            }
+
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = Math.floor(seconds % 60);
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
+            // Initialize video controls
+            if (video) {
+                updatePlayButton();
+                updateVolumeButton();
+            }
+</script>
+</body>
+</html>
