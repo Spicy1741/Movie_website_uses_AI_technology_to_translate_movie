@@ -39,19 +39,19 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="Index">
-                                <i class="fas fa-home"></i>Trang chủ
+                                <i class="fas fa-home"></i>Hompage
                             </a>
                         </li>
                         @if (User.Identity!.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-section="movies">
-                                    <i class="fas fa-video"></i>Phim
+                                    <i class="fas fa-video"></i>Film
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="#" data-section="favorites">
-                                    <i class="fas fa-heart"></i>Yêu thích
+                                    <i class="fas fa-heart"></i>Favourite
                                 </a>
                             </li>
                         }
@@ -126,33 +126,22 @@
                                     <li>
                                         <a class="dropdown-item" asp-controller="Account" asp-action="Profile">
                                             <i class="fas fa-user-circle"></i>
-                                            Hồ sơ cá nhân
+                                            Profile
                                         </a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item" asp-controller="Account" asp-action="EditProfile">
                                             <i class="fas fa-edit"></i>
-                                            Chỉnh sửa hồ sơ
+                                            Edit profile
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#" data-section="watchlist">
-                                            <i class="fas fa-list"></i>
-                                            Danh sách xem
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="#" data-section="settings">
-                                            <i class="fas fa-cog"></i>
-                                            Cài đặt
-                                        </a>
-                                    </li>
+                                   
                                     @if (User.IsInRole("Admin"))
                                     {
                                         <li>
                                             <a class="dropdown-item" asp-controller="Admin" asp-action="index">
                                                 <i class="fas fa-cogs"></i>
-                                                Quản trị
+                                                Admin
                                             </a>
                                         </li>
                                     }
@@ -161,7 +150,7 @@
                                         <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
                                             <button type="submit" class="dropdown-item">
                                                 <i class="fas fa-sign-out-alt"></i>
-                                                Đăng xuất
+                                                Log out
                                             </button>
                                         </form>
                                     </li>
@@ -174,11 +163,11 @@
                             <div class="auth-buttons slide-in-right">
                                 <a class="btn-login" asp-controller="Account" asp-action="Login">
                                     <i class="fas fa-sign-in-alt"></i>
-                                    Đăng nhập
+                                    Login
                                 </a>
                                 <a class="btn-register" asp-controller="Account" asp-action="Register">
                                     <i class="fas fa-user-plus"></i>
-                                    Đăng ký
+                                    Register
                                 </a>
                             </div>
                         }
