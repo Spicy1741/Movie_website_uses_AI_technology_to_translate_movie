@@ -332,7 +332,7 @@ body {
     background: rgba(0, 0, 0, 0.8);
     border: 2px solid var(--primary-red);
     color: var(--text-white);
-    padding: 15px 18px;
+    padding: 12px 16px;
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.3s ease;

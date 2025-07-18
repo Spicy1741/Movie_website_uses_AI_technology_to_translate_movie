@@ -4,6 +4,8 @@ using Film_website.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.IO;
 
 public class AccountController : Controller
 {
@@ -255,22 +257,32 @@ public class AccountController : Controller
         user.LastName = model.LastName;
         user.DisplayUserName = model.DisplayUserName;
 
-        // Handle avatar upload
+        // Handle avatar upload with better error handling
         if (model.AvatarFile != null)
         {
-            // Delete old avatar if exists
-            if (!string.IsNullOrEmpty(user.AvatarPath))
+            try
             {
-                var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarPath.TrimStart('/'));
-                if (System.IO.File.Exists(oldAvatarPath))
+                // Delete old avatar if exists
+                if (!string.IsNullOrEmpty(user.AvatarPath))
                 {
-                    System.IO.File.Delete(oldAvatarPath);
+                    var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarPath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldAvatarPath))
+                    {
+                        System.IO.File.Delete(oldAvatarPath);
+                    }
                 }
-            }
 
-            // Save new avatar
-            var avatarPath = await SaveAvatarAsync(model.AvatarFile, user.Id);
-            user.AvatarPath = avatarPath;
+                // Save new avatar
+                var avatarPath = await SaveAvatarAsync(model.AvatarFile, user.Id);
+                user.AvatarPath = avatarPath;
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Add the error to ModelState instead of letting it crash
+                ModelState.AddModelError("AvatarFile", ex.Message);
+                model.CurrentAvatarPath = user.AvatarPath;
+                return View(model);
+            }
         }
         else if (model.RemoveAvatar && !string.IsNullOrEmpty(user.AvatarPath))
         {
@@ -306,13 +318,16 @@ public class AccountController : Controller
     {
         try
         {
-            // Validate file type
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-            var fileExtension = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
+            // Validate file type by both extension and MIME type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }; // Added webp
+            var allowedMimeTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" };
 
-            if (!allowedExtensions.Contains(fileExtension))
+            var fileExtension = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
+            var mimeType = avatarFile.ContentType.ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(fileExtension) || !allowedMimeTypes.Contains(mimeType))
             {
-                throw new InvalidOperationException("Only image files (jpg, jpeg, png, gif) are allowed.");
+                throw new InvalidOperationException("Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed.");
             }
 
             // Validate file size (max 5MB)
@@ -320,6 +335,9 @@ public class AccountController : Controller
             {
                 throw new InvalidOperationException("File size cannot exceed 5MB.");
             }
+
+            // Reset stream position after image validation
+            avatarFile.OpenReadStream().Position = 0;
 
             // Create uploads directory if it doesn't exist
             var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
@@ -347,5 +365,4 @@ public class AccountController : Controller
             throw;
         }
     }
-
 }
