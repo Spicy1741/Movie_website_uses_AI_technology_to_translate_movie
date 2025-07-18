@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Film_website.Migrations
 {
     /// <inheritdoc />
-    public partial class webfilmdb : Migration
+    public partial class Add : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -250,6 +250,33 @@ namespace Film_website.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Favorites",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    MovieId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Favorites", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Favorites_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Favorites_Movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "Movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommentLikes",
                 columns: table => new
                 {
@@ -366,6 +393,27 @@ namespace Film_website.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Favorites_CreatedAt",
+                table: "Favorites",
+                column: "CreatedAt");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_MovieId",
+                table: "Favorites",
+                column: "MovieId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_UserId",
+                table: "Favorites",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Favorites_UserId_MovieId",
+                table: "Favorites",
+                columns: new[] { "UserId", "MovieId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserActivities_ActivityType",
                 table: "UserActivities",
                 column: "ActivityType");
@@ -401,6 +449,9 @@ namespace Film_website.Migrations
 
             migrationBuilder.DropTable(
                 name: "CommentLikes");
+
+            migrationBuilder.DropTable(
+                name: "Favorites");
 
             migrationBuilder.DropTable(
                 name: "UserActivities");

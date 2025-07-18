@@ -15,6 +15,7 @@ namespace Film_website.Data
         public DbSet<UserActivity> UserActivities { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<CommentLike> CommentLikes { get; set; }
+        public DbSet<Favorite> Favorites { get; set; } // Add this line
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -104,6 +105,28 @@ namespace Film_website.Data
                 // Indexes for better performance
                 entity.HasIndex(e => e.CommentId);
                 entity.HasIndex(e => e.UserId);
+            });
+
+            // NEW: Favorite configuration
+            builder.Entity<Favorite>(entity =>
+            {
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasOne(e => e.User)
+                      .WithMany()
+                      .HasForeignKey(e => e.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.Movie)
+                      .WithMany()
+                      .HasForeignKey(e => e.MovieId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // Ensure a user can only favorite a movie once
+                entity.HasIndex(e => new { e.UserId, e.MovieId }).IsUnique();
+                entity.HasIndex(e => e.UserId);
+                entity.HasIndex(e => e.MovieId);
+                entity.HasIndex(e => e.CreatedAt);
             });
 
             // Existing role seeding
