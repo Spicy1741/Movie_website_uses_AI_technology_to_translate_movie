@@ -40,21 +40,40 @@ namespace Film_website.Controllers
             }
         }
 
-        // Updated Details action with comments
+        // Updated Details method to include favorite status
         public async Task<IActionResult> Details(int id)
         {
             try
             {
                 var movie = await _movieService.GetMovieByIdAsync(id);
                 if (movie == null)
-                {
                     return NotFound();
-                }
 
                 // Get comments for this movie
-                var comments = await GetMovieCommentsAsync(id);
+                var comments = await _context.Comments
+                    .Include(c => c.User)
+                    .Include(c => c.Replies)
+                        .ThenInclude(r => r.User)
+                    .Include(c => c.CommentLikes)
+                    .Where(c => c.MovieId == id && c.ParentCommentId == null)
+                    .OrderByDescending(c => c.CreatedAt)
+                    .ToListAsync();
+
                 ViewBag.Comments = comments;
-                ViewBag.CommentCount = comments.Count;
+                ViewBag.CommentCount = comments.Count + comments.Sum(c => c.Replies.Count);
+
+                // Check if current user has this movie in favorites
+                if (User.Identity?.IsAuthenticated == true)
+                {
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var isFavorite = await _context.Favorites
+                        .AnyAsync(f => f.UserId == userId && f.MovieId == id);
+                    ViewBag.IsFavorite = isFavorite;
+                }
+                else
+                {
+                    ViewBag.IsFavorite = false;
+                }
 
                 return View(movie);
             }
@@ -62,6 +81,145 @@ namespace Film_website.Controllers
             {
                 _logger.LogError(ex, "Error loading movie details for ID: {MovieId}", id);
                 return NotFound();
+            }
+        }
+
+        // NEW: Add to Favorites functionality
+        [HttpPost]
+        [Authorize(Roles = "Admin,User")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddToFavorite(int movieId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { success = false, message = "User not authenticated." });
+                }
+
+                // Check if movie exists
+                var movie = await _context.Movies.FindAsync(movieId);
+                if (movie == null)
+                {
+                    return Json(new { success = false, message = "Movie not found." });
+                }
+
+                // Check if already in favorites
+                var existingFavorite = await _context.Favorites
+                    .FirstOrDefaultAsync(f => f.UserId == userId && f.MovieId == movieId);
+
+                if (existingFavorite != null)
+                {
+                    return Json(new { success = false, message = "Movie is already in your favorites." });
+                }
+
+                // Add to favorites
+                var favorite = new Favorite
+                {
+                    UserId = userId,
+                    MovieId = movieId,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Favorites.Add(favorite);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Movie added to favorites successfully!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error adding movie {MovieId} to favorites for user {UserId}", movieId, User.FindFirstValue(ClaimTypes.NameIdentifier));
+                return Json(new { success = false, message = "An error occurred while adding to favorites." });
+            }
+        }
+
+        // NEW: Remove from Favorites functionality
+        [HttpPost]
+        [Authorize(Roles = "Admin,User")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveFromFavorite(int movieId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { success = false, message = "User not authenticated." });
+                }
+
+                var favorite = await _context.Favorites
+                    .FirstOrDefaultAsync(f => f.UserId == userId && f.MovieId == movieId);
+
+                if (favorite == null)
+                {
+                    return Json(new { success = false, message = "Movie is not in your favorites." });
+                }
+
+                _context.Favorites.Remove(favorite);
+                await _context.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Movie removed from favorites successfully!" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing movie {MovieId} from favorites for user {UserId}", movieId, User.FindFirstValue(ClaimTypes.NameIdentifier));
+                return Json(new { success = false, message = "An error occurred while removing from favorites." });
+            }
+        }
+
+        // NEW: Display Favorites page
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> Favorites()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return RedirectToAction("Login", "Account");
+                }
+
+                var favoriteMovies = await _context.Favorites
+                    .Include(f => f.Movie)
+                    .Where(f => f.UserId == userId)
+                    .OrderByDescending(f => f.CreatedAt)
+                    .Select(f => f.Movie)
+                    .ToListAsync();
+
+                ViewBag.FavoriteCount = favoriteMovies.Count;
+                return View(favoriteMovies);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading favorites for user {UserId}", User.FindFirstValue(ClaimTypes.NameIdentifier));
+                ViewBag.ErrorMessage = "Unable to load your favorites at this time.";
+                return View(new List<Movie>());
+            }
+        }
+
+        // NEW: Check if movie is in favorites (for AJAX calls)
+        [HttpGet]
+        [Authorize(Roles = "Admin,User")]
+        public async Task<IActionResult> CheckFavoriteStatus(int movieId)
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Json(new { isFavorite = false });
+                }
+
+                var isFavorite = await _context.Favorites
+                    .AnyAsync(f => f.UserId == userId && f.MovieId == movieId);
+
+                return Json(new { isFavorite = isFavorite });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error checking favorite status for movie {MovieId}", movieId);
+                return Json(new { isFavorite = false });
             }
         }
 

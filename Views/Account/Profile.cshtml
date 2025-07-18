@@ -1,6 +1,6 @@
 ﻿@model Film_website.Models.User
 @{
-    ViewData["Title"] = "Thông tin cá nhân";
+    ViewData["Title"] = "Personal information";
 }
 
 <!-- Link to the new profile CSS -->
@@ -48,13 +48,13 @@
                         <div class="info-section slide-in-left">
                             <h3 class="section-title">
                                 <i class="fas fa-id-card"></i>
-                                Thông tin cá nhân
+                                Personal information
                             </h3>
 
                             <div class="info-item">
                                 <span class="info-label">
                                     <i class="fas fa-user me-2"></i>
-                                    Họ tên:
+                                    Full name:
                                 </span>
                                 <span class="info-value">@Model.FirstName @Model.LastName</span>
                             </div>
@@ -62,7 +62,7 @@
                             <div class="info-item">
                                 <span class="info-label">
                                     <i class="fas fa-at me-2"></i>
-                                    Tên hiển thị:
+                                    Display name:
                                 </span>
                                 <span class="info-value">@Model.DisplayUserName</span>
                             </div>
@@ -78,7 +78,7 @@
                             <div class="info-item">
                                 <span class="info-label">
                                     <i class="fas fa-calendar-alt me-2"></i>
-                                    Ngày tham gia:
+                                    Join Date:
                                 </span>
                                 <span class="info-value">@Model.CreatedAt.ToString("dd/MM/yyyy")</span>
                             </div>
@@ -88,26 +88,26 @@
                         <div class="info-section slide-in-right">
                             <h3 class="section-title">
                                 <i class="fas fa-shield-alt"></i>
-                                Trạng thái tài khoản
+                                Account Status
                             </h3>
 
                             <div class="info-item">
                                 <span class="info-label">
                                     <i class="fas fa-check-circle me-2"></i>
-                                    Trạng thái:
+                                    Status:
                                 </span>
                                 <span class="info-value status @(Model.IsActive ? "active" : "inactive")">
-                                    @(Model.IsActive ? "Hoạt động" : "Không hoạt động")
+                                    @(Model.IsActive ? "Active" : "Inactive")
                                 </span>
                             </div>
 
                             <div class="info-item">
                                 <span class="info-label">
                                     <i class="fas fa-envelope-check me-2"></i>
-                                    Email xác thực:
+                                    Verification Email:
                                 </span>
                                 <span class="info-value status @(Model.EmailConfirmed ? "verified" : "unverified")">
-                                    @(Model.EmailConfirmed ? "Đã xác thực" : "Chưa xác thực")
+                                    @(Model.EmailConfirmed ? "Verified" : "Not verified")
                                 </span>
                             </div>
                         </div>
@@ -116,11 +116,11 @@
                         <div class="profile-actions">
                             <a asp-action="EditProfile" class="action-btn primary">
                                 <i class="fas fa-edit"></i>
-                                Chỉnh sửa hồ sơ
+                                Edit profile
                             </a>
                             <a asp-controller="Movie" asp-action="Index" class="action-btn secondary">
                                 <i class="fas fa-arrow-left"></i>
-                                Quay lại trang chủ
+                                Back to home page
                             </a>
                         </div>
                     </div>
@@ -167,31 +167,17 @@
 
     // Placeholder functions for buttons
     function editProfile() {
-        alert('Chức năng chỉnh sửa profile sẽ được phát triển trong tương lai!');
+        alert('Profile editing function will be developed in the future!');
     }
 
     function changePassword() {
-        alert('Chức năng đổi mật khẩu sẽ được phát triển trong tương lai!');
+        alert('Password change function will be developed in the future!');
     }
 </script>
 
 <style>
-    /* Additional inline styles for badges */
-    /* .badge {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-        border-radius: 15px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    } */
-
     .bg-warning {
         background: linear-gradient(45deg, #fbbf24, #f59e0b) !important;
-    }
-
-    .bg-info {
-        background: linear-gradient(45deg, #3b82f6, #2563eb) !important;
     }
 
     .avatar-image {

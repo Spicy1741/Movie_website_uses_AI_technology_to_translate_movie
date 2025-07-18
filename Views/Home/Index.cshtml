@@ -143,23 +143,13 @@
                                             <span>@movie.Title</span>
                                         </div>
                                     }
-                                    <div class="play-overlay">
-                                        <i class="fas fa-play"></i>
-                                    </div>
+                                  
                                     <div class="movie-overlay">
                                         <div class="movie-overlay-content">
                                             <h4>@movie.Title</h4>
                                             <p class="movie-genre">@movie.Genre</p>
                                             <p class="movie-year">@movie.ReleaseYear</p>
-                                            @if (!string.IsNullOrEmpty(movie.Categories))
-                                            {
-                                                <div class="movie-categories">
-                                                    @foreach (var movieCategory in movie.GetCategoriesList().Take(2))
-                                                    {
-                                                        <span class="mini-category-tag">@movieCategory</span>
-                                                    }
-                                                </div>
-                                            }
+                                          
                                             <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="watch-btn">
                                                 <i class="fas fa-play"></i> Watch Now
                                             </a>

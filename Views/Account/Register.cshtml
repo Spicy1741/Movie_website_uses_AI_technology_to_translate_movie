@@ -7,7 +7,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h3 class="text-center">Đăng ký tài khoản</h3>
+                <h3 class="text-center">Register</h3>
             </div>
             <div class="card-body">
                 <form asp-action="Register" method="post">
@@ -15,47 +15,47 @@
 
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label asp-for="FirstName" class="form-label">Họ</label>
-                            <input asp-for="FirstName" class="form-control" placeholder="Nhập họ" />
+                            <label asp-for="FirstName" class="form-label">FirstName</label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Enter firstname" />
                             <span asp-validation-for="FirstName" class="text-danger"></span>
                         </div>
                         <div class="col-md-6">
-                            <label asp-for="LastName" class="form-label">Tên</label>
-                            <input asp-for="LastName" class="form-control" placeholder="Nhập tên" />
+                            <label asp-for="LastName" class="form-label">LastName</label>
+                            <input asp-for="LastName" class="form-control" placeholder="Enter lastname" />
                             <span asp-validation-for="LastName" class="text-danger"></span>
                         </div>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="UserName" class="form-label">Tên người dùng</label>
-                        <input asp-for="UserName" class="form-control" placeholder="Nhập tên người dùng" />
-                        <small class="form-text text-muted">Chỉ được chứa chữ cái, số và dấu gạch dưới. Từ 3-30 ký tự.</small>
+                        <label asp-for="UserName" class="form-label">Username</label>
+                        <input asp-for="UserName" class="form-control" placeholder="Enter username" />
+                        <small class="form-text text-muted">Must contain only letters, numbers and underscores. 3-30 characters.</small>
                         <span asp-validation-for="UserName" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
                         <label asp-for="Email" class="form-label">Email</label>
-                        <input asp-for="Email" class="form-control" placeholder="Nhập email" />
+                        <input asp-for="Email" class="form-control" placeholder="Enter email" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="Password" class="form-label">Mật khẩu</label>
-                        <input asp-for="Password" class="form-control" placeholder="Nhập mật khẩu" />
+                        <label asp-for="Password" class="form-label">Password</label>
+                        <input asp-for="Password" class="form-control" placeholder="Enter password" />
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
 
                     <div class="form-group mb-3">
-                        <label asp-for="ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
-                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu" />
+                        <label asp-for="ConfirmPassword" class="form-label">Confirm password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm password" />
                         <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100">Đăng ký</button>
+                    <button type="submit" class="btn btn-primary w-100">Register</button>
                 </form>
 
                 <div class="text-center mt-3">
-                    <p style="color:#333">Đã có tài khoản? <a asp-action="Login">Đăng nhập tại đây</a></p>
+                    <p style="color:white">Already have account? <a asp-action="Login">Login</a></p>
                 </div>
             </div>
         </div>
