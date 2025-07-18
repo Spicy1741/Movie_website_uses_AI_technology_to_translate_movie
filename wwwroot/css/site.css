@@ -1,5 +1,4 @@
-﻿/* ========== LAYOUT FIXES - Footer và Navigation ========== */
-
+﻿﻿ /* ========== LAYOUT FIXES - Footer và Navigation ========== */
 /* Body layout với flexbox để footer luôn ở dưới */
 html, body {
     height: 100%;
@@ -37,11 +36,385 @@ main {
 }
 
 /* Footer luôn ở dưới cùng */
-footer {
+/* ========== FIXED ENHANCED FOOTER STYLES ========== */
+
+.enhanced-footer {
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a);
+    border-top: 2px solid rgba(229, 9, 20, 0.3);
     margin-top: auto;
-    background: linear-gradient(135deg, #0d0d0d, #141414) !important;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+    .enhanced-footer::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><circle cx="100" cy="100" r="50" fill="%23e50914" opacity="0.1"/><circle cx="1800" cy="200" r="80" fill="%23ffd700" opacity="0.05"/></svg>') center/cover;
+        z-index: 1;
+    }
+
+.footer-content {
+    position: relative;
+    z-index: 2;
+    padding: 3rem 0 1rem 0;
+}
+
+/* ========== BRAND SECTION - LEFT ALIGNED ========== */
+.footer-brand {
+    margin-bottom: 1.5rem;
+    text-align: left; /* Ensure left alignment */
+}
+
+    .footer-brand h3 {
+        color: #e50914;
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: flex-start; /* Left align the logo */
+    }
+
+    .footer-brand p {
+        color: #b0b0b0;
+        line-height: 1.6;
+        max-width: 300px;
+        text-align: left; /* Left align description */
+        margin-bottom: 1.5rem;
+    }
+
+/* ========== FOOTER SECTIONS - CONSISTENT ALIGNMENT ========== */
+.footer-section {
+    margin-bottom: 1.5rem;
+    text-align: left; /* All sections left-aligned */
+}
+
+    .footer-section h5 {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        position: relative;
+        text-align: left; /* Left align headings */
+    }
+
+        .footer-section h5::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0; /* Keep underline at left */
+            width: 40px;
+            height: 2px;
+            background: #e50914;
+        }
+
+.footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left; /* Left align links */
+}
+
+    .footer-links li {
+        margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+        color: #b0b0b0;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: flex-start; /* Left align link content */
+    }
+
+        .footer-links a:hover {
+            color: #e50914;
+            transform: translateX(5px);
+        }
+
+        .footer-links a i {
+            width: 16px;
+            font-size: 0.9rem;
+            text-align: center;
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+
+/* ========== LOGOUT BUTTON STYLING ========== */
+.footer-link-btn {
+    background: none;
+    border: none;
+    color: #b0b0b0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+    width: 100%;
+    justify-content: flex-start; /* Left align button content */
+}
+
+    .footer-link-btn:hover {
+        color: #e50914;
+        transform: translateX(5px);
+    }
+
+    .footer-link-btn i {
+        width: 16px;
+        font-size: 0.9rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+/* ========== SOCIAL LINKS - LEFT ALIGNED ========== */
+.social-links {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    justify-content: flex-start; /* Left align social icons */
+}
+
+    .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        background: rgba(229, 9, 20, 0.1);
+        border: 1px solid rgba(229, 9, 20, 0.3);
+        border-radius: 50%;
+        color: #b0b0b0;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+        .social-links a:hover {
+            background: #e50914;
+            color: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.4);
+        }
+
+/* ========== FOOTER BOTTOM - PROPER ALIGNMENT ========== */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2rem 0 1rem 0;
+    margin-top: 2rem;
+}
+
+.footer-legal {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Left align legal links */
+    align-items: center;
+}
+
+    .footer-legal a {
+        color: #b0b0b0;
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+        white-space: nowrap; /* Prevent text wrapping */
+    }
+
+        .footer-legal a:hover {
+            color: #e50914;
+        }
+
+.copyright {
+    color: #808080;
+    font-size: 0.9rem;
+    margin: 0;
+    text-align: left; /* Right align copyright */
+}
+
+/* ========== BOOTSTRAP GRID FIXES ========== */
+.enhanced-footer .row {
+    margin-left: 0;
+    margin-right: 0;
+    align-items: flex-start; /* Top align columns */
+}
+
+.enhanced-footer .col-lg-3,
+.enhanced-footer .col-lg-2,
+.enhanced-footer .col-md-6,
+.enhanced-footer .col-md-4,
+.enhanced-footer .col-md-8 {
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 2rem; /* Consistent bottom margin */
+}
+
+/* Ensure equal height columns */
+.enhanced-footer .row > [class*="col-"] {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-section {
+    flex: 1;
+    height: 100%;
+}
+
+/* ========== RESPONSIVE FIXES ========== */
+@media (max-width: 991.98px) {
+    .footer-brand,
+    .footer-section {
+        text-align: center; /* Center align on tablet */
+        margin-bottom: 2rem;
+    }
+
+        .footer-brand h3 {
+            justify-content: center;
+        }
+
+        .footer-brand p {
+            text-align: center;
+            margin: 0 auto 1.5rem auto;
+        }
+
+        .footer-section h5 {
+            text-align: center;
+        }
+
+            .footer-section h5::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+    .footer-links {
+        text-align: center;
+    }
+
+        .footer-links a {
+            justify-content: center;
+        }
+
+    .social-links {
+        justify-content: center;
+    }
+
+    .footer-legal {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .copyright {
+        text-align: center;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .footer-content {
+        padding: 2rem 0 1rem 0;
+    }
+
+    .footer-brand h3 {
+        font-size: 1.5rem;
+    }
+
+    .footer-section h5 {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .footer-links li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-legal {
+        gap: 1rem;
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .footer-legal a {
+            margin-bottom: 0.5rem;
+        }
+
+    .social-links {
+        gap: 0.75rem;
+    }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            font-size: 0.9rem;
+        }
+}
+
+/* ========== ADDITIONAL ALIGNMENT FIXES ========== */
+.enhanced-footer .container {
+    max-width: 80%;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Remove any hover animations that might cause misalignment */
+.footer-section:hover {
+    transform: none; /* Remove hover transform that causes jumping */
+}
+
+/* Ensure consistent vertical spacing */
+.enhanced-footer .row {
+    margin-bottom: 0;
+}
+
+    .enhanced-footer .row:last-child {
+        margin-bottom: 0;
+    }
+
+/* Fix any potential Bootstrap conflicts */
+.enhanced-footer * {
+    box-sizing: border-box;
+}
+
+/* Ensure footer takes full width */
+.enhanced-footer {
+    width: 100%;
+    min-width: 100%;
+}
+
+/* Override any conflicting footer styles */
+footer.enhanced-footer {
+    background: linear-gradient(135deg, #0a0a0a, #1a1a1a) !important;
+    border-top: 2px solid rgba(229, 9, 20, 0.3) !important;
+    padding: 0 !important;
+    margin-top: auto !important;
+}
+
+/* Animation fixes */
+.footer-brand {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.footer-section:nth-child(2) {
+    animation: fadeInUp 0.8s ease-out 0.1s both;
+}
+
+.footer-section:nth-child(3) {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.footer-section:nth-child(4) {
+    animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.footer-section:nth-child(5) {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
 }
 
 /* ========== NAVBAR IMPROVEMENTS ========== */

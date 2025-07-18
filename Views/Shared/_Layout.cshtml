@@ -209,18 +209,124 @@
         </form>
     }
 
-    <!-- Footer luôn ở dưới cùng -->
-    <footer>
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <div class="d-flex align-items-center mb-2 mb-md-0">
-                        <i class="fas fa-film text-primary me-2 fs-4"></i>
-                        <span class="fw-semibold">Film Website</span>
+    <!-- Replace your footer section in _Layout.cshtml with this corrected structure -->
+
+    <footer class="enhanced-footer">
+        <div class="footer-content">
+            <div class="container">
+                <div class="row">
+                    <!-- Brand Section - 3 columns on large screens -->
+                    <div class="col-lg-3 col-md-6 col-12 mb-4">
+                        <div class="footer-brand">
+                            <h3>
+                                <i class="fas fa-film"></i>
+                                Film Website
+                            </h3>
+                            <p>Your ultimate destination for discovering, watching, and enjoying the best movies and TV series from around the world.</p>
+                            <div class="social-links">
+                                <a href="#" title="Facebook" aria-label="Follow us on Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" title="Twitter" aria-label="Follow us on Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                                <a href="#" title="Instagram" aria-label="Follow us on Instagram">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" title="YouTube" aria-label="Subscribe to our YouTube channel">
+                                    <i class="fab fa-youtube"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Browse Section - 2 columns on large screens -->
+                    <div class="col-lg-2 col-md-6 col-6 mb-4">
+                        <div class="footer-section">
+                            <h5>Browse</h5>
+                            <ul class="footer-links">
+                                <li><a asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Home</a></li>
+                                <li><a asp-controller="Movie" asp-action="Index"><i class="fas fa-video"></i> Movies</a></li>
+                                <li><a asp-controller="Movie" asp-action="Categories"><i class="fas fa-tags"></i> Categories</a></li>
+                                <li><a asp-controller="Movie" asp-action="Favorites"><i class="fas fa-heart"></i> My Favorites</a></li>
+                                <li><a asp-controller="Movie" asp-action="Search"><i class="fas fa-search"></i> Search</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Genres Section - 2 columns on large screens -->
+                    <div class="col-lg-2 col-md-6 col-6 mb-4">
+                        <div class="footer-section">
+                            <h5>Genres</h5>
+                            <ul class="footer-links">
+                                <li><a href="#"><i class="fas fa-magic"></i> Action</a></li>
+                                <li><a href="#"><i class="fas fa-laugh"></i> Comedy</a></li>
+                                <li><a href="#"><i class="fas fa-heart-broken"></i> Drama</a></li>
+                                <li><a href="#"><i class="fas fa-ghost"></i> Horror</a></li>
+                                <li><a href="#"><i class="fas fa-rocket"></i> Sci-Fi</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Account Section - 2 columns on large screens -->
+                    <div class="col-lg-2 col-md-6 col-6 mb-4">
+                        <div class="footer-section">
+                            <h5>Account</h5>
+                            <ul class="footer-links">
+                                @if (User.Identity!.IsAuthenticated)
+                                {
+                                    <li><a asp-controller="Account" asp-action="Profile"><i class="fas fa-user"></i> My Profile</a></li>
+                                    <li><a asp-controller="Account" asp-action="EditProfile"><i class="fas fa-edit"></i> Edit Profile</a></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="footer-link-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                                        </form>
+                                    </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a asp-controller="Admin" asp-action="Index"><i class="fas fa-cogs"></i> Admin Panel</a></li>
+                                    }
+                                }
+                                else
+                                {
+                                    <li><a asp-controller="Account" asp-action="Login"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                                    <li><a asp-controller="Account" asp-action="Register"><i class="fas fa-user-plus"></i> Register</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Support Section - 3 columns on large screens -->
+                    <div class="col-lg-3 col-md-6 col-12 mb-4">
+                        <div class="footer-section">
+                            <h5>Support</h5>
+                            <ul class="footer-links">
+                                <li><a href="#"><i class="fas fa-question-circle"></i> Help Center</a></li>
+                                <li><a href="#"><i class="fas fa-envelope"></i> Contact Us</a></li>
+                                <li><a href="#"><i class="fas fa-comments"></i> Community</a></li>
+                                <li><a href="#"><i class="fas fa-bug"></i> Report Issue</a></li>
+                                <li><a href="#"><i class="fas fa-star"></i> Rate Us</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <p class="mb-0 text-muted">&copy; 2025 - Film Website. All rights reserved.</p>
+
+                <!-- Footer Bottom Section -->
+                <div class="footer-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-8 col-12">
+                            <div class="footer-legal">
+                                <a href="#">Privacy Policy</a>
+                                <a href="#">Terms & Conditions</a>
+                                <a href="#">Code of Conduct</a>
+                                <a href="#">Cookie Policy</a>
+                                <a href="#">DMCA</a>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <p class="copyright">&copy; 2025 Film Website. All rights reserved.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
