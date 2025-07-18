@@ -32,7 +32,7 @@ body {
 .movie-details-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 /* Video Section */
@@ -744,7 +744,6 @@ body {
 .favorite-section {
     margin: 20px 0;
     display: flex;
-    justify-content: center;
 }
 
 .favorite-btn {
@@ -888,6 +887,109 @@ body {
         height: 32px;
         font-size: 12px;
     }
+}
+
+/* Add this CSS to your Detail.css file */
+
+/* Favorite Added Display - Static message after adding to favorites */
+.favorite-added-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #2ed573, #1dd1a1);
+    color: white;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(46, 213, 115, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    animation: favoriteAddedAnimation 0.6s ease-out;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+    .favorite-added-display i {
+        font-size: 18px;
+        animation: checkPulse 1s ease-in-out;
+    }
+
+/* Animation for when favorite is added */
+@keyframes favoriteAddedAnimation {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-10deg);
+    }
+
+    50% {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Pulse animation for the check icon */
+@keyframes checkPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+/* Update existing favorite button for consistency */
+.favorite-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+    .favorite-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        background: linear-gradient(45deg, #ee5a24, #ff6b6b);
+    }
+
+    .favorite-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .favorite-btn i {
+        font-size: 18px;
+    }
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .favorite-btn,
+    .favorite-added-display {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+        .favorite-btn i,
+        .favorite-added-display i {
+            font-size: 16px;
+        }
 }
 
 

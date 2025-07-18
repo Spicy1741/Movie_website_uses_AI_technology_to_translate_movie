@@ -1,6 +1,6 @@
 ﻿@model Film_website.Models.ViewModels.EditProfileViewModel
 @{
-    ViewData["Title"] = "Chỉnh sửa hồ sơ";
+    ViewData["Title"] = "Edit profile";
 }
 
 <!-- Link to the profile CSS -->
@@ -30,8 +30,8 @@
                                 <i class="fas fa-user"></i>
                             }
                         </div>
-                        <h1 class="profile-title">Chỉnh sửa hồ sơ</h1>
-                        <p class="profile-subtitle">Cập nhật thông tin cá nhân</p>
+                        <h1 class="profile-title">Edit profile</h1>
+                        <p class="profile-subtitle">Update personal information</p>
                     </div>
 
                     <!-- Profile Body -->
@@ -51,14 +51,14 @@
                             <div class="info-section slide-in-left">
                                 <h3 class="section-title">
                                     <i class="fas fa-id-card"></i>
-                                    Thông tin cá nhân
+                                    Personal information
                                 </h3>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label asp-for="FirstName" class="form-label">
                                             <i class="fas fa-user me-2"></i>
-                                            Tên
+                                            Name
                                         </label>
                                         <input asp-for="FirstName" class="form-control profile-input" />
                                         <span asp-validation-for="FirstName" class="text-danger"></span>
@@ -67,7 +67,7 @@
                                     <div class="form-group">
                                         <label asp-for="LastName" class="form-label">
                                             <i class="fas fa-user me-2"></i>
-                                            Họ
+                                            Surname
                                         </label>
                                         <input asp-for="LastName" class="form-control profile-input" />
                                         <span asp-validation-for="LastName" class="text-danger"></span>
@@ -77,7 +77,7 @@
                                 <div class="form-group">
                                     <label asp-for="DisplayUserName" class="form-label">
                                         <i class="fas fa-at me-2"></i>
-                                        Tên hiển thị
+                                        Display name
                                     </label>
                                     <input asp-for="DisplayUserName" class="form-control profile-input" />
                                     <span asp-validation-for="DisplayUserName" class="text-danger"></span>
@@ -88,7 +88,7 @@
                             <div class="info-section slide-in-right">
                                 <h3 class="section-title">
                                     <i class="fas fa-image"></i>
-                                    Ảnh đại diện
+                                    Avatar
                                 </h3>
 
                                 <div class="avatar-upload-section">
@@ -97,7 +97,7 @@
                                         {
                                             <div class="current-avatar-container">
                                                 <img src="@Model.CurrentAvatarPath" alt="Current Avatar" class="current-avatar-img" />
-                                                <p class="avatar-label">Ảnh hiện tại</p>
+                                                <p class="avatar-label">Current photo</p>
                                             </div>
                                         }
                                     </div>
@@ -107,9 +107,11 @@
                                             <i class="fas fa-upload me-2"></i>
                                             Tải lên ảnh mới
                                         </label>
-                                        <input asp-for="AvatarFile" type="file" class="form-control-file" accept="image/*" onchange="previewAvatar(event)" />
+                                        <input asp-for="AvatarFile" type="file" class="form-control-file"
+                                               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                                               onchange="validateAndPreviewAvatar(event)" />
                                         <small class="form-text text-muted">
-                                            Chấp nhận: JPG, JPEG, PNG, GIF. Kích thước tối đa: 5MB
+                                            Accepted: JPG, JPEG, PNG, GIF. Maximum size: 5MB
                                         </small>
                                         <span asp-validation-for="AvatarFile" class="text-danger"></span>
                                     </div>
@@ -121,7 +123,7 @@
                                                 <input asp-for="RemoveAvatar" type="checkbox" class="form-check-input" />
                                                 <label asp-for="RemoveAvatar" class="form-check-label">
                                                     <i class="fas fa-trash me-2"></i>
-                                                    Xóa ảnh đại diện hiện tại
+                                                    Delete current profile picture
                                                 </label>
                                             </div>
                                         </div>
@@ -346,6 +348,35 @@
         const preview = document.getElementById('avatarPreview');
 
         if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="avatar-image" />`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+        function validateAndPreviewAvatar(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('avatarPreview');
+
+        if (file) {
+            // Check file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPG, JPEG, PNG, GIF, WebP)');
+                event.target.value = '';
+                return;
+            }
+
+            // Check file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size cannot exceed 5MB');
+                event.target.value = '';
+                return;
+            }
+
+            // Preview the image
             const reader = new FileReader();
             reader.onload = function(e) {
                 preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="avatar-image" />`;
