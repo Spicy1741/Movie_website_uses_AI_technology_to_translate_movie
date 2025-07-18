@@ -58,7 +58,7 @@ public class AccountController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Movie");
+            return RedirectToAction("Index", "Home");
         }
         return View();
     }
@@ -88,7 +88,7 @@ public class AccountController : Controller
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Movie");
+                    return RedirectToAction("Index", "Home");
                 }
             }
         }

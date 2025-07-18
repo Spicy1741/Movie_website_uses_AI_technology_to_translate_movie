@@ -45,8 +45,8 @@
                         @if (User.Identity!.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" href="#" data-section="favorites">
-                                    <i class="fas fa-heart"></i>Favourite
+                                <a class="nav-link" href="@Url.Action("Favorites", "Movie")">
+                                    <i class="fas fa-heart"></i> My Favorites
                                 </a>
                             </li>
                         }

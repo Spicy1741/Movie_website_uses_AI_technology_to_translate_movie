@@ -104,6 +104,40 @@ namespace Film_website.Migrations
                     b.ToTable("CommentLikes");
                 });
 
+            modelBuilder.Entity("Film_website.Models.Favorite", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<int>("MovieId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt");
+
+                    b.HasIndex("MovieId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "MovieId")
+                        .IsUnique();
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("Film_website.Models.Movie", b =>
                 {
                     b.Property<int>("Id")
@@ -487,6 +521,25 @@ namespace Film_website.Migrations
                         .IsRequired();
 
                     b.Navigation("Comment");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Film_website.Models.Favorite", b =>
+                {
+                    b.HasOne("Film_website.Models.Movie", "Movie")
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Film_website.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
 
                     b.Navigation("User");
                 });
