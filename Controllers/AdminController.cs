@@ -59,9 +59,9 @@ namespace Film_website.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi lấy danh sách người dùng");
-                ViewBag.ErrorMessage = "Có lỗi xảy ra khi tải danh sách người dùng.";
-                ViewBag.Message = "Chào mừng đến trang quản trị";
+                _logger.LogError(ex, "Error while getting user list");
+                ViewBag.ErrorMessage = "An error occurred while loading the user list.";
+                ViewBag.Message = "Welcome to the admin page";
                 return View(new Dictionary<Film_website.Models.User, IList<string>>());
             }
         }

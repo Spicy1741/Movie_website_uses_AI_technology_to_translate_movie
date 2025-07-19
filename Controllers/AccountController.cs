@@ -43,7 +43,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+            TempData["SuccessMessage"] = "Registration successful! Please login.";
             return RedirectToAction("Login");
         }
 
@@ -95,7 +95,7 @@ public class AccountController : Controller
             }
         }
 
-        ModelState.AddModelError(string.Empty, "Email/tên người dùng hoặc mật khẩu không đúng.");
+        ModelState.AddModelError(string.Empty, "Incorrect email/username or password.");
         return View(model);
     }
 
@@ -147,11 +147,11 @@ public class AccountController : Controller
             // Store user info in TempData for the next step
             TempData["ResetEmail"] = model.Email;
             TempData["ResetUserName"] = model.UserName;
-            TempData["SuccessMessage"] = "Thông tin hợp lệ! Vui lòng nhập mật khẩu mới.";
+            TempData["SuccessMessage"] = "Valid information! Please enter new password.";
             return RedirectToAction("ResetPassword");
         }
 
-        ModelState.AddModelError(string.Empty, "Email và tên người dùng không khớp với bất kỳ tài khoản nào.");
+        ModelState.AddModelError(string.Empty, "Email and username do not match any accounts.");
         return View(model);
     }
 
@@ -195,7 +195,7 @@ public class AccountController : Controller
         if (TempData["ResetEmail"]?.ToString() != model.Email ||
             TempData["ResetUserName"]?.ToString() != model.UserName)
         {
-            ModelState.AddModelError(string.Empty, "Thông tin không hợp lệ. Vui lòng thử lại.");
+            ModelState.AddModelError(string.Empty, "Invalid information. Please try again.");
             return RedirectToAction("ForgotPassword");
         }
 
@@ -203,7 +203,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập với mật khẩu mới.";
+            TempData["SuccessMessage"] = "Password reset successful! Please log in with the new password.";
             return RedirectToAction("Login");
         }
 
@@ -300,7 +300,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Hồ sơ của bạn đã được cập nhật thành công!";
+            TempData["SuccessMessage"] = "Your profile has been updated successfully!";
             return RedirectToAction("Profile");
         }
         else
