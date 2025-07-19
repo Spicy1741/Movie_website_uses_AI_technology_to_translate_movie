@@ -245,7 +245,6 @@ body {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-    margin-bottom: 2rem;
 }
 
 .form-section {
@@ -1032,4 +1031,5 @@ textarea.form-control {
 .all-movie {
     margin: 20px 0 0 30px;
 }
+
 
