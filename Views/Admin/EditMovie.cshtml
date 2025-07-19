@@ -11,13 +11,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/css/admin-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/admin-styles.css" />
+    <link rel="stylesheet" href="~/css/edit-movie.css" />
 </head>
 <body>
     <div class="main-container">
         <aside class="sidebar">
-            <!-- Sidebar content as in ManageMovies.cshtml -->
+            <div class="admin-header">
+            <h2>🎬 ADMIN</h2>
+            <p>ULTIMATE MOVIE CONTROL</p>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">DASHBOARD</span>
+                </a>
+                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active" data-section="movies">
+                    <span class="menu-icon">🎬</span>
+                    <span class="menu-text">MOVIE MANAGER</span>
+                </a>
+
+                <a href="@Url.Action("Translator", "Admin")" class="menu-item translator-link">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text">AI TRANSLATOR</span>
+                </a>
+            </nav>
         </aside>
 
         <main class="main-content">
@@ -28,41 +47,138 @@
 
                 <div class="content-card">
                     <div class="card-content">
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success">
+                                @TempData["Success"]
+                            </div>
+                        }
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger">
+                                @TempData["Error"]
+                            </div>
+                        }
+
                         <form asp-action="EditMovie" method="post" enctype="multipart/form-data">
                             <input type="hidden" asp-for="Id" />
-                            <div class="form-group">
-                                <label asp-for="Title">Title</label>
-                                <input asp-for="Title" class="form-control" />
-                                <span asp-validation-for="Title" class="text-danger"></span>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label asp-for="Title">Title</label>
+                                    <input asp-for="Title" class="form-control" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Genre">Genre</label>
+                                    <input asp-for="Genre" class="form-control" />
+                                    <span asp-validation-for="Genre" class="text-danger"></span>
+                                </div>
                             </div>
+
                             <div class="form-group">
                                 <label asp-for="Description">Description</label>
                                 <textarea asp-for="Description" class="form-control" rows="5"></textarea>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="Genre">Genre</label>
-                                <input asp-for="Genre" class="form-control" />
-                                <span asp-validation-for="Genre" class="text-danger"></span>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label asp-for="ReleaseYear">Release Year</label>
+                                    <input asp-for="ReleaseYear" type="number" class="form-control" />
+                                    <span asp-validation-for="ReleaseYear" class="text-danger"></span>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label asp-for="ReleaseYear">Release Year</label>
-                                <input asp-for="ReleaseYear" type="number" class="form-control" />
-                                <span asp-validation-for="ReleaseYear" class="text-danger"></span>
+
+                            <!-- Category Selection Section -->
+                            <div class="form-group category-section">
+                                <label class="category-header">📋 Movie Categories</label>
+                                <p class="category-description">Select all categories that apply to this movie:</p>
+
+                                <div class="category-grid">
+                                    <div class="category-item">
+                                        <input asp-for="IsNewRelease" type="checkbox" id="newRelease" />
+                                        <label for="newRelease" class="category-label">
+                                            🆕 New Releases
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsMostWatched" type="checkbox" id="mostWatched" />
+                                        <label for="mostWatched" class="category-label">
+                                            🔥 Most Watched
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsTopRated" type="checkbox" id="topRated" />
+                                        <label for="topRated" class="category-label">
+                                            ⭐ Top Rated
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsCinema" type="checkbox" id="cinema" />
+                                        <label for="cinema" class="category-label">
+                                            🎭 Cinema
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsOngoingTVSeries" type="checkbox" id="tvSeries" />
+                                        <label for="tvSeries" class="category-label">
+                                            📺 Ongoing TV Series
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsFeatureFilm" type="checkbox" id="featureFilm" />
+                                        <label for="featureFilm" class="category-label">
+                                            🎬 Feature Films
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsComingSoon" type="checkbox" id="comingSoon" />
+                                        <label for="comingSoon" class="category-label">
+                                            🚀 Coming Soon
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="movieFile">Movie File (leave blank to keep current)</label>
-                                <input type="file" name="movieFile" class="form-control-file" accept="video/*" />
+
+                            <!-- File Upload Section -->
+                            <div class="file-upload-section">
+                                <h3>📁 File Uploads (Optional - leave blank to keep current files)</h3>
+
+                                <div class="form-group">
+                                    <label for="movieFile">Movie File</label>
+                                    <input type="file" name="movieFile" class="form-control-file" accept="video/*" />
+                                    <small class="form-text text-muted">Supported formats: MP4, AVI, MKV, etc.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="thumbnailFile">Thumbnail Image</label>
+                                    <input type="file" name="thumbnailFile" class="form-control-file" accept="image/*" />
+                                    <small class="form-text text-muted">Supported formats: JPG, PNG, GIF, etc.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="subtitleFile">Subtitle File</label>
+                                    <input type="file" name="subtitleFile" class="form-control-file" accept=".srt,.vtt,.ass" />
+                                    <small class="form-text text-muted">Supported formats: SRT, VTT, ASS</small>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="thumbnailFile">Thumbnail (leave blank to keep current)</label>
-                                <input type="file" name="thumbnailFile" class="form-control-file" accept="image/*" />
+
+                            <!-- Submit Buttons -->
+                            <div class="form-actions">
+                                <button type="submit" class="action-btn">
+                                    💾 Update Movie
+                                </button>
+                                <a href="@Url.Action("ManageMovies", "Admin")" class="action-btn secondary">
+                                    ↩️ Cancel
+                                </a>
                             </div>
-                            <div class="form-group">
-                                <label for="subtitleFile">Subtitle File (.srt, leave blank to keep current)</label>
-                                <input type="file" name="subtitleFile" class="form-control-file" accept=".srt" />
-                            </div>
-                            <button type="submit" class="action-btn">💾 UPDATE MOVIE</button>
                         </form>
                     </div>
                 </div>
@@ -70,569 +186,9 @@
         </main>
     </div>
 
-    <script src="~/js/admin-dashboard.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-    <style>
-        /* Modern Red & Black Admin Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-red: #dc2626;
-            --dark-red: #991b1b;
-            --light-red: #ef4444;
-            --black: #000000;
-            --dark-gray: #111111;
-            --medium-gray: #1f1f1f;
-            --light-gray: #2d2d2d;
-            --white: #ffffff;
-            --text-light: #e5e5e5;
-            --text-gray: #a3a3a3;
-            --shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
-            --shadow-dark: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--black) 0%, var(--dark-gray) 100%);
-            color: var(--text-light);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .main-container {
-            display: flex;
-            min-height: 100vh;
-            position: relative;
-        }
-
-            .main-container::before {
-                content: '';
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.1) 0%, transparent 50%);
-                pointer-events: none;
-                z-index: 0;
-            }
-
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, var(--medium-gray) 0%, var(--dark-gray) 100%);
-            border-right: 2px solid var(--primary-red);
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
-            position: relative;
-            z-index: 1;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-            background: rgba(17, 17, 17, 0.8);
-            backdrop-filter: blur(10px);
-        }
-
-        .content-section {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            margin-bottom: 2rem;
-            text-align: center;
-            position: relative;
-        }
-
-            .section-header h2 {
-                font-family: 'Bungee', cursive;
-                font-size: 2.5rem;
-                color: var(--primary-red);
-                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-                margin-bottom: 0.5rem;
-                position: relative;
-                display: inline-block;
-            }
-
-                .section-header h2::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -10px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    width: 100px;
-                    height: 3px;
-                    background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
-                }
-
-        .content-card {
-            background: linear-gradient(145deg, var(--medium-gray) 0%, var(--light-gray) 100%);
-            border-radius: 20px;
-            padding: 3rem;
-            box-shadow: var(--shadow-dark);
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-            .content-card::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                height: 4px;
-                background: linear-gradient(90deg, var(--primary-red), var(--light-red), var(--primary-red));
-            }
-
-        .card-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-            position: relative;
-        }
-
-            .form-group label {
-                display: block;
-                margin-bottom: 0.8rem;
-                font-weight: 600;
-                color: var(--text-light);
-                font-size: 1.1rem;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                position: relative;
-            }
-
-                .form-group label::after {
-                    content: '';
-                    position: absolute;
-                    bottom: -4px;
-                    left: 0;
-                    width: 30px;
-                    height: 2px;
-                    background: var(--primary-red);
-                }
-
-        .form-control,
-        .form-control-file {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            border: 2px solid var(--light-gray);
-            border-radius: 12px;
-            background: var(--dark-gray);
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            outline: none;
-        }
-
-            .form-control:focus,
-            .form-control-file:focus {
-                border-color: var(--primary-red);
-                box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
-                transform: translateY(-2px);
-            }
-
-            .form-control::placeholder {
-                color: var(--text-gray);
-            }
-
-        textarea.form-control {
-            resize: vertical;
-            min-height: 120px;
-        }
-
-        .form-control-file {
-            padding: 0.8rem 1.5rem;
-            cursor: pointer;
-            border-style: dashed;
-            transition: all 0.3s ease;
-        }
-
-            .form-control-file:hover {
-                border-color: var(--light-red);
-                background: rgba(220, 38, 38, 0.1);
-            }
-
-        .action-btn {
-            background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
-            color: var(--white);
-            border: none;
-            padding: 1.2rem 3rem;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            display: block;
-            margin: 2rem auto 0;
-            min-width: 200px;
-        }
-
-            .action-btn::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: -100%;
-                width: 100%;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-                transition: left 0.5s ease;
-            }
-
-            .action-btn:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4);
-                background: linear-gradient(135deg, var(--light-red) 0%, var(--primary-red) 100%);
-            }
-
-                .action-btn:hover::before {
-                    left: 100%;
-                }
-
-            .action-btn:active {
-                transform: translateY(-1px);
-            }
-
-        .text-danger {
-            color: #ff6b6b;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: block;
-            font-weight: 500;
-        }
-
-        /* Edit Movie Specific Styles */
-        .form-group .file-info {
-            background: rgba(220, 38, 38, 0.1);
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            border-radius: 8px;
-            padding: 0.8rem 1rem;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            color: var(--text-gray);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-            .form-group .file-info::before {
-                content: "ℹ️";
-                font-size: 1rem;
-            }
-
-        /* Enhanced File Upload Styling */
-        .form-control-file {
-            position: relative;
-            background: linear-gradient(145deg, var(--dark-gray), var(--medium-gray));
-            border: 2px dashed var(--light-gray);
-            transition: all 0.4s ease;
-        }
-
-            .form-control-file:hover {
-                border-color: var(--primary-red);
-                background: linear-gradient(145deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
-                transform: translateY(-2px);
-            }
-
-            .form-control-file::before {
-                content: "📁 Choose File";
-                position: absolute;
-                top: 50%;
-                left: 1.5rem;
-                transform: translateY(-50%);
-                color: var(--text-gray);
-                pointer-events: none;
-                z-index: 1;
-            }
-
-            .form-control-file::-webkit-file-upload-button {
-                background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
-                color: white;
-                border: none;
-                padding: 0.5rem 1rem;
-                border-radius: 6px;
-                margin-right: 1rem;
-                cursor: pointer;
-                font-weight: 600;
-                transition: all 0.3s ease;
-            }
-
-                .form-control-file::-webkit-file-upload-button:hover {
-                    background: linear-gradient(135deg, var(--light-red), var(--primary-red));
-                    transform: scale(1.05);
-                }
-
-        /* Form Section Dividers */
-        .form-section {
-            border-left: 4px solid var(--primary-red);
-            padding-left: 1.5rem;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-            .form-section::before {
-                content: '';
-                position: absolute;
-                left: -2px;
-                top: 0;
-                width: 4px;
-                height: 100%;
-                background: linear-gradient(180deg, var(--primary-red), transparent);
-            }
-
-        .form-section-title {
-            color: var(--primary-red);
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Success/Update Messages */
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            border: 1px solid;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-weight: 500;
-        }
-
-        .alert-success {
-            background: rgba(34, 197, 94, 0.1);
-            border-color: rgba(34, 197, 94, 0.3);
-            color: #4ade80;
-        }
-
-            .alert-success::before {
-                content: "✅";
-                font-size: 1.2rem;
-            }
-
-        .alert-danger {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: #f87171;
-        }
-
-            .alert-danger::before {
-                content: "❌";
-                font-size: 1.2rem;
-            }
-
-        /* Action Button Variations */
-        .action-btn.update-btn {
-            background: linear-gradient(135deg, var(--primary-red) 0%, #dc2626 100%);
-        }
-
-            .action-btn.update-btn:hover {
-                background: linear-gradient(135deg, var(--light-red) 0%, var(--primary-red) 100%);
-            }
-
-        .action-btn.secondary-btn {
-            background: linear-gradient(135deg, var(--light-gray) 0%, var(--medium-gray) 100%);
-            color: var(--text-light);
-            border: 2px solid var(--primary-red);
-        }
-
-            .action-btn.secondary-btn:hover {
-                background: linear-gradient(135deg, var(--primary-red) 0%, var(--dark-red) 100%);
-                color: var(--white);
-            }
-
-        /* Form Actions Container */
-        .form-actions {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(220, 38, 38, 0.2);
-        }
-
-        /* Enhanced Input Focus States */
-        .form-control:focus,
-        .form-control-file:focus {
-            border-color: var(--primary-red);
-            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2), 0 4px 12px rgba(220, 38, 38, 0.15);
-            transform: translateY(-2px);
-        }
-
-        /* Loading State for Buttons */
-        .action-btn.loading {
-            pointer-events: none;
-            opacity: 0.7;
-            position: relative;
-        }
-
-            .action-btn.loading::after {
-                content: '';
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 20px;
-                height: 20px;
-                border: 2px solid transparent;
-                border-top: 2px solid white;
-                border-radius: 50%;
-                animation: spin 1s linear infinite;
-            }
-
-        @@-webkit-keyframes spin {
-            0% {
-                -webkit-transform: translate(-50%, -50%) rotate(0deg);
-            }
-
-            100% {
-                -webkit-transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        @@keyframes spin {
-            0% {
-                transform: translate(-50%, -50%) rotate(0deg);
-            }
-
-            100% {
-                transform: translate(-50%, -50%) rotate(360deg);
-            }
-        }
-
-        /* Preview Image Styles */
-        .image-preview {
-            max-width: 200px;
-            max-height: 150px;
-            border-radius: 8px;
-            border: 2px solid var(--primary-red);
-            margin-top: 1rem;
-            object-fit: cover;
-        }
-
-        /* Enhanced Typography */
-        .section-header h2.edit-title {
-            color: #fbbf24;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-        }
-
-            .section-header h2.edit-title::after {
-                background: linear-gradient(90deg, transparent, #fbbf24, transparent);
-            }
-
-        /* Responsive Design */
-        @@media screen and (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                order: 2;
-            }
-
-            .main-content {
-                padding: 1rem;
-                order: 1;
-            }
-
-            .content-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .section-header h2 {
-                font-size: 2rem;
-            }
-        }
-
-        /* Loading Animation */
-        @@-webkit-keyframes pulse {
-            0% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-
-            50% {
-                -webkit-transform: scale(1.05);
-                transform: scale(1.05);
-            }
-
-            100% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-        }
-
-        @@keyframes pulse {
-            0% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-
-            50% {
-                -webkit-transform: scale(1.05);
-                transform: scale(1.05);
-            }
-
-            100% {
-                -webkit-transform: scale(1);
-                transform: scale(1);
-            }
-        }
-
-        .form-group:hover .form-control {
-            -webkit-animation: pulse 0.6s ease-in-out;
-            animation: pulse 0.6s ease-in-out;
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--dark-gray);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-red);
-            border-radius: 4px;
-        }
-
-            ::-webkit-scrollbar-thumb:hover {
-                background: var(--light-red);
-            }
-
-        /* Enhanced Visual Effects */
-        .content-card {
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .form-control,
-        .form-control-file {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-    </style>
+    <script src="~/js/edit-movie.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 ﻿@model Film_website.Models.Movie
 @{
-    ViewData["Title"] = @Model.Title + " - CineHub Admin";
+    ViewData["Title"] = @Model.Title + " - Admin";
     Layout = null;
 }
 
@@ -16,24 +16,7 @@
 <body>
     <div class="comic-elements" id="comicElements"></div>
 
-    <nav class="admin-navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <div class="admin-logo">
-                    <div class="logo-circle">🛡️</div>
-                    <h2>ADMIN HQ</h2>
-                </div>
-            </div>
-            <div class="nav-center">
-                <h1>🎬 CINEHUB COMMAND CENTER 🎬</h1>
-            </div>
-            <div class="nav-right">
-                <button class="nav-btn" onclick="toggleNotifications()">🔔</button>
-                <button class="nav-btn" onclick="toggleProfile()">👨‍💼</button>
-                <a href="@Url.Action("Index", "Home")" class="nav-btn logout-btn">🚪</a>
-            </div>
-        </div>
-    </nav>
+
 
     <div class="main-container">
         <aside class="sidebar">
@@ -41,13 +24,13 @@
                 <div class="user-info">
                     <div class="user-avatar">🦸</div>
                     <div class="user-details">
-                        <h3>ADMIN HERO</h3>
-                        <p>Supreme Commander</p>
+                        <h3>ADMIN </h3>
+                        <p>Supreme </p>
                     </div>
                 </div>
             </div>
             <nav class="sidebar-menu">
-                <a href="@Url.Action("Dashboard", "Admin")" class="menu-item" data-section="dashboard">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
                     <span class="menu-icon">🏠</span>
                     <span class="menu-text">DASHBOARD</span>
                 </a>
@@ -55,38 +38,11 @@
                     <span class="menu-icon">🎬</span>
                     <span class="menu-text">MOVIE MANAGER</span>
                 </a>
-                <a href="#" class="menu-item" data-section="series">
-                    <span class="menu-icon">📺</span>
-                    <span class="menu-text">SERIES CONTROL</span>
-                </a>
-                <a href="#" class="menu-item" data-section="subtitles">
-                    <span class="menu-icon">💬</span>
-                    <span class="menu-text">SUBTITLE HQ</span>
-                </a>
+               
                 <a href="@Url.Action("Translator", "Admin")" class="menu-item translator-link">
                     <span class="menu-icon">🌐</span>
                     <span class="menu-text">AI TRANSLATOR</span>
-                </a>
-                <a href="#" class="menu-item" data-section="photos">
-                    <span class="menu-icon">📸</span>
-                    <span class="menu-text">PHOTO VAULT</span>
-                </a>
-                <a href="#" class="menu-item" data-section="users">
-                    <span class="menu-icon">👥</span>
-                    <span class="menu-text">USER HEROES</span>
-                </a>
-                <a href="#" class="menu-item" data-section="comments">
-                    <span class="menu-icon">💭</span>
-                    <span class="menu-text">HERO COMMENTS</span>
-                </a>
-                <a href="#" class="menu-item" data-section="reports">
-                    <span class="menu-icon">📊</span>
-                    <span class="menu-text">BATTLE REPORTS</span>
-                </a>
-                <a href="#" class="menu-item" data-section="contact">
-                    <span class="menu-icon">📞</span>
-                    <span class="menu-text">HERO CONTACT</span>
-                </a>
+                </a>               
             </nav>
         </aside>
 
@@ -95,7 +51,6 @@
                 <div class="section-header">
                     <h2>🎬 @Model.Title</h2>
                 </div>
-
                 <div class="content-card">
                     <div class="card-content">
                         <div class="movie-details">
@@ -324,96 +279,6 @@
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
-    </style>
-    <style>
-        /* CineHub Admin - Modern Red Black Theme */
-        :root {
-            --primary-red: #ff1744;
-            --dark-red: #d50000;
-            --light-red: #ff5983;
-            --primary-black: #0a0a0a;
-            --dark-black: #000000;
-            --light-black: #1a1a1a;
-            --gray-dark: #2d2d2d;
-            --gray-medium: #424242;
-            --gray-light: #616161;
-            --white: #ffffff;
-            --white-transparent: rgba(255, 255, 255, 0.9);
-            --red-transparent: rgba(255, 23, 68, 0.1);
-            --shadow-red: rgba(255, 23, 68, 0.3);
-            --shadow-black: rgba(0, 0, 0, 0.5);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary-black) 0%, var(--dark-black) 50%, var(--light-black) 100%);
-            color: var(--white);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        /* Comic Elements Background */
-        .comic-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            background: radial-gradient(circle at 20% 20%, var(--red-transparent) 0%, transparent 50%), radial-gradient(circle at 80% 80%, var(--red-transparent) 0%, transparent 50%), radial-gradient(circle at 40% 60%, var(--red-transparent) 0%, transparent 30%);
-        }
-
-        /* Navigation */
-        .admin-navbar {
-            background: linear-gradient(90deg, var(--primary-black) 0%, var(--dark-red) 100%);
-            padding: 1rem 0;
-            box-shadow: 0 4px 20px var(--shadow-black);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 2px solid var(--primary-red);
-        }
-
-        .nav-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .nav-left, .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .admin-logo {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo-circle {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(45deg, var(--primary-red), var(--light-red));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 15px var(--shadow-red);
-            animation: pulse 2s infinite;
-        }
 
         .video-controls-custom {
             display: flex;
@@ -497,176 +362,6 @@
             100% {
                 transform: scale(1);
             }
-        }
-
-        .admin-logo h2 {
-            color: var(--white);
-            font-family: 'Bangers', cursive;
-            font-size: 1.8rem;
-            text-shadow: 2px 2px 4px var(--shadow-black);
-        }
-
-        .nav-center h1 {
-            color: var(--white);
-            font-family: 'Bungee', cursive;
-            font-size: 2rem;
-            text-shadow: 2px 2px 4px var(--shadow-black);
-            background: linear-gradient(45deg, var(--white), var(--light-red));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-btn {
-            background: linear-gradient(45deg, var(--gray-dark), var(--gray-medium));
-            border: 2px solid var(--primary-red);
-            color: var(--white);
-            padding: 0.8rem 1rem;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-            .nav-btn:hover {
-                background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
-                transform: translateY(-2px);
-                box-shadow: 0 6px 20px var(--shadow-red);
-            }
-
-        .logout-btn:hover {
-            background: linear-gradient(45deg, var(--dark-red), var(--primary-red));
-        }
-
-        /* Main Container */
-        .main-container {
-            display: flex;
-            min-height: calc(100vh - 100px);
-            gap: 2rem;
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, var(--light-black) 0%, var(--primary-black) 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 30px var(--shadow-black);
-            border: 1px solid var(--gray-dark);
-            position: sticky;
-            top: 120px;
-            height: fit-content;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: linear-gradient(45deg, var(--gray-dark), var(--gray-medium));
-            border-radius: 15px;
-            border: 1px solid var(--primary-red);
-        }
-
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, var(--primary-red), var(--light-red));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            box-shadow: 0 4px 15px var(--shadow-red);
-        }
-
-        .user-details h3 {
-            color: var(--white);
-            font-family: 'Bangers', cursive;
-            font-size: 1.3rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .user-details p {
-            color: var(--light-red);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        /* Sidebar Menu */
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem 1.5rem;
-            background: linear-gradient(90deg, transparent, var(--red-transparent));
-            border: 1px solid transparent;
-            border-radius: 12px;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .menu-item::before {
-                content: '';
-                position: absolute;
-                left: 0;
-                top: 0;
-                height: 100%;
-                width: 0;
-                background: linear-gradient(90deg, var(--primary-red), var(--dark-red));
-                transition: width 0.3s ease;
-                z-index: -1;
-            }
-
-            .menu-item:hover::before,
-            .menu-item.active::before {
-                width: 100%;
-            }
-
-            .menu-item:hover,
-            .menu-item.active {
-                border-color: var(--primary-red);
-                transform: translateX(5px);
-                box-shadow: 0 4px 15px var(--shadow-red);
-            }
-
-        .menu-icon {
-            font-size: 1.5rem;
-            width: 30px;
-            text-align: center;
-        }
-
-        .menu-text {
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            background: linear-gradient(135deg, var(--light-black) 0%, var(--primary-black) 100%);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 30px var(--shadow-black);
-            border: 1px solid var(--gray-dark);
         }
 
         .section-header {
@@ -996,5 +691,6 @@
                 color: var(--primary-red);
             }
     </style>
+    
 </body>
 </html>

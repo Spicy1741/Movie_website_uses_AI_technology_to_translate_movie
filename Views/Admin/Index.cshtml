@@ -7,7 +7,7 @@
 <div class="container" id="mainAdminSection">
     <div class="row">
         <div class="col-12">
-            <h1>Trang quản trị</h1>
+            <h1>Admin Page</h1>
             <p class="lead">@ViewBag.Message</p>
         </div>
     </div>
@@ -16,11 +16,11 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Quản lý người dùng</h5>
+                    <h5>User management</h5>
                 </div>
                 <div class="card-body">
                     <p>Xem và quản lý tài khoản người dùng.</p>
-                    <button class="btn btn-primary" onclick="showUserManagement()">Quản lý User</button>
+                    <button class="btn btn-primary" onclick="showUserManagement()">Manage user</button>
                 </div>
             </div>
         </div>
@@ -28,12 +28,12 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Quản lý phim</h5>
+                    <h5>Film management</h5>
                 </div>
                 <div class="card-body">
-                    <p>Thêm, sửa, xóa phim trong hệ thống.</p>
+                    <p>Add, edit, delete film on system.</p>
                     <button class="btn btn-primary">
-                        <a href="@Url.Action("ManageMovies", "Admin")" class="btn btn-primary">Quản lý phim</a>
+                        <a href="@Url.Action("ManageMovies", "Admin")" class="btn btn-primary">Manage film</a>
                     </button>
                 </div>
             </div>
@@ -48,9 +48,9 @@
                     <h5>🌐 AI Translator</h5>
                 </div>
                 <div class="card-body">
-                    <p>Dịch phim tự động bằng công nghệ AI tiên tiến.</p>
+                    <p>Translate film by high-end AI.</p>
                     <a href="@Url.Action("Translator", "Admin")" class="btn btn-success translator-btn">
-                        🚀 Bắt đầu dịch
+                        🚀 Translation start
                     </a>
                 </div>
             </div>

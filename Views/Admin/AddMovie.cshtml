@@ -1,8 +1,10 @@
 ﻿@model Film_website.Models.ViewModels.AddMovieViewModel
 @{
-    ViewData["Title"] = "Add Movie - CineHub Admin";
+    ViewData["Title"] = "Add Movie - Admin";
     Layout = null;
 }
+<link href="~/css/admin-styles.css" rel="stylesheet" />
+<link href="~/css/Addmovie.css" rel="stylesheet" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,7 +12,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/css/admin-styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -18,17 +19,22 @@
         <aside class="sidebar">
             <!-- Sidebar content -->
             <div class="admin-header">
-                <h2>🎬 CINEHUB ADMIN</h2>
+                <h2>🎬 ADMIN</h2>
                 <p>ULTIMATE MOVIE CONTROL</p>
             </div>
-            <nav class="admin-nav">
-                <a href="@Url.Action("Index", "Admin")" class="menu-item">
-                    <span class="menu-icon">📊</span>
+            <nav class="sidebar-menu">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
+                    <span class="menu-icon">🏠</span>
                     <span class="menu-text">DASHBOARD</span>
                 </a>
-                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active">
+                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active" data-section="movies">
                     <span class="menu-icon">🎬</span>
                     <span class="menu-text">MOVIE MANAGER</span>
+                </a>
+
+                <a href="@Url.Action("Translator", "Admin")" class="menu-item translator-link">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text">AI TRANSLATOR</span>
                 </a>
             </nav>
         </aside>
@@ -153,7 +159,7 @@
                             </div>
 
                             <div class="form-actions">
-                                <button type="submit" class="action-btn primary">💾 SAVE MOVIE</button>
+                                <button type="submit" class="action-btn primary">💾 SAVE </button>
                                 <a href="@Url.Action("ManageMovies", "Admin")" class="action-btn secondary">❌ CANCEL</a>
                             </div>
                         </form>
@@ -163,249 +169,8 @@
         </main>
     </div>
 
-    <script src="~/js/admin-dashboard.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
-
-    <style>
-        /* Enhanced Styles for Category Selection */
-        .category-section {
-            background: var(--medium-gray);
-            border: 2px solid var(--primary-red);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .category-header {
-            color: var(--primary-red);
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .category-description {
-            color: var(--text-light);
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .category-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: var(--dark-gray);
-            border-radius: 8px;
-            border: 1px solid #333;
-            transition: all 0.3s ease;
-        }
-
-        .category-item:hover {
-            border-color: var(--primary-red);
-            background: var(--light-gray);
-        }
-
-        .category-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            accent-color: var(--primary-red);
-        }
-
-        .category-label {
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .category-item input[type="checkbox"]:checked + .category-label {
-            color: var(--primary-red);
-            font-weight: bold;
-        }
-
-        .file-upload-section {
-            background: var(--medium-gray);
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .file-upload-section h3 {
-            color: var(--primary-red);
-            margin-bottom: 15px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-            justify-content: center;
-        }
-
-        .action-btn.secondary {
-            background: var(--medium-gray);
-            border: 2px solid #666;
-        }
-
-        .action-btn.secondary:hover {
-            background: #666;
-            border-color: white;
-        }
-
-        .form-text {
-            color: #999;
-            font-size: 12px;
-            margin-top: 5px;
-            display: block;
-        }
-
-        /* Root variables */
-        :root {
-            --primary-red: #dc2626;
-            --dark-red: #991b1b;
-            --light-red: #ef4444;
-            --black: #000000;
-            --dark-gray: #111111;
-            --medium-gray: #1f1f1f;
-            --light-gray: #2d2d2d;
-            --text-light: #cccccc;
-            --text-dark: #999999;
-            --border-color: #333333;
-            --hover-red: #fee2e2;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: var(--black);
-            color: white;
-            line-height: 1.6;
-        }
-
-        .main-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 280px;
-            background: var(--dark-gray);
-            border-right: 3px solid var(--primary-red);
-            padding: 20px;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            background: var(--medium-gray);
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .section-header h2 {
-            color: var(--primary-red);
-            font-size: 28px;
-        }
-
-        .content-card {
-            background: var(--dark-gray);
-            border: 2px solid var(--primary-red);
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .card-content {
-            padding: 30px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--primary-red);
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            background: var(--medium-gray);
-            border: 2px solid #333;
-            border-radius: 8px;
-            color: white;
-            font-size: 16px;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-red);
-        }
-
-        .form-control-file {
-            width: 100%;
-            padding: 10px;
-            background: var(--medium-gray);
-            border: 2px solid #333;
-            border-radius: 8px;
-            color: white;
-        }
-
-        .action-btn {
-            background: var(--primary-red);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 16px;
-        }
-
-        .action-btn:hover {
-            background: var(--dark-red);
-            transform: translateY(-2px);
-        }
-
-        .text-danger {
-            color: #ff6b6b;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-    </style>
 </body>
 </html>
