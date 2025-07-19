@@ -1,8 +1,4 @@
-﻿/* ========== ENHANCED MOVIE MANAGEMENT PAGES CSS ========== */
-/* Comprehensive styling for AddMovie.cshtml, EditMovie.cshtml, and ManageMovie.cshtml */
-
-/* CSS Variables for Cinema Theme */
-:root {
+﻿:root {
     --primary-red: #dc2626;
     --dark-red: #991b1b;
     --light-red: #ef4444;
@@ -240,7 +236,6 @@ body {
     padding: 2.5rem;
 }
 
-/* Form Layout */
 .form-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
