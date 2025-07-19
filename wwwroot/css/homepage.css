@@ -973,3 +973,7 @@ body {
         font-size: 0.8rem;
     }
 }
+
+.section-title::after{
+    display: none
+}
