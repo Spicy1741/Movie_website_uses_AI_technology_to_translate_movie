@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Film_website.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250718160911_Add")]
-    partial class Add
+    [Migration("20250720191701_add")]
+    partial class add
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
