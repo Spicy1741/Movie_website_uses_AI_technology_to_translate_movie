@@ -1,1 +1,125 @@
-[]
+[
+  {
+    "ContainingType": "Film_website.Controllers.TranslatorController",
+    "Method": "ClearFiles",
+    "RelativePath": "api/Translator/clear",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Film_website.Controllers.TranslatorController",
+    "Method": "GetSupportedLanguages",
+    "RelativePath": "api/Translator/languages",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Film_website.Controllers.TranslatorController",
+    "Method": "SaveEditedSubtitle",
+    "RelativePath": "api/Translator/save-edited",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Film_website.Controllers.SaveEditedRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Film_website.Controllers.TranslatorController",
+    "Method": "TranscribeAndTranslate",
+    "RelativePath": "api/Translator/transcribe",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "VideoFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      },
+      {
+        "Name": "SourceLanguage",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TargetLanguage",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "OutputFormat",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "EnableTranslation",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "EnableDebugConsole",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      },
+      {
+        "Name": "Notes",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Film_website.Controllers.TranslatorController",
+    "Method": "UploadSrtFile",
+    "RelativePath": "api/Translator/upload-srt",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ContentType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ContentDisposition",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Headers",
+        "Type": "Microsoft.AspNetCore.Http.IHeaderDictionary",
+        "IsRequired": false
+      },
+      {
+        "Name": "Length",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FileName",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

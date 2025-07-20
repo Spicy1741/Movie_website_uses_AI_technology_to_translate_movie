@@ -1,6 +1,10 @@
-﻿using Film_website.Services;
+﻿using Film_website.Models;
+using Film_website.Models.ViewModels;
+using Film_website.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Text;
 
 namespace Film_website.Controllers
 {
@@ -10,12 +14,26 @@ namespace Film_website.Controllers
         private readonly UserService _userService;
         private readonly UserActivityService? _activityService;
         private readonly ILogger<AdminController> _logger;
+        private readonly MovieService _movieService;
+        private readonly IWebHostEnvironment _environment;
+        private readonly IWhisperService? _whisperService;
+        private readonly ITranslationService? _translationService;
 
-        public AdminController(UserService userService, ILogger<AdminController> logger, UserActivityService? activityService = null)
+        public AdminController(UserService userService,
+            ILogger<AdminController> logger,
+            MovieService movieService,
+            IWebHostEnvironment environment,
+            UserActivityService? activityService = null,
+            IWhisperService? whisperService = null,
+            ITranslationService? translationService = null)
         {
             _userService = userService;
             _logger = logger;
+            _movieService = movieService;
+            _environment = environment;
             _activityService = activityService;
+            _whisperService = whisperService;
+            _translationService = translationService;
         }
 
         public async Task<IActionResult> Index()
@@ -35,16 +53,16 @@ namespace Film_website.Controllers
                 // Get all users with their roles for user management section
                 var usersWithRoles = await _userService.GetAllUsersWithRolesDictionaryAsync();
 
-                ViewBag.Message = "Chào mừng đến trang quản trị";
+                ViewBag.Message = "Welcome to AdminPage";
                 ViewBag.TotalUsers = usersWithRoles.Count;
 
                 return View(usersWithRoles);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi khi lấy danh sách người dùng");
-                ViewBag.ErrorMessage = "Có lỗi xảy ra khi tải danh sách người dùng.";
-                ViewBag.Message = "Chào mừng đến trang quản trị";
+                _logger.LogError(ex, "Error while getting user list");
+                ViewBag.ErrorMessage = "An error occurred while loading the user list.";
+                ViewBag.Message = "Welcome to the admin page";
                 return View(new Dictionary<Film_website.Models.User, IList<string>>());
             }
         }
@@ -122,15 +140,630 @@ namespace Film_website.Controllers
             }
         }
 
-        public IActionResult Dashboard()
+        // WHISPER AI TRANSLATOR METHODS
+        [HttpGet]
+        public async Task<IActionResult> Translator()
         {
-            return View();
+            try
+            {
+                // Log admin access to translator
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(adminUser.Id, "Accessed AI Translator", HttpContext);
+                    }
+                }
+
+                ViewData["Title"] = "AI Translator - Film Website Admin";
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error accessing translator");
+                TempData["Error"] = "Error accessing AI Translator.";
+                return RedirectToAction("Index");
+            }
         }
 
-        public IActionResult Translator()
+        [HttpPost]
+        public async Task<IActionResult> TranscribeAndTranslate([FromForm] TranslationRequest request)
         {
-            ViewData["Title"] = "AI Translator - CineHub Admin";
-            return View();
+            if (_whisperService == null)
+            {
+                return BadRequest(new TranslationResponse
+                {
+                    Success = false,
+                    Message = "Whisper service not available"
+                });
+            }
+
+            try
+            {
+                if (request.VideoFile == null || request.VideoFile.Length == 0)
+                {
+                    return BadRequest(new TranslationResponse
+                    {
+                        Success = false,
+                        Message = "No file uploaded"
+                    });
+                }
+
+                // Validate file type
+                var allowedExtensions = new[] { ".mp4", ".mp3", ".wav", ".m4a", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".aac", ".ogg", ".flac" };
+                var fileExtension = Path.GetExtension(request.VideoFile.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    return BadRequest(new TranslationResponse
+                    {
+                        Success = false,
+                        Message = "Invalid file type. Please upload a supported audio/video file."
+                    });
+                }
+
+                // Check file size (limit to 500MB)
+                if (request.VideoFile.Length > 524288000) // 500MB
+                {
+                    return BadRequest(new TranslationResponse
+                    {
+                        Success = false,
+                        Message = "File size too large. Maximum size is 500MB."
+                    });
+                }
+
+                // Save uploaded file
+                var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploadsPath);
+
+                var fileName = $"{Guid.NewGuid()}_{request.VideoFile.FileName}";
+                var filePath = Path.Combine(uploadsPath, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.VideoFile.CopyToAsync(stream);
+                }
+
+                // Transcribe audio/video using Whisper AI
+                var transcriptionResult = await _whisperService.TranscribeAudioAsync(filePath, request.SourceLanguage);
+
+                if (!transcriptionResult.Success)
+                {
+                    // Clean up uploaded file
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                    return BadRequest(transcriptionResult);
+                }
+
+                // Optional: Translate if enabled and translation service is available
+                if (request.EnableTranslation && _translationService != null && !string.IsNullOrEmpty(transcriptionResult.OriginalText))
+                {
+                    transcriptionResult.TranslatedText = await _translationService.TranslateSubtitleAsync(
+                        transcriptionResult.OriginalText,
+                        request.SourceLanguage,
+                        request.TargetLanguage);
+                }
+
+                // Save results to downloads folder
+                var downloadsPath = Path.Combine(_environment.WebRootPath, "downloads");
+                Directory.CreateDirectory(downloadsPath);
+
+                var resultFileName = $"{Path.GetFileNameWithoutExtension(request.VideoFile.FileName)}_transcription.srt";
+                var resultFilePath = Path.Combine(downloadsPath, resultFileName);
+
+                var contentToSave = request.EnableTranslation && !string.IsNullOrEmpty(transcriptionResult.TranslatedText)
+                    ? transcriptionResult.TranslatedText
+                    : transcriptionResult.OriginalText;
+
+                await System.IO.File.WriteAllTextAsync(resultFilePath, contentToSave ?? "");
+
+                transcriptionResult.DownloadUrl = $"/downloads/{resultFileName}";
+                transcriptionResult.FileName = resultFileName;
+
+                // Log activity if service is available
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(
+                            adminUser.Id,
+                            $"Used Whisper AI to transcribe: {request.VideoFile.FileName}",
+                            HttpContext);
+                    }
+                }
+
+                // Clean up uploaded file after processing
+                try
+                {
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Could not delete temporary file: {FilePath}", filePath);
+                }
+
+                return Json(transcriptionResult);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during transcription and translation");
+                return StatusCode(500, new TranslationResponse
+                {
+                    Success = false,
+                    Message = "Internal server error during processing",
+                    Errors = { ex.Message }
+                });
+            }
+        }
+
+        [HttpPost]
+        [Route("Admin/TranslateSubtitles")]
+        public async Task<IActionResult> TranslateSubtitles([FromBody] TranslateSubtitlesRequest request)
+        {
+            try
+            {
+                // Validate request
+                if (request.Subtitles == null || !request.Subtitles.Any())
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "No subtitles provided for translation"
+                    });
+                }
+
+                if (string.IsNullOrEmpty(request.SourceLanguage) || string.IsNullOrEmpty(request.TargetLanguage))
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "Source and target languages are required"
+                    });
+                }
+
+                if (request.SourceLanguage == request.TargetLanguage)
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "Source and target languages cannot be the same"
+                    });
+                }
+
+                // Get Google Translation service
+                var googleTranslationService = HttpContext.RequestServices.GetService<IGoogleTranslationService>();
+                if (googleTranslationService == null)
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "Translation service not available"
+                    });
+                }
+
+                // Translate subtitles
+                var translatedSubtitles = await googleTranslationService.TranslateSubtitlesAsync(
+                    request.Subtitles,
+                    request.SourceLanguage,
+                    request.TargetLanguage);
+
+                // Generate SRT content
+                var srtContent = GenerateSrtContent(translatedSubtitles);
+
+                // Log activity
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(adminUser.Id,
+                            $"Translated subtitles from {request.SourceLanguage} to {request.TargetLanguage}", HttpContext);
+                    }
+                }
+
+                return Ok(new TranslateSubtitlesResponse
+                {
+                    Success = true,
+                    Message = "Translation completed successfully",
+                    TranslatedSubtitles = translatedSubtitles,
+                    SrtContent = srtContent
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error translating subtitles");
+                return StatusCode(500, new TranslateSubtitlesResponse
+                {
+                    Success = false,
+                    Message = "An error occurred during translation"
+                });
+            }
+        }
+
+        [HttpGet]
+        [Route("Admin/SupportedLanguages")]
+        public IActionResult GetSupportedLanguages()
+        {
+            var languages = new List<LanguageOption>
+    {
+        new() { Code = "auto", Name = "Auto Detect" },
+        new() { Code = "en", Name = "English" },
+        new() { Code = "es", Name = "Spanish" },
+        new() { Code = "fr", Name = "French" },
+        new() { Code = "de", Name = "German" },
+        new() { Code = "it", Name = "Italian" },
+        new() { Code = "pt", Name = "Portuguese" },
+        new() { Code = "zh", Name = "Chinese" },
+        new() { Code = "ja", Name = "Japanese" },
+        new() { Code = "ko", Name = "Korean" },
+        new() { Code = "vi", Name = "Vietnamese" },
+        new() { Code = "ru", Name = "Russian" },
+        new() { Code = "ar", Name = "Arabic" },
+        new() { Code = "hi", Name = "Hindi" },
+        new() { Code = "th", Name = "Thai" },
+        new() { Code = "nl", Name = "Dutch" },
+        new() { Code = "sv", Name = "Swedish" },
+        new() { Code = "no", Name = "Norwegian" },
+        new() { Code = "da", Name = "Danish" },
+        new() { Code = "fi", Name = "Finnish" }
+    };
+
+            return Ok(languages);
+        }
+
+        [HttpPost]
+        [Route("Admin/DownloadTranslatedSubtitle")]
+        public IActionResult DownloadTranslatedSubtitle([FromBody] DownloadSubtitleRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(request.Content))
+                {
+                    return BadRequest("No content to download");
+                }
+
+                var originalFileName = Path.GetFileNameWithoutExtension(request.FileName ?? "subtitle");
+                var newFileName = $"{originalFileName}_{request.TargetLanguage}.srt";
+
+                var bytes = Encoding.UTF8.GetBytes(request.Content);
+
+                return File(bytes, "application/octet-stream", newFileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating download file");
+                return BadRequest("Error generating download file");
+            }
+        }
+
+        // Helper method to generate SRT content
+        private string GenerateSrtContent(List<SubtitleParagraphViewModel> subtitles)
+        {
+            var result = new StringBuilder();
+
+            foreach (var subtitle in subtitles.OrderBy(s => s.Number))
+            {
+                result.AppendLine(subtitle.Number.ToString());
+                result.AppendLine($"{subtitle.StartTime} --> {subtitle.EndTime}");
+                result.AppendLine(subtitle.Text);
+                result.AppendLine();
+            }
+
+            return result.ToString();
+        }
+
+        // Request model for download
+        public class DownloadSubtitleRequest
+        {
+            public string? Content { get; set; }
+            public string? FileName { get; set; }
+            public string? TargetLanguage { get; set; }
+        }
+
+        public class TranslateSubtitlesRequest
+        {
+            public List<SubtitleParagraphViewModel> Subtitles { get; set; } = new();
+            public string SourceLanguage { get; set; } = "";
+            public string TargetLanguage { get; set; } = "";
+        }
+
+        public class TranslateSubtitlesResponse
+        {
+            public bool Success { get; set; }
+            public string? Message { get; set; }
+            public List<SubtitleParagraphViewModel> TranslatedSubtitles { get; set; } = new();
+            public string? SrtContent { get; set; }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadSrtFile([FromForm] IFormFile srtFile)
+        {
+            try
+            {
+                if (srtFile == null || srtFile.Length == 0)
+                {
+                    return Json(new { success = false, message = "No SRT file selected" });
+                }
+
+                // Validate file type
+                var fileExtension = Path.GetExtension(srtFile.FileName).ToLower();
+                if (fileExtension != ".srt")
+                {
+                    return Json(new { success = false, message = "Please upload a valid .srt file" });
+                }
+
+                // Read SRT content
+                using var reader = new StreamReader(srtFile.OpenReadStream());
+                var srtContent = await reader.ReadToEndAsync();
+
+                // Log activity
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogActivityAsync(
+                            adminUser.Id,
+                            "SRT Upload",
+                            $"Uploaded SRT file: {srtFile.FileName}"
+                        );
+                    }
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    message = "SRT file uploaded successfully",
+                    fileName = srtFile.FileName,
+                    content = srtContent
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error uploading SRT file");
+                return Json(new { success = false, message = "Error uploading SRT file" });
+            }
+        }
+
+
+        // MOVIE MANAGEMENT METHODS
+        public async Task<IActionResult> ManageMovies()
+        {
+            try
+            {
+                var movies = await _movieService.GetAllMoviesAsync();
+                return View(movies);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading movies");
+                TempData["Error"] = "Error loading movies.";
+                return View(new List<Movie>());
+            }
+        }
+
+        [HttpGet]
+        public IActionResult AddMovie()
+        {
+            return View(new AddMovieViewModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddMovie(AddMovieViewModel viewModel, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Convert ViewModel to Movie entity
+                    var movie = viewModel.ToMovie();
+
+                    // Add the movie using the service
+                    await _movieService.AddMovieAsync(movie, movieFile, thumbnailFile, subtitleFile);
+
+                    TempData["Success"] = "Movie added successfully with selected categories!";
+                    return RedirectToAction("ManageMovies");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error adding movie");
+                    TempData["Error"] = $"Error adding movie: {ex.Message}";
+                    return View(viewModel);
+                }
+            }
+            return View(viewModel);
+        }
+
+        // Also update the EditMovie methods to handle categories
+        [HttpGet]
+        public async Task<IActionResult> EditMovie(int id)
+        {
+            try
+            {
+                var movie = await _movieService.GetMovieByIdAsync(id);
+                if (movie == null)
+                    return NotFound();
+
+                // Convert Movie to ViewModel for editing
+                var viewModel = new AddMovieViewModel
+                {
+                    Title = movie.Title,
+                    Description = movie.Description,
+                    Genre = movie.Genre,
+                    ReleaseYear = movie.ReleaseYear
+                };
+
+                // Set categories from existing movie
+                viewModel.SetCategoriesFromMovie(movie);
+
+                return View("EditMovie", viewModel); // You'll need to create EditMovie.cshtml similar to AddMovie
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading movie for edit");
+                return NotFound();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditMovie(int id, AddMovieViewModel viewModel, IFormFile movieFile, IFormFile thumbnailFile, IFormFile subtitleFile)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Fetch the existing movie
+                    var existingMovie = await _movieService.GetMovieByIdAsync(id);
+                    if (existingMovie == null)
+                        return NotFound();
+
+                    // Update the movie properties
+                    existingMovie.Title = viewModel.Title;
+                    existingMovie.Description = viewModel.Description;
+                    existingMovie.Genre = viewModel.Genre;
+                    existingMovie.ReleaseYear = viewModel.ReleaseYear;
+
+                    // Update categories
+                    existingMovie.SetCategoriesFromList(viewModel.GetSelectedCategories());
+                    existingMovie.UpdatedAt = DateTime.UtcNow;
+
+                    await _movieService.UpdateMovieAsync(existingMovie, movieFile, thumbnailFile, subtitleFile);
+                    TempData["Success"] = "Movie updated successfully with categories!";
+                    return RedirectToAction("ManageMovies");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error updating movie");
+                    TempData["Error"] = $"Error updating movie: {ex.Message}";
+                    return View(viewModel);
+                }
+            }
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMovie(int id)
+        {
+            try
+            {
+                await _movieService.DeleteMovieAsync(id);
+                TempData["Success"] = "Movie deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting movie");
+                TempData["Error"] = "Error deleting movie.";
+            }
+            return RedirectToAction("ManageMovies");
+        }
+
+        public async Task<IActionResult> ViewMovie(int id)
+        {
+            try
+            {
+                var movie = await _movieService.GetMovieByIdAsync(id);
+                if (movie == null)
+                    return NotFound();
+                return View(movie);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading movie details");
+                return NotFound();
+            }
+        }
+
+        // DASHBOARD METHODS
+        public async Task<IActionResult> Dashboard()
+        {
+            try
+            {
+                // Log admin access
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(adminUser.Id, "Accessed Dashboard", HttpContext);
+                    }
+                }
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading dashboard");
+                TempData["Error"] = "Error loading dashboard.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // USER MANAGEMENT METHODS
+        public async Task<IActionResult> UserManagement()
+        {
+            try
+            {
+                // Log admin access
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(adminUser.Id, "Accessed User Management", HttpContext);
+                    }
+                }
+
+                var usersWithRoles = await _userService.GetAllUsersWithRolesDictionaryAsync();
+                return View(usersWithRoles);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading user management");
+                TempData["Error"] = "Error loading user management.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // SYSTEM SETTINGS
+        public async Task<IActionResult> SystemSettings()
+        {
+            try
+            {
+                // Log admin access
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(adminUser.Id, "Accessed System Settings", HttpContext);
+                    }
+                }
+
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error accessing system settings");
+                TempData["Error"] = "Error loading system settings.";
+                return RedirectToAction("Index");
+            }
+        }
+
+        // Error handling
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

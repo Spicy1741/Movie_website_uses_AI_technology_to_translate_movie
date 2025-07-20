@@ -1,0 +1,421 @@
+﻿/* ========== ENHANCED PROFILE PAGE STYLES ========== */
+/* Custom CSS for Views/Account/Profile.cshtml */
+
+/* CSS Variables for consistency with your theme */
+:root {
+    --primary-red: #dc2626;
+    --dark-red: #b91c1c;
+    --light-red: #ef4444;
+    --primary-black: #0d0d0d;
+    --light-black: #1a1a1a;
+    --medium-gray: #2d2d2d;
+    --light-gray: #404040;
+    --text-gray: #a1a1aa;
+    --white: #ffffff;
+    --shadow-red: rgba(220, 38, 38, 0.3);
+    --shadow-black: rgba(0, 0, 0, 0.5);
+}
+
+/* Profile Container Styling - Works with Shared Layout */
+.profile-container {
+    padding: 2rem 0;
+    position: relative;
+    min-height: auto;
+}
+
+    /* Background pattern for the main content area only */
+    .profile-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080"><rect width="1920" height="1080" fill="%23111"/><circle cx="400" cy="300" r="150" fill="%23222" opacity="0.3"/><circle cx="1200" cy="600" r="200" fill="%23333" opacity="0.2"/></svg>') center/cover;
+        opacity: 0.05;
+        z-index: 1;
+        border-radius: 20px;
+    }
+
+/* Profile Card Enhancement */
+.profile-card {
+    background: linear-gradient(180deg, var(--light-black) 0%, var(--primary-black) 100%);
+    border: 2px solid var(--primary-red);
+    border-radius: 20px;
+    box-shadow: 0 15px 40px var(--shadow-black);
+    position: relative;
+    z-index: 2;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 50px var(--shadow-red);
+    }
+
+/* Profile Header */
+.profile-header {
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: repeating-linear-gradient( 45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px );
+        animation: movePattern 20s linear infinite;
+    }
+
+@keyframes movePattern {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(45deg, var(--white), var(--text-gray));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--primary-red);
+    margin: 0 auto 1rem;
+    border: 4px solid var(--white);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+    .profile-avatar:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+    }
+
+.profile-title {
+    color: var(--white);
+    font-family: 'Bangers', cursive;
+    font-size: 2rem;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+    letter-spacing: 2px;
+}
+
+.profile-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    position: relative;
+    z-index: 2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Profile Body */
+.profile-body {
+    padding: 2.5rem;
+    background: var(--light-black);
+}
+
+/* Info Section Styling */
+.info-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    color: var(--primary-red);
+    font-family: 'Bungee', cursive;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+    .section-title::before {
+        content: '';
+        width: 4px;
+        height: 20px;
+        background: linear-gradient(45deg, var(--primary-red), var(--light-red));
+        border-radius: 2px;
+    }
+
+/* Info Item Styling */
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(45deg, var(--medium-gray), var(--light-gray));
+    border-radius: 12px;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+    .info-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(45deg, var(--primary-red), var(--light-red));
+        transition: width 0.3s ease;
+    }
+
+    .info-item:hover {
+        background: linear-gradient(45deg, var(--light-gray), var(--medium-gray));
+        transform: translateX(10px);
+        box-shadow: 0 5px 15px var(--shadow-red);
+    }
+
+        .info-item:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+
+.info-label {
+    font-weight: 600;
+    color: var(--primary-red);
+    min-width: 120px;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+
+.info-value {
+    color: var(--white);
+    font-size: 1rem;
+    flex: 1;
+    position: relative;
+    z-index: 1;
+}
+
+/* Profile Actions */
+.profile-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.action-btn {
+    background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
+    color: var(--white);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+    .action-btn:hover {
+        background: linear-gradient(45deg, var(--dark-red), var(--primary-red));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px var(--shadow-red);
+        color: var(--white);
+        text-decoration: none;
+    }
+
+    .action-btn i {
+        font-size: 1.1rem;
+    }
+
+    /* Secondary Action Button */
+    .action-btn.secondary {
+        background: linear-gradient(45deg, var(--medium-gray), var(--light-gray));
+        border: 2px solid var(--primary-red);
+    }
+
+        .action-btn.secondary:hover {
+            background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
+        }
+
+/* Statistics Section */
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.stat-card {
+    background: linear-gradient(45deg, var(--medium-gray), var(--light-gray));
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+    transition: all 0.3s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px var(--shadow-red);
+        border-color: var(--primary-red);
+    }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-red);
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: 'Bangers', cursive;
+}
+
+.stat-label {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem 0;
+    }
+
+    .profile-header {
+        padding: 1.5rem;
+    }
+
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+    }
+
+    .profile-title {
+        font-size: 1.5rem;
+    }
+
+    .profile-body {
+        padding: 1.5rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .info-label {
+        margin-bottom: 0.5rem;
+        min-width: auto;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* Adjustments for Shared Layout Integration */
+main .profile-container {
+    margin-top: 0;
+    padding-top: 1rem;
+}
+
+/* Ensure proper spacing with existing layout */
+.container-fluid .profile-container,
+.container .profile-container {
+    max-width: 100%;
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.6s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+    .loading::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30px;
+        height: 30px;
+        border: 3px solid var(--text-gray);
+        border-top-color: var(--primary-red);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        transform: translate(-50%, -50%);
+    }
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

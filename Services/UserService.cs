@@ -26,7 +26,7 @@ namespace Film_website.Services
                     new IdentityError
                     {
                         Code = "DuplicateUserName",
-                        Description = "Tên người dùng đã được sử dụng."
+                        Description = "Username is already in use."
                     }
                 };
                 return IdentityResult.Failed(errors.ToArray());
@@ -40,7 +40,7 @@ namespace Film_website.Services
                     new IdentityError
                     {
                         Code = "DuplicateEmail",
-                        Description = "Email đã được sử dụng."
+                        Description = "Email is already in use."
                     }
                 };
                 return IdentityResult.Failed(errors.ToArray());
@@ -62,7 +62,7 @@ namespace Film_website.Services
             {
                 // Mặc định gán role "User" cho người đăng ký mới
                 await _userRepository.AddToRoleAsync(user, "User");
-                _logger.LogInformation($"Người dùng {model.Email} (username: {model.UserName}) đăng ký thành công");
+                _logger.LogInformation($"User {model.Email} (username: {model.UserName}) Registration successful");
             }
 
             return result;
@@ -74,7 +74,7 @@ namespace Film_website.Services
 
             if (result.Succeeded)
             {
-                _logger.LogInformation($"Người dùng {model.EmailOrUserName} đăng nhập thành công");
+                _logger.LogInformation($"User {model.EmailOrUserName} Login successful");
             }
 
             return result;
@@ -123,7 +123,7 @@ namespace Film_website.Services
                     new IdentityError
                     {
                         Code = "UserNotFound",
-                        Description = "Không tìm thấy người dùng với email và tên người dùng này."
+                        Description = "No user with this email and username was found."
                     }
                 };
                 return IdentityResult.Failed(errors.ToArray());
@@ -133,7 +133,7 @@ namespace Film_website.Services
 
             if (result.Succeeded)
             {
-                _logger.LogInformation($"Người dùng {model.Email} đã đặt lại mật khẩu thành công");
+                _logger.LogInformation($"User {model.Email} Password reset successful");
             }
 
             return result;

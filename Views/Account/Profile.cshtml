@@ -1,32 +1,175 @@
 ﻿@model Film_website.Models.User
 @{
-    ViewData["Title"] = "Thông tin cá nhân";
+    ViewData["Title"] = "Personal information";
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Thông tin cá nhân</h3>
-                </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-sm-3"><strong>Họ tên:</strong></div>
-                        <div class="col-sm-9">@Model.FirstName @Model.LastName</div>
+<!-- Link to the new profile CSS -->
+<link rel="stylesheet" href="~/css/profile-styles.css" asp-append-version="true" />
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bungee&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<div class="profile-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="profile-card fade-in">
+                    <!-- Profile Header -->
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            @if (!string.IsNullOrEmpty(Model.AvatarPath))
+                            {
+                                <img src="@Model.AvatarPath" alt="Avatar" class="avatar-image" />
+                            }
+                            else if (!string.IsNullOrEmpty(Model.FirstName) && !string.IsNullOrEmpty(Model.LastName))
+                            {
+                                @(Model.FirstName.Substring(0, 1).ToUpper())
+                            }
+                            else
+                            {
+                                <i class="fas fa-user"></i>
+                            }
+                        </div>
+                        <p class="profile-subtitle">User Profile</p>
                     </div>
 
-                    <div class="row mb-3">
-                        <div class="col-sm-3"><strong>Email:</strong></div>
-                        <div class="col-sm-9">@Model.Email</div>
-                    </div>
+                    <!-- Profile Body -->
+                    <div class="profile-body">
+                        @if (TempData["SuccessMessage"] != null)
+                        {
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                @TempData["SuccessMessage"]
+                            </div>
+                        }
 
-                    <div class="row mb-3">
-                        <div class="col-sm-3"><strong>Ngày tạo:</strong></div>
-                        <div class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy")</div>
+                        <!-- Personal Information Section -->
+                        <div class="info-section slide-in-left">
+                            <h3 class="section-title">
+                                <i class="fas fa-id-card"></i>
+                                Personal information
+                            </h3>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-user me-2"></i>
+                                    Full name:
+                                </span>
+                                <span class="info-value">@Model.FirstName @Model.LastName</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-at me-2"></i>
+                                    Display name:
+                                </span>
+                                <span class="info-value">@Model.DisplayUserName</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-envelope me-2"></i>
+                                    Email:
+                                </span>
+                                <span class="info-value">@Model.Email</span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-calendar-alt me-2"></i>
+                                    Join Date:
+                                </span>
+                                <span class="info-value">@Model.CreatedAt.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+
+                        <!-- Account Status Section -->
+                        <div class="info-section slide-in-right">
+                            <h3 class="section-title">
+                                <i class="fas fa-shield-alt"></i>
+                                Account Status
+                            </h3>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Status:
+                                </span>
+                                <span class="info-value status @(Model.IsActive ? "active" : "inactive")">
+                                    @(Model.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <span class="info-label">
+                                    <i class="fas fa-envelope-check me-2"></i>
+                                    Verification Email:
+                                </span>
+                                <span class="info-value status @(Model.EmailConfirmed ? "verified" : "unverified")">
+                                    @(Model.EmailConfirmed ? "Verified" : "Not verified")
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="profile-actions">
+                            <a asp-action="EditProfile" class="action-btn primary">
+                                <i class="fas fa-edit"></i>
+                                Edit profile
+                            </a>
+                            <a asp-controller="Movie" asp-action="Index" class="action-btn secondary">
+                                <i class="fas fa-arrow-left"></i>
+                                Back to home page
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- JavaScript for Enhanced Functionality -->
+<script>
+    // Add loading animation when buttons are clicked
+    document.addEventListener('DOMContentLoaded', function() {
+        const actionButtons = document.querySelectorAll('.action-btn');
+
+        actionButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.href === '#' || this.onclick) {
+                    e.preventDefault();
+                }
+
+                // Add loading state
+                this.classList.add('loading');
+
+                // Remove loading state after 2 seconds (for demo)
+                setTimeout(() => {
+                    this.classList.remove('loading');
+                }, 2000);
+            });
+        });
+
+        // Add hover effects to info items
+        const infoItems = document.querySelectorAll('.info-item');
+        infoItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(10px)';
+            });
+
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+    });
+
+    // Placeholder functions for buttons
+    function editProfile() {
+        alert('Profile editing function will be developed in the future!');
+    }
+
+    function changePassword() {
+        alert('Password change function will be developed in the future!');
+    }
+</script>
+

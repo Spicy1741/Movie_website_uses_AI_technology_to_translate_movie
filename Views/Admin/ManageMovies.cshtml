@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Movie Manager - CineHub Admin";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="comic-elements" id="comicElements"></div>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="user-info">
+                    <div class="user-avatar">🦸</div>
+                    <div class="user-details">
+                        <h3>ADMIN </h3>
+                        <p>Supreme</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">DASHBOARD</span>
+                </a>
+                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active" data-section="movies">
+                    <span class="menu-icon">🎬</span>
+                    <span class="menu-text">MOVIE MANAGER</span>
+                </a>
+                <a href="@Url.Action("Translator", "Admin")" class="menu-item translator-link">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text">AI TRANSLATOR</span>
+                </a>
+                
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section id="movies" class="content-section active">
+                <div class="section-header">
+                    <h2>🎬 MOVIE MANAGER 🎬</h2>
+                    <div class="quick-actions">
+                        <a href="@Url.Action("AddMovie", "Admin")" class="action-btn">➕ ADD MOVIE</a>
+                    </div>
+                </div>
+
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success comic-pop">
+                        @TempData["Success"]
+                    </div>
+                }
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h3 class="all-movie">🎬 ALL MOVIES</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <span>TITLE</span>
+                                <span>GENRE</span>
+                                <span>CATEGORIES</span>
+                                <span>RELEASE YEAR</span>
+                                <span>ACTIONS</span>
+                            </div>
+                            @foreach (var movie in Model)
+                            {
+                                <div class="table-row">
+                                    <span class="movie-title">@movie.Title</span>
+                                    <span class="movie-genre">@movie.Genre</span>
+                                    <span class="movie-categories">
+                                        @if (!string.IsNullOrEmpty(movie.Categories))
+                                        {
+                                            @foreach (var category in movie.GetCategoriesList())
+                                            {
+                                                <span class="category-badge">@category</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span class="no-categories">No categories</span>
+                                        }
+                                    </span>
+                                    <span>@movie.ReleaseYear</span>
+                                    <span class="actions">
+                                        <a href="@Url.Action("ViewMovie", "Admin", new { id = movie.Id })" class="mini-btn view-btn">👀 View</a>
+                                        <a href="@Url.Action("EditMovie", "Admin", new { id = movie.Id })" class="mini-btn edit">✏️ </a>
+                                        <form asp-action="DeleteMovie" asp-route-id="@movie.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this movie?')">
+                                            <button type="submit" class="mini-btn delete">🗑️ </button>
+                                        </form>
+                                    </span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="~/js/admin-dashboard.js"></script>
+</body>
+</html>

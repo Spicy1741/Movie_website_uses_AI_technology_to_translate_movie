@@ -2,17 +2,22 @@
 using Film_website.Models.ViewModels;
 using Film_website.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Drawing;
+using System.IO;
 
 public class AccountController : Controller
 {
     private readonly UserService _userService;
     private readonly ILogger<AccountController> _logger;
+    private readonly UserManager<User> _userManager;
 
-    public AccountController(UserService userService, ILogger<AccountController> logger)
+    public AccountController(UserService userService, ILogger<AccountController> logger, UserManager<User> userManager)
     {
         _userService = userService;
         _logger = logger;
+        _userManager = userManager;
     }
 
     [HttpGet]
@@ -38,7 +43,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+            TempData["SuccessMessage"] = "Registration successful! Please login.";
             return RedirectToAction("Login");
         }
 
@@ -55,7 +60,7 @@ public class AccountController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return RedirectToAction("Index", "Movie");
+            return RedirectToAction("Index", "Home");
         }
         return View();
     }
@@ -85,12 +90,12 @@ public class AccountController : Controller
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Movie");
+                    return RedirectToAction("Index", "Home");
                 }
             }
         }
 
-        ModelState.AddModelError(string.Empty, "Email/tên người dùng hoặc mật khẩu không đúng.");
+        ModelState.AddModelError(string.Empty, "Incorrect email/username or password.");
         return View(model);
     }
 
@@ -100,7 +105,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _userService.LogoutUserAsync();
-        return RedirectToAction("Index", "Movie");
+        return RedirectToAction("Index", "Home");
     }
 
     [Authorize]
@@ -142,11 +147,11 @@ public class AccountController : Controller
             // Store user info in TempData for the next step
             TempData["ResetEmail"] = model.Email;
             TempData["ResetUserName"] = model.UserName;
-            TempData["SuccessMessage"] = "Thông tin hợp lệ! Vui lòng nhập mật khẩu mới.";
+            TempData["SuccessMessage"] = "Valid information! Please enter new password.";
             return RedirectToAction("ResetPassword");
         }
 
-        ModelState.AddModelError(string.Empty, "Email và tên người dùng không khớp với bất kỳ tài khoản nào.");
+        ModelState.AddModelError(string.Empty, "Email and username do not match any accounts.");
         return View(model);
     }
 
@@ -190,7 +195,7 @@ public class AccountController : Controller
         if (TempData["ResetEmail"]?.ToString() != model.Email ||
             TempData["ResetUserName"]?.ToString() != model.UserName)
         {
-            ModelState.AddModelError(string.Empty, "Thông tin không hợp lệ. Vui lòng thử lại.");
+            ModelState.AddModelError(string.Empty, "Invalid information. Please try again.");
             return RedirectToAction("ForgotPassword");
         }
 
@@ -198,7 +203,7 @@ public class AccountController : Controller
 
         if (result.Succeeded)
         {
-            TempData["SuccessMessage"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập với mật khẩu mới.";
+            TempData["SuccessMessage"] = "Password reset successful! Please log in with the new password.";
             return RedirectToAction("Login");
         }
 
@@ -208,5 +213,156 @@ public class AccountController : Controller
         }
 
         return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> EditProfile()
+    {
+        var user = await _userService.GetUserByEmailOrUserNameAsync(User.Identity!.Name!);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        var model = new EditProfileViewModel
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            DisplayUserName = user.DisplayUserName,
+            CurrentAvatarPath = user.AvatarPath
+        };
+
+        return View(model);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var user = await _userService.GetUserByEmailOrUserNameAsync(User.Identity!.Name!);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        // Update user information
+        user.FirstName = model.FirstName;
+        user.LastName = model.LastName;
+        user.DisplayUserName = model.DisplayUserName;
+
+        // Handle avatar upload with better error handling
+        if (model.AvatarFile != null)
+        {
+            try
+            {
+                // Delete old avatar if exists
+                if (!string.IsNullOrEmpty(user.AvatarPath))
+                {
+                    var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarPath.TrimStart('/'));
+                    if (System.IO.File.Exists(oldAvatarPath))
+                    {
+                        System.IO.File.Delete(oldAvatarPath);
+                    }
+                }
+
+                // Save new avatar
+                var avatarPath = await SaveAvatarAsync(model.AvatarFile, user.Id);
+                user.AvatarPath = avatarPath;
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Add the error to ModelState instead of letting it crash
+                ModelState.AddModelError("AvatarFile", ex.Message);
+                model.CurrentAvatarPath = user.AvatarPath;
+                return View(model);
+            }
+        }
+        else if (model.RemoveAvatar && !string.IsNullOrEmpty(user.AvatarPath))
+        {
+            // Remove current avatar
+            var oldAvatarPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", user.AvatarPath.TrimStart('/'));
+            if (System.IO.File.Exists(oldAvatarPath))
+            {
+                System.IO.File.Delete(oldAvatarPath);
+            }
+            user.AvatarPath = null;
+        }
+
+        // Update user in database
+        var result = await _userManager.UpdateAsync(user);
+
+        if (result.Succeeded)
+        {
+            TempData["SuccessMessage"] = "Your profile has been updated successfully!";
+            return RedirectToAction("Profile");
+        }
+        else
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+            model.CurrentAvatarPath = user.AvatarPath;
+            return View(model);
+        }
+    }
+
+    private async Task<string> SaveAvatarAsync(IFormFile avatarFile, string userId)
+    {
+        try
+        {
+            // Validate file type by both extension and MIME type
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" }; // Added webp
+            var allowedMimeTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp" };
+
+            var fileExtension = Path.GetExtension(avatarFile.FileName).ToLowerInvariant();
+            var mimeType = avatarFile.ContentType.ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(fileExtension) || !allowedMimeTypes.Contains(mimeType))
+            {
+                throw new InvalidOperationException("Only image files (JPG, JPEG, PNG, GIF, WebP) are allowed.");
+            }
+
+            // Validate file size (max 5MB)
+            if (avatarFile.Length > 5 * 1024 * 1024)
+            {
+                throw new InvalidOperationException("File size cannot exceed 5MB.");
+            }
+
+            // Reset stream position after image validation
+            avatarFile.OpenReadStream().Position = 0;
+
+            // Create uploads directory if it doesn't exist
+            var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+            if (!Directory.Exists(uploadsDir))
+            {
+                Directory.CreateDirectory(uploadsDir);
+            }
+
+            // Generate unique filename
+            var fileName = $"{userId}_{Guid.NewGuid()}{fileExtension}";
+            var filePath = Path.Combine(uploadsDir, fileName);
+
+            // Save file
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await avatarFile.CopyToAsync(stream);
+            }
+
+            // Return relative path for storage in database
+            return $"/uploads/avatars/{fileName}";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error saving avatar file for user {UserId}", userId);
+            throw;
+        }
     }
 }

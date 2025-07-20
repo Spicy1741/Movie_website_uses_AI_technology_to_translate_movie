@@ -5436,23 +5436,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\nghia\\.nuget\\packages\\": {},
+    "C:\\Users\\PC\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Film_website.csproj",
+      "projectUniqueName": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Film_website.csproj",
       "projectName": "Film_website",
-      "projectPath": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Film_website.csproj",
-      "packagesPath": "C:\\Users\\nghia\\.nuget\\packages\\",
-      "outputPath": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\obj\\",
+      "projectPath": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Film_website.csproj",
+      "packagesPath": "C:\\Users\\PC\\.nuget\\packages\\",
+      "outputPath": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\nghia\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\PC\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -5480,7 +5480,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -5528,7 +5528,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.300/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

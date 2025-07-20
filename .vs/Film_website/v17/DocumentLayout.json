@@ -1,191 +1,50 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\",
+  "WorkspaceRootPath": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\wwwroot\\js\\professional-translator.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:wwwroot\\js\\professional-translator.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:data\\applicationdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\views\\admin\\translator.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\admin\\translator.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\services\\useractivityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\useractivityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\repositories\\useractivityrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:repositories\\useractivityrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\models\\translatormodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\translatormodels.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\services\\googletranslationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\googletranslationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\repositories\\iuseractivityrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:repositories\\iuseractivityrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\wwwroot\\css\\translator-styles.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:wwwroot\\css\\translator-styles.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\models\\useractivity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\useractivity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\wwwroot\\js\\translator.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:wwwroot\\js\\translator.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\admin\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\services\\isubtitleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\isubtitleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\repositories\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:repositories\\iuserrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\services\\subtitleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\subtitleservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\admin\\usermanagement.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\admin\\usermanagement.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\admin\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\admin\\dashboard.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\account\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\account\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\services\\translationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\translationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\movieservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\services\\aiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:services\\aiservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\models\\viewmodels\\registerviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\viewmodels\\registerviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\models\\viewmodels\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\viewmodels\\loginviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\controllers\\moviecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:controllers\\moviecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\configuration\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:configuration\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\wwwroot\\css\\login.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:wwwroot\\css\\login.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\account\\register.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\account\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\models\\viewmodels\\forgotpasswordviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\viewmodels\\forgotpasswordviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|e:\\other\\subject\\research\\official\\new 1\\update\\movie_website_uses_ai_technology_to_translate_movie\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623163107_webfirmDb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\dotnet\\sdk\\9.0.300\\Sdks\\Microsoft.NET.Sdk.StaticWebAssets\\targets\\Microsoft.NET.Sdk.StaticWebAssets.targets||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623151844_webfilmDb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\admin\\systemsettings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\admin\\systemsettings.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\account\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\account\\profile.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\shared\\_layout.cshtml.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\shared\\_layout.cshtml.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\movie\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\movie\\details.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\movie\\htmlpage1.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\movie\\htmlpage1.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\movie\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\movie\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|d:\\movie_website_uses_ai_technology_to_translate_movies\\views\\movie\\player.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{AC04C509-AD77-41C7-864B-F6F5A6BFA139}|Film_website.csproj|solutionrelative:views\\movie\\player.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -195,570 +54,152 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 3,
           "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "UserActivity.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\UserActivity.cs",
-              "RelativeDocumentMoniker": "Models\\UserActivity.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\UserActivity.cs",
-              "RelativeToolTip": "Models\\UserActivity.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAAAywDQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T07:21:05.773Z"
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Dashboard.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\Dashboard.cshtml",
-              "RelativeDocumentMoniker": "Views\\Admin\\Dashboard.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\Dashboard.cshtml",
-              "RelativeToolTip": "Views\\Admin\\Dashboard.cshtml",
-              "ViewState": "AgIAALQBAAAAAAAAAAAQwO0BAAAHAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-25T08:17:16.122Z"
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
             },
             {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "RegisterViewModel.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ViewModels\\RegisterViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ViewModels\\RegisterViewModel.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ViewModels\\RegisterViewModel.cs",
-              "RelativeToolTip": "Models\\ViewModels\\RegisterViewModel.cs",
-              "ViewState": "AgIAABcAAAAAAAAAAAAIwCEAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:00:38.251Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "User.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\User.cs",
-              "RelativeDocumentMoniker": "Models\\User.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\User.cs",
-              "RelativeToolTip": "Models\\User.cs",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T17:54:52.869Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "AIService.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\AIService.cs",
-              "RelativeDocumentMoniker": "Services\\AIService.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\AIService.cs",
-              "RelativeToolTip": "Services\\AIService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:14:40.819Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "MovieService.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\MovieService.cs",
-              "RelativeDocumentMoniker": "Services\\MovieService.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\MovieService.cs",
-              "RelativeToolTip": "Services\\MovieService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:14:40.162Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "TranslationService.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\TranslationService.cs",
-              "RelativeDocumentMoniker": "Services\\TranslationService.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\TranslationService.cs",
-              "RelativeToolTip": "Services\\TranslationService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:14:39.367Z"
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH4AAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T17:47:33.777Z",
+              "Title": "professional-translator.js",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\professional-translator.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\professional-translator.js",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\professional-translator.js",
+              "RelativeToolTip": "wwwroot\\js\\professional-translator.js",
+              "ViewState": "AgIAAEwCAAAAAAAAAAAuwIwCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-07-20T10:41:52.674Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "IUserActivityRepository.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\IUserActivityRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\IUserActivityRepository.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\IUserActivityRepository.cs",
-              "RelativeToolTip": "Repositories\\IUserActivityRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T07:21:48.936Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "UserActivityRepository.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\UserActivityRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\UserActivityRepository.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\UserActivityRepository.cs",
-              "RelativeToolTip": "Repositories\\UserActivityRepository.cs",
-              "ViewState": "AgIAAFIAAAAAAAAAAAAIwGMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T07:22:05.473Z"
+              "Title": "translator-styles.css",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\translator-styles.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\translator-styles.css",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\translator-styles.css",
+              "RelativeToolTip": "wwwroot\\css\\translator-styles.css",
+              "ViewState": "AgIAAAEFAAAAAAAAAAAqwBAFAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-07-20T09:40:00.165Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "UserActivityService.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\UserActivityService.cs",
-              "RelativeDocumentMoniker": "Services\\UserActivityService.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\UserActivityService.cs",
-              "RelativeToolTip": "Services\\UserActivityService.cs",
-              "ViewState": "AgIAAF4AAAAAAAAAAAAywG8AAAABAAAAAAAAAA==",
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAhwFIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-26T07:22:44.194Z"
+              "WhenOpened": "2025-07-20T09:36:41.194Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\Index.cshtml",
-              "RelativeDocumentMoniker": "Views\\Admin\\Index.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\Index.cshtml",
-              "RelativeToolTip": "Views\\Admin\\Index.cshtml",
-              "ViewState": "AgIAAAQEAAAAAAAAAAAIwCQEAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-23T04:12:20.385Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "ForgotPassword.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\ForgotPassword.cshtml",
-              "RelativeDocumentMoniker": "Views\\Account\\ForgotPassword.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\ForgotPassword.cshtml",
-              "RelativeToolTip": "Views\\Account\\ForgotPassword.cshtml",
-              "ViewState": "AgIAACEAAAAAAAAAAAAAwDgAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-23T16:20:48.313Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "LoginViewModel.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ViewModels\\LoginViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ViewModels\\LoginViewModel.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ViewModels\\LoginViewModel.cs",
-              "RelativeToolTip": "Models\\ViewModels\\LoginViewModel.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwBEAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:00:26.793Z"
+              "DocumentIndex": 7,
+              "Title": "translator.js",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\translator.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\translator.js",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\translator.js",
+              "RelativeToolTip": "wwwroot\\js\\translator.js",
+              "ViewState": "AgIAAMoBAAAAAAAAAAAwwNkBAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-07-20T09:36:06.903Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "ApplicationDbContext.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Data\\ApplicationDbContext.cs",
-              "RelativeDocumentMoniker": "Data\\ApplicationDbContext.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Data\\ApplicationDbContext.cs",
-              "RelativeToolTip": "Data\\ApplicationDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:00:53.852Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "UserService.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\UserService.cs",
-              "RelativeDocumentMoniker": "Services\\UserService.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Services\\UserService.cs",
-              "RelativeToolTip": "Services\\UserService.cs",
-              "ViewState": "AgIAAJoAAAAAAAAAAAAAAKYAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T04:02:37.161Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "MovieController.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\MovieController.cs",
-              "RelativeDocumentMoniker": "Controllers\\MovieController.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\MovieController.cs",
-              "RelativeToolTip": "Controllers\\MovieController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T18:21:43.641Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "HomeController.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\HomeController.cs",
-              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\HomeController.cs",
-              "RelativeToolTip": "Controllers\\HomeController.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAA5wAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T17:50:41.668Z"
+              "Title": "Translator.cshtml",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Views\\Admin\\Translator.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Translator.cshtml",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Views\\Admin\\Translator.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Translator.cshtml",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAhwBMAAAAqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-07-20T09:35:25.317Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "AdminController.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\AdminController.cs",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Controllers\\AdminController.cs",
               "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\AdminController.cs",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Controllers\\AdminController.cs",
               "RelativeToolTip": "Controllers\\AdminController.cs",
-              "ViewState": "AgIAAHwAAAAAAAAAAAAIwIcAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAANsBAAAAAAAAAAAswOMBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T17:54:56.375Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "AccountController.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\AccountController.cs",
-              "RelativeDocumentMoniker": "Controllers\\AccountController.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Controllers\\AccountController.cs",
-              "RelativeToolTip": "Controllers\\AccountController.cs",
-              "ViewState": "AgIAAL4AAAAAAAAAAAAQwNMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T17:43:14.6Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "DependencyInjection.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Configuration\\DependencyInjection.cs",
-              "RelativeDocumentMoniker": "Configuration\\DependencyInjection.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Configuration\\DependencyInjection.cs",
-              "RelativeToolTip": "Configuration\\DependencyInjection.cs",
-              "ViewState": "AgIAACgAAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-25T08:14:53.869Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "Login.css",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\Login.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\Login.css",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\Login.css",
-              "RelativeToolTip": "wwwroot\\css\\Login.css",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAwwBsAAAAOAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-06-22T19:03:19.322Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "IUserRepository.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\IUserRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\IUserRepository.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\IUserRepository.cs",
-              "RelativeToolTip": "Repositories\\IUserRepository.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAA8wBAAAAAzAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T15:07:28.61Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 30,
-              "Title": "Microsoft.NET.Sdk.StaticWebAssets.targets",
-              "DocumentMoniker": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\Sdks\\Microsoft.NET.Sdk.StaticWebAssets\\targets\\Microsoft.NET.Sdk.StaticWebAssets.targets",
-              "ToolTip": "C:\\Program Files\\dotnet\\sdk\\9.0.300\\Sdks\\Microsoft.NET.Sdk.StaticWebAssets\\targets\\Microsoft.NET.Sdk.StaticWebAssets.targets",
-              "ViewState": "AgIAAGACAAAAAAAAAAAgwGYCAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003801|",
-              "WhenOpened": "2025-06-23T15:24:15.737Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "Login.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\Login.cshtml",
-              "RelativeDocumentMoniker": "Views\\Account\\Login.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\Login.cshtml",
-              "RelativeToolTip": "Views\\Account\\Login.cshtml",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAAB8AAABhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:14:04.047Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "Register.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\Register.cshtml",
-              "RelativeDocumentMoniker": "Views\\Account\\Register.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\Register.cshtml",
-              "RelativeToolTip": "Views\\Account\\Register.cshtml",
-              "ViewState": "AgIAAC4AAAAAAAAAAAAAwDEAAABsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T17:53:38.741Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "20250623163107_webfirmDb.cs",
-              "DocumentMoniker": "D:\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623163107_webfirmDb.cs",
-              "RelativeDocumentMoniker": "..\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623163107_webfirmDb.cs",
-              "ToolTip": "D:\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623163107_webfirmDb.cs",
-              "RelativeToolTip": "..\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623163107_webfirmDb.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAgwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T16:31:07.482Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "ForgotPasswordViewModel.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ViewModels\\ForgotPasswordViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ViewModels\\ForgotPasswordViewModel.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ViewModels\\ForgotPasswordViewModel.cs",
-              "RelativeToolTip": "Models\\ViewModels\\ForgotPasswordViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T16:19:29.348Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAIAAABBAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-06-22T17:46:03.861Z"
+              "WhenOpened": "2025-07-20T09:32:46.612Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "UserRepository.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\UserRepository.cs",
-              "RelativeDocumentMoniker": "Repositories\\UserRepository.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Repositories\\UserRepository.cs",
-              "RelativeToolTip": "Repositories\\UserRepository.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAAAAAHgAAAAJAAAAAAAAAA==",
+              "Title": "GoogleTranslationService.cs",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Services\\GoogleTranslationService.cs",
+              "RelativeDocumentMoniker": "Services\\GoogleTranslationService.cs",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Services\\GoogleTranslationService.cs",
+              "RelativeToolTip": "Services\\GoogleTranslationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAJAAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T15:07:35.868Z"
+              "WhenOpened": "2025-07-20T09:31:58.703Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "ResetPassword.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\ResetPassword.cshtml",
-              "RelativeDocumentMoniker": "Views\\Account\\ResetPassword.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\ResetPassword.cshtml",
-              "RelativeToolTip": "Views\\Account\\ResetPassword.cshtml",
-              "ViewState": "AgIAADoAAAAAAAAAAAAAwEsAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-23T16:21:22.744Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 32,
-              "Title": "_ViewImports.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\_ViewImports.cshtml",
-              "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\_ViewImports.cshtml",
-              "RelativeToolTip": "Views\\_ViewImports.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:26:08.664Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
-              "Title": "20250623151844_webfilmDb.cs",
-              "DocumentMoniker": "D:\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623151844_webfilmDb.cs",
-              "RelativeDocumentMoniker": "..\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623151844_webfilmDb.cs",
-              "ToolTip": "D:\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623151844_webfilmDb.cs",
-              "RelativeToolTip": "..\\Project1\\Movie_website_uses_AI_technology_to_translate_movies\\Migrations\\20250623151844_webfilmDb.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 9,
+              "Title": "SubtitleService.cs",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Services\\SubtitleService.cs",
+              "RelativeDocumentMoniker": "Services\\SubtitleService.cs",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Services\\SubtitleService.cs",
+              "RelativeToolTip": "Services\\SubtitleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-23T15:18:44.826Z"
+              "WhenOpened": "2025-07-20T09:31:17.079Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "UserManagement.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\UserManagement.cshtml",
-              "RelativeDocumentMoniker": "Views\\Admin\\UserManagement.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\UserManagement.cshtml",
-              "RelativeToolTip": "Views\\Admin\\UserManagement.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-23T04:14:43.531Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 34,
-              "Title": "SystemSettings.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\SystemSettings.cshtml",
-              "RelativeDocumentMoniker": "Views\\Admin\\SystemSettings.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Admin\\SystemSettings.cshtml",
-              "RelativeToolTip": "Views\\Admin\\SystemSettings.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-23T04:14:44.337Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 35,
-              "Title": "ErrorViewModel.cs",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ErrorViewModel.cs",
-              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Models\\ErrorViewModel.cs",
-              "RelativeToolTip": "Models\\ErrorViewModel.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "ISubtitleService.cs",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Services\\ISubtitleService.cs",
+              "RelativeDocumentMoniker": "Services\\ISubtitleService.cs",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Services\\ISubtitleService.cs",
+              "RelativeToolTip": "Services\\ISubtitleService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA3AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-22T17:54:51.935Z"
+              "WhenOpened": "2025-07-20T09:30:40.486Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 36,
-              "Title": "Profile.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\Profile.cshtml",
-              "RelativeDocumentMoniker": "Views\\Account\\Profile.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Account\\Profile.cshtml",
-              "RelativeToolTip": "Views\\Account\\Profile.cshtml",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAUAAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T17:53:39.338Z"
+              "DocumentIndex": 4,
+              "Title": "TranslatorModels.cs",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Models\\TranslatorModels.cs",
+              "RelativeDocumentMoniker": "Models\\TranslatorModels.cs",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\Models\\TranslatorModels.cs",
+              "RelativeToolTip": "Models\\TranslatorModels.cs",
+              "ViewState": "AgIAABgAAAAAAAAAAAAwwCAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-07-20T09:30:02.342Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 42,
-              "Title": "_ViewStart.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\_ViewStart.cshtml",
-              "RelativeDocumentMoniker": "Views\\_ViewStart.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\_ViewStart.cshtml",
-              "RelativeToolTip": "Views\\_ViewStart.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:26:13.9Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 44,
-              "Title": "HTMLPage1.html",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\HTMLPage1.html",
-              "RelativeDocumentMoniker": "Views\\Movie\\HTMLPage1.html",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\HTMLPage1.html",
-              "RelativeToolTip": "Views\\Movie\\HTMLPage1.html",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
-              "WhenOpened": "2025-06-22T18:26:19.962Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 43,
-              "Title": "Details.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\Details.cshtml",
-              "RelativeDocumentMoniker": "Views\\Movie\\Details.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\Details.cshtml",
-              "RelativeToolTip": "Views\\Movie\\Details.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:26:20.936Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 41,
-              "Title": "Privacy.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Home\\Privacy.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Privacy.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Home\\Privacy.cshtml",
-              "RelativeToolTip": "Views\\Home\\Privacy.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:26:23.214Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 37,
-              "Title": "_Layout.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Shared\\_Layout.cshtml",
-              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Shared\\_Layout.cshtml",
-              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:27:00.715Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 38,
-              "Title": "site.css",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\site.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\site.css",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\site.css",
-              "RelativeToolTip": "wwwroot\\css\\site.css",
-              "ViewState": "AgIAAIwBAAAAAAAAAAAAAK8BAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-06-22T18:44:39.099Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 39,
-              "Title": "_Layout.cshtml.css",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Shared\\_Layout.cshtml.css",
-              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml.css",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Shared\\_Layout.cshtml.css",
-              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml.css",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAgwDEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-06-22T18:27:09.577Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 40,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Home\\Index.cshtml",
-              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Home\\Index.cshtml",
-              "RelativeToolTip": "Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T17:50:35.656Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 46,
-              "Title": "Player.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\Player.cshtml",
-              "RelativeDocumentMoniker": "Views\\Movie\\Player.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\Player.cshtml",
-              "RelativeToolTip": "Views\\Movie\\Player.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:14:19.974Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 45,
-              "Title": "Index.cshtml",
-              "DocumentMoniker": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\Index.cshtml",
-              "RelativeDocumentMoniker": "Views\\Movie\\Index.cshtml",
-              "ToolTip": "D:\\Movie_website_uses_AI_technology_to_translate_movies\\Views\\Movie\\Index.cshtml",
-              "RelativeToolTip": "Views\\Movie\\Index.cshtml",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-06-22T18:14:19.213Z"
+              "DocumentIndex": 10,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-07-20T09:26:50.842Z"
             }
           ]
         }

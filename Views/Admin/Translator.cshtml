@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "AI Translator - CineHub Admin";
+    ViewData["Title"] = "AI Translator - Film Website Admin";
     Layout = null;
 }
 
@@ -9,167 +9,407 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="~/css/admin-styles.css">
     <link rel="stylesheet" href="~/css/translator-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
 </head>
-<body class="translator-body">
-    <!-- Header Navigation -->
-    <nav class="translator-nav">
-        <div class="nav-container">
-            <div class="nav-left">
-                <div class="logo-container">
-                    <div class="logo-circle">🎬</div>
-                    <span class="logo-text">Logo</span>
-                </div>
-            </div>
-            <div class="nav-center">
-                <h1 class="page-title">Translator</h1>
-            </div>
-            <div class="nav-right">
-                <button class="nav-icon" onclick="toggleNotifications()">🔔</button>
-                <button class="nav-icon" onclick="toggleProfile()">👤</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Container -->
+<body>
+    @Html.AntiForgeryToken()
     <div class="translator-container">
-        <!-- Sidebar -->
-        <aside class="translator-sidebar">
-            <div class="sidebar-menu">
-                <a href="@Url.Action("Dashboard", "Admin")" class="menu-item">
-                    <span class="menu-text">Dashboard</span>
-                </a>
-                <a href="#" class="menu-item active">
-                    <span class="menu-text">Subtitle for Translator</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <span class="menu-text">Note from Admin</span>
-                </a>
-                <a href="@Url.Action("Logout", "Account")" class="menu-item logout">
-                    <span class="menu-text">Logout</span>
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="translator-main">
-            <!-- File Upload Area -->
-            <div class="upload-section">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-content">
-                        <div class="upload-icon">📁</div>
-                        <p class="upload-text">Input movie file</p>
-                        <input type="file" id="movieFile" class="file-input" accept=".mp4,.avi,.mkv,.mov" />
-                        <button class="upload-btn" onclick="document.getElementById('movieFile').click()">
-                            Choose File
-                        </button>
+        <!-- Header -->
+        <header class="translator-header">
+            <div class="header-content">
+                <h1 class="header-title">🤖 AI Translator</h1>
+                <div class="header-actions">
+                    <button class="notification-btn" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <div class="user-profile" id="userProfile">
+                        <i class="fas fa-user-circle"></i>
                     </div>
                 </div>
-                <button class="download-btn" id="downloadBtn" disabled>
-                    Download translated file
+            </div>
+        </header>
+
+        <!-- Professional Tab Navigation -->
+        <div class="professional-tabs">
+            <div class="tab-container">
+                <button class="pro-tab-btn active" data-tab="video">
+                    <i class="fas fa-video"></i>
+                    <span>Video Transcription</span>
+                </button>
+                <button class="pro-tab-btn" data-tab="subtitle">
+                    <i class="fas fa-closed-captioning"></i>
+                    <span>Subtitle Translation</span>
                 </button>
             </div>
+        </div>
 
-            <!-- Translation Options -->
-            <div class="translation-section">
-                <div class="translation-area">
-                    <div class="translation-header">
-                        <h3>Translation Settings</h3>
+        <!-- VIDEO TRANSCRIPTION TAB (Your Original Interface) -->
+        <div class="tab-content active" id="video-tab">
+            <div class="translator-layout">
+                <!-- Left Sidebar -->
+                <aside class="left-sidebar">
+                    <div class="logo-section">
+                        <div class="logo-circle">
+                            <i class="fas fa-film"></i>
+                            <span class="logo-text">Logo</span>
+                        </div>
                     </div>
-                    <div class="translation-content">
-                        <div class="option-group">
-                            <label for="sourceLanguage">Source Language:</label>
-                            <select id="sourceLanguage" class="language-select">
-                                <option value="auto">Auto Detect</option>
-                                <option value="en">English</option>
-                                <option value="vi">Vietnamese</option>
-                                <option value="ja">Japanese</option>
-                                <option value="ko">Korean</option>
-                                <option value="zh">Chinese</option>
-                            </select>
+                    <div class="sidebar-title">
+                        <h3>Video Transcription</h3>
+                    </div>
+                    <div class="sidebar-menu">
+                        <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item">
+                            <i class="fas fa-video"></i>
+                            Movies
+                        </a>
+                        <a href="@Url.Action("UserManagement", "Admin")" class="menu-item">
+                            <i class="fas fa-users"></i>
+                            Users
+                        </a>
+                        <a href="@Url.Action("Translator", "Admin")" class="menu-item active">
+                            <i class="fas fa-language"></i>
+                            Translator
+                        </a>
+                    </div>
+                </aside>
+
+                <!-- Main Content -->
+                <main class="main-content">
+                    <!-- Note from Admin Bar -->
+                    <aside class="right-sidebar">
+                        <div class="note-section">
+                            <h3>Note from admin bar</h3>
+                            <div class="note-content">
+                                <p>Video transcription with Whisper AI</p>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Movie File Input Section -->
+                    <section class="movie-input-section">
+                        <h2>Input Movie File</h2>
+                        <div class="movie-upload-area" id="movieUploadArea">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Input or drag movie file</p>
+                            </div>
+                            <input type="file" id="movieFileInput" accept=".mp4,.avi,.mov,.mkv,.wmv,.flv,.mp3,.wav,.m4a,.aac,.ogg,.flac" style="display: none;">
+                        </div>
+                    </section>
+
+                    <!-- Three Column Layout (Original) -->
+                    <div class="three-column-layout">
+                        <!-- Original Subtitle Column -->
+                        <div class="column original-column">
+                            <div class="column-header">
+                                <h3>Original Subtitle</h3>
+                                <span class="language-tag" id="originalLanguageTag">1st Language</span>
+                            </div>
+                            <div class="subtitle-upload-area" id="originalSubtitleUpload">
+                                <div class="upload-placeholder">
+                                    <i class="fas fa-file-alt"></i>
+                                    <p>input or drag srt file</p>
+                                </div>
+                                <input type="file" id="originalSubtitleInput" accept=".srt,.vtt" style="display: none;">
+                            </div>
+                            <div class="subtitle-text-area">
+                                <textarea class="subtitle-textarea" id="originalText" placeholder="Original subtitle text will appear here" readonly></textarea>
+                            </div>
                         </div>
 
-                        <div class="option-group">
-                            <label for="targetLanguage">Target Language:</label>
-                            <select id="targetLanguage" class="language-select">
-                                <option value="vi">Vietnamese</option>
-                                <option value="en">English</option>
-                                <option value="ja">Japanese</option>
-                                <option value="ko">Korean</option>
-                                <option value="zh">Chinese</option>
-                            </select>
+                        <!-- Translator Control Column -->
+                        <div class="column control-column">
+                            <div class="column-header">
+                                <h3>Translator Control</h3>
+                            </div>
+                            <div class="translator-controls">
+                                <div class="language-controls">
+                                    <div class="language-option">
+                                        <label for="sourceLanguage">1st Language</label>
+                                        <select id="sourceLanguage" class="language-select">
+                                            <option value="auto">Auto Detect</option>
+                                            <option value="en">English</option>
+                                            <option value="vi">Vietnamese</option>
+                                            <option value="ja">Japanese</option>
+                                            <option value="ko">Korean</option>
+                                            <option value="zh">Chinese</option>
+                                            <option value="es">Spanish</option>
+                                            <option value="fr">French</option>
+                                            <option value="de">German</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="swap-container">
+                                        <button class="swap-btn" id="swapLanguages">
+                                            <i class="fas fa-exchange-alt"></i>
+                                            <span>Swap</span>
+                                        </button>
+                                    </div>
+
+                                    <div class="language-option">
+                                        <label for="targetLanguage">2nd Language</label>
+                                        <select id="targetLanguage" class="language-select">
+                                            <option value="vi">Vietnamese</option>
+                                            <option value="en">English</option>
+                                            <option value="ja">Japanese</option>
+                                            <option value="ko">Korean</option>
+                                            <option value="zh">Chinese</option>
+                                            <option value="es">Spanish</option>
+                                            <option value="fr">French</option>
+                                            <option value="de">German</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="action-buttons">
+                                    <button class="translate-btn" id="translateBtn">
+                                        <i class="fas fa-play"></i>
+                                        Start AI Translation
+                                    </button>
+                                    <button class="clear-btn" id="clearAllBtn">
+                                        <i class="fas fa-trash"></i>
+                                        Clear All
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="option-group">
-                            <label for="translationMode">Translation Mode:</label>
-                            <select id="translationMode" class="language-select">
-                                <option value="subtitle">Subtitle Only</option>
-                                <option value="dubbing">Voice Dubbing</option>
-                                <option value="both">Subtitle + Dubbing</option>
-                            </select>
+                        <!-- Translated Result Column -->
+                        <div class="column translated-column">
+                            <div class="column-header">
+                                <h3>Translated Subtitle</h3>
+                                <span class="language-tag" id="translatedLanguageTag">2nd Language</span>
+                            </div>
+                            <div class="translation-placeholder" id="translationPlaceholder">
+                                <i class="fas fa-language"></i>
+                                <p>Translation will appear here</p>
+                            </div>
+                            <div class="subtitle-text-area" style="display: none;" id="translatedTextArea">
+                                <textarea class="subtitle-textarea" id="translatedText"></textarea>
+                            </div>
+                            <div class="edit-controls" style="display: none;" id="editControls">
+                                <button class="btn-control" id="saveEditsBtn">
+                                    <i class="fas fa-save"></i> Save Changes
+                                </button>
+                                <button class="btn-control" id="autoFormatBtn">
+                                    <i class="fas fa-magic"></i> Auto Format
+                                </button>
+                                <button class="btn-control" id="downloadBtn">
+                                    <i class="fas fa-download"></i> Download SRT
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- SUBTITLE TRANSLATION TAB (Professional Interface) -->
+        <div class="tab-content" id="subtitle-tab">
+            <div class="subtitle-translator">
+                <!-- Upload Section -->
+                <div class="subtitle-upload-section" id="subtitleUploadSection">
+                    <div class="subtitle-header">
+                        <h1><i class="fas fa-language"></i> Subtitle Translator</h1>
+                        <p>Translate your subtitle files quickly and easily using Google Translate</p>
+                    </div>
+
+                    <div class="upload-card">
+                        <div class="upload-header">
+                            <i class="fas fa-upload"></i>
+                            <span>Upload Subtitle File</span>
                         </div>
 
+                        <div class="file-upload-area" id="subtitleFileUpload">
+                            <div class="upload-placeholder">
+                                <i class="fas fa-file-alt"></i>
+                                <div class="upload-text">
+                                    <p class="main-text">Choose File</p>
+                                    <p class="sub-text">or drag and drop</p>
+                                </div>
+                                <p class="file-name" id="selectedFileName">No file selected</p>
+                            </div>
+                            <input type="file" id="subtitleFileInput" accept=".srt,.vtt,.ass,.ssa,.sub" style="display: none;">
+                        </div>
+
+                        <p class="supported-formats">Supported formats: .srt, .vtt, .ass, .ssa, .sub (Max size 20MB)</p>
+
+                        <div class="language-selection">
+                            <div class="language-group">
+                                <label for="subtitleSourceLang">
+                                    <i class="fas fa-globe"></i>
+                                    Source Language
+                                </label>
+                                <select id="subtitleSourceLang" class="lang-select">
+                                    <option value="auto">Auto Detect</option>
+                                    <option value="en" selected>English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="it">Italian</option>
+                                    <option value="pt">Portuguese</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ko">Korean</option>
+                                    <option value="vi">Vietnamese</option>
+                                    <option value="ru">Russian</option>
+                                    <option value="ar">Arabic</option>
+                                    <option value="hi">Hindi</option>
+                                    <option value="th">Thai</option>
+                                </select>
+                            </div>
+
+                            <div class="language-group">
+                                <label for="subtitleTargetLang">
+                                    <i class="fas fa-flag"></i>
+                                    Target Language
+                                </label>
+                                <select id="subtitleTargetLang" class="lang-select">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="it">Italian</option>
+                                    <option value="pt">Portuguese</option>
+                                    <option value="zh">Chinese</option>
+                                    <option value="ja">Japanese</option>
+                                    <option value="ko">Korean</option>
+                                    <option value="vi" selected>Vietnamese</option>
+                                    <option value="ru">Russian</option>
+                                    <option value="ar">Arabic</option>
+                                    <option value="hi">Hindi</option>
+                                    <option value="th">Thai</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button class="upload-translate-btn" id="uploadTranslateBtn">
+                            <i class="fas fa-upload"></i>
+                            Upload and Translate
+                        </button>
+                    </div>
+
+                    <!-- Process Steps -->
+                    <div class="process-steps">
+                        <div class="step">
+                            <div class="step-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h3>Upload</h3>
+                            <p>Upload your subtitle file in SRT, VTT, ASS, SSA or SUB format.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <h3>Translate</h3>
+                            <p>Automatically translate to over 100 languages using Google Translate.</p>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                            <h3>Download</h3>
+                            <p>Download the translated subtitle file ready to use with your video.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="subtitle-results-section" id="subtitleResultsSection" style="display: none;">
+                    <!-- Success Header -->
+                    <div class="success-header">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2>Translation Complete</h2>
                         <div class="action-buttons">
-                            <button class="translate-btn" id="translateBtn" onclick="startTranslation()">
-                                🚀 Start Translation
+                            <button class="download-btn" id="downloadTranslatedBtn">
+                                <i class="fas fa-download"></i>
+                                Download Translated File
                             </button>
-                            <button class="reset-btn" onclick="resetTranslation()">
-                                🔄 Reset
+                            <button class="translate-another-btn" id="translateAnotherBtn">
+                                <i class="fas fa-plus"></i>
+                                Translate Another File
                             </button>
+                        </div>
+                    </div>
+
+                    <!-- Translation Summary -->
+                    <div class="translation-summary">
+                        <div class="summary-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h3>Translation Summary:</h3>
+                        <ul class="summary-list">
+                            <li><strong>File:</strong> <span id="summaryFileName">-</span></li>
+                            <li><strong>From:</strong> <span id="summaryFromLang">-</span> → <strong>To:</strong> <span id="summaryToLang">-</span></li>
+                            <li><strong>Subtitles processed:</strong> <span id="summaryCount">-</span></li>
+                        </ul>
+                    </div>
+
+                    <!-- Side by Side Comparison -->
+                    <div class="subtitle-comparison">
+                        <div class="original-subtitles">
+                            <div class="subtitle-header">
+                                <i class="fas fa-file-text"></i>
+                                Original Subtitles (<span id="originalLangCode">en</span>)
+                            </div>
+                            <div class="subtitle-list" id="originalSubtitlesList">
+                                <!-- Original subtitles will be populated here -->
+                            </div>
+                        </div>
+
+                        <div class="translated-subtitles">
+                            <div class="subtitle-header translated">
+                                <i class="fas fa-language"></i>
+                                Translated Subtitles (<span id="translatedLangCode">vi</span>)
+                            </div>
+                            <div class="subtitle-list" id="translatedSubtitlesList">
+                                <!-- Translated subtitles will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SRT Content Section -->
+                    <div class="srt-content-section">
+                        <div class="srt-header">
+                            <i class="fas fa-code"></i>
+                            <span>Translated SRT Content</span>
+                            <button class="copy-btn" id="copySrtBtn">
+                                <i class="fas fa-copy"></i>
+                                Copy to Clipboard
+                            </button>
+                        </div>
+                        <div class="srt-content">
+                            <pre id="srtContentDisplay"><!-- SRT content will be displayed here --></pre>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Progress and Status -->
-            <div class="status-section" id="statusSection" style="display: none;">
-                <div class="status-header">
-                    <h3>Translation Progress</h3>
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <span class="progress-text" id="progressText">0%</span>
-                </div>
-                <div class="status-info">
-                    <p id="statusMessage">Ready to start translation...</p>
-                </div>
-            </div>
-
-            <!-- Admin Notes Section -->
-            <div class="notes-section">
-                <div class="notes-header">
-                    <h3>Admin Notes</h3>
-                </div>
-                <div class="notes-content">
-                    <textarea id="adminNotes"
-                              class="notes-textarea"
-                              placeholder="Add notes about translation quality, special requirements, or instructions for AI..."
-                              rows="6"></textarea>
-                    <div class="notes-actions">
-                        <button class="save-notes-btn" onclick="saveNotes()">
-                            💾 Save Notes
-                        </button>
-                        <button class="clear-notes-btn" onclick="clearNotes()">
-                            🗑️ Clear Notes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-        <div class="loading-content">
-            <div class="loading-spinner"></div>
-            <p>Processing translation...</p>
         </div>
     </div>
 
-    <script src="~/js/translator.js"></script>
+    <!-- Loading Modal -->
+    <div class="loading-modal" id="loadingModal" style="display: none;">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 id="loadingText">Processing your file with AI...</h3>
+            <p id="loadingSubtext">This may take a few minutes depending on file size</p>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="toast-content">
+            <span class="toast-icon"></span>
+            <span class="toast-message"></span>
+        </div>
+    </div>
+
+    <script src="~/js/professional-translator.js"></script>
 </body>
 </html>

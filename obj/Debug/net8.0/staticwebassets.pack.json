@@ -1,260 +1,340 @@
 {
   "Files": [
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Film_website.bundle.scp.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Film_website.bundle.scp.css",
       "PackagePath": "staticwebassets\\Film_website.5zc2cfbjck.bundle.scp.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\Login.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\Addmovie.css",
+      "PackagePath": "staticwebassets\\css\\Addmovie.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\Detail.css",
+      "PackagePath": "staticwebassets\\css\\Detail.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\Favorite.css",
+      "PackagePath": "staticwebassets\\css\\Favorite.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\Login.css",
       "PackagePath": "staticwebassets\\css\\Login.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\site.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\admin-styles.css",
+      "PackagePath": "staticwebassets\\css\\admin-styles.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\edit-movie.css",
+      "PackagePath": "staticwebassets\\css\\edit-movie.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\edit-profile.css",
+      "PackagePath": "staticwebassets\\css\\edit-profile.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\homepage.css",
+      "PackagePath": "staticwebassets\\css\\homepage.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\index.css",
+      "PackagePath": "staticwebassets\\css\\index.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\profile-styles.css",
+      "PackagePath": "staticwebassets\\css\\profile-styles.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\profile.css",
+      "PackagePath": "staticwebassets\\css\\profile.css"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\site.css",
       "PackagePath": "staticwebassets\\css\\site.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\css\\translator-styles.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\css\\translator-styles.css",
       "PackagePath": "staticwebassets\\css\\translator-styles.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\favicon.ico",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\favicon.ico",
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\js\\site.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\admin-dashboard.js",
+      "PackagePath": "staticwebassets\\js\\admin-dashboard.js"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\edit-movie.js",
+      "PackagePath": "staticwebassets\\js\\edit-movie.js"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\index.js",
+      "PackagePath": "staticwebassets\\js\\index.js"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\login.js",
+      "PackagePath": "staticwebassets\\js\\login.js"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\movie-comments.js",
+      "PackagePath": "staticwebassets\\js\\movie-comments.js"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\professional-translator.js",
+      "PackagePath": "staticwebassets\\js\\professional-translator.js"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\js\\translator.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\js\\translator.js",
       "PackagePath": "staticwebassets\\js\\translator.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\LICENSE",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\LICENSE",
       "PackagePath": "staticwebassets\\lib\\bootstrap"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-grid.rtl.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-reboot.rtl.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap-utilities.rtl.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.rtl.min.css.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.js.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.bundle.min.js.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.js.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.esm.min.js.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.js.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.js.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map",
       "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\js\\bootstrap.min.js.map"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation-unobtrusive\\LICENSE.txt",
       "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\LICENSE.txt"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation-unobtrusive\\jquery.validate.unobtrusive.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation\\LICENSE.md",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\LICENSE.md"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation\\dist\\additional-methods.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\additional-methods.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery-validation\\dist\\jquery.validate.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery-validation\\dist\\jquery.validate.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery\\LICENSE.txt",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery\\LICENSE.txt",
       "PackagePath": "staticwebassets\\lib\\jquery\\LICENSE.txt"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery\\dist\\jquery.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery\\dist\\jquery.js",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery\\dist\\jquery.min.js",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.js"
     },
     {
-      "Id": "E:\\Other\\Subject\\Research\\Backup 2\\Movie_website_uses_AI_technology_to_translate_movies\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\3bb38f09-3380-4cc5-8277-4765952c2705.mp4",
+      "PackagePath": "staticwebassets\\uploads\\movies\\3bb38f09-3380-4cc5-8277-4765952c2705.mp4"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\5251468e-c1c2-4cc7-b12e-c9ea7e0de806.jpg",
+      "PackagePath": "staticwebassets\\uploads\\movies\\5251468e-c1c2-4cc7-b12e-c9ea7e0de806.jpg"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\84d954aa-18e4-41bc-974f-d6f408a5d752.srt",
+      "PackagePath": "staticwebassets\\uploads\\movies\\84d954aa-18e4-41bc-974f-d6f408a5d752.srt"
+    },
+    {
+      "Id": "E:\\Other\\Subject\\Research\\Official\\new 1\\Update\\Movie_website_uses_AI_technology_to_translate_movie\\wwwroot\\uploads\\movies\\84d954aa-18e4-41bc-974f-d6f408a5d752.vtt",
+      "PackagePath": "staticwebassets\\uploads\\movies\\84d954aa-18e4-41bc-974f-d6f408a5d752.vtt"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.Film_website.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",

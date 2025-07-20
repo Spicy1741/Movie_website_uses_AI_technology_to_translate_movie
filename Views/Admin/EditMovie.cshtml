@@ -1,0 +1,194 @@
+﻿@model Film_website.Models.ViewModels.AddMovieViewModel
+
+@{
+    ViewData["Title"] = "Edit Movie - CineHub Admin";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/admin-styles.css" />
+    <link rel="stylesheet" href="~/css/edit-movie.css" />
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="admin-header">
+            <h2>🎬 ADMIN</h2>
+            <p>ULTIMATE MOVIE CONTROL</p>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">DASHBOARD</span>
+                </a>
+                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active" data-section="movies">
+                    <span class="menu-icon">🎬</span>
+                    <span class="menu-text">MOVIE MANAGER</span>
+                </a>
+
+                <a href="@Url.Action("Translator", "Admin")" class="menu-item translator-link">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text">AI TRANSLATOR</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section class="content-section active">
+                <div class="section-header">
+                    <h2>✏️ EDIT MOVIE</h2>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-content">
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success">
+                                @TempData["Success"]
+                            </div>
+                        }
+                        @if (TempData["Error"] != null)
+                        {
+                            <div class="alert alert-danger">
+                                @TempData["Error"]
+                            </div>
+                        }
+
+                        <form asp-action="EditMovie" method="post" enctype="multipart/form-data">
+                            <input type="hidden" asp-for="Id" />
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label asp-for="Title">Title</label>
+                                    <input asp-for="Title" class="form-control" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Genre">Genre</label>
+                                    <input asp-for="Genre" class="form-control" />
+                                    <span asp-validation-for="Genre" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Description">Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label asp-for="ReleaseYear">Release Year</label>
+                                    <input asp-for="ReleaseYear" type="number" class="form-control" />
+                                    <span asp-validation-for="ReleaseYear" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Category Selection Section -->
+                            <div class="form-group category-section">
+                                <label class="category-header">📋 Movie Categories</label>
+                                <p class="category-description">Select all categories that apply to this movie:</p>
+
+                                <div class="category-grid">
+                                    <div class="category-item">
+                                        <input asp-for="IsNewRelease" type="checkbox" id="newRelease" />
+                                        <label for="newRelease" class="category-label">
+                                            🆕 New Releases
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsMostWatched" type="checkbox" id="mostWatched" />
+                                        <label for="mostWatched" class="category-label">
+                                            🔥 Most Watched
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsTopRated" type="checkbox" id="topRated" />
+                                        <label for="topRated" class="category-label">
+                                            ⭐ Top Rated
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsCinema" type="checkbox" id="cinema" />
+                                        <label for="cinema" class="category-label">
+                                            🎭 Cinema
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsOngoingTVSeries" type="checkbox" id="tvSeries" />
+                                        <label for="tvSeries" class="category-label">
+                                            📺 Ongoing TV Series
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsFeatureFilm" type="checkbox" id="featureFilm" />
+                                        <label for="featureFilm" class="category-label">
+                                            🎬 Feature Films
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsComingSoon" type="checkbox" id="comingSoon" />
+                                        <label for="comingSoon" class="category-label">
+                                            🚀 Coming Soon
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Section -->
+                            <div class="file-upload-section">
+                                <h3>📁 File Uploads (Optional - leave blank to keep current files)</h3>
+
+                                <div class="form-group">
+                                    <label for="movieFile">Movie File</label>
+                                    <input type="file" name="movieFile" class="form-control-file" accept="video/*" />
+                                    <small class="form-text text-muted">Supported formats: MP4, AVI, MKV, etc.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="thumbnailFile">Thumbnail Image</label>
+                                    <input type="file" name="thumbnailFile" class="form-control-file" accept="image/*" />
+                                    <small class="form-text text-muted">Supported formats: JPG, PNG, GIF, etc.</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="subtitleFile">Subtitle File</label>
+                                    <input type="file" name="subtitleFile" class="form-control-file" accept=".srt,.vtt,.ass" />
+                                    <small class="form-text text-muted">Supported formats: SRT, VTT, ASS</small>
+                                </div>
+                            </div>
+
+                            <!-- Submit Buttons -->
+                            <div class="form-actions">
+                                <button type="submit" class="action-btn">
+                                    💾 Update Movie
+                                </button>
+                                <a href="@Url.Action("ManageMovies", "Admin")" class="action-btn secondary">
+                                    ↩️ Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="~/js/edit-movie.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

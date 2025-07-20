@@ -17,6 +17,10 @@ namespace Film_website.Models
         [StringLength(30, MinimumLength = 3)]
         public string DisplayUserName { get; set; } = string.Empty; // Custom username field
 
+        // Add Avatar property
+        [StringLength(255)]
+        public string? AvatarPath { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public bool IsActive { get; set; } = true;
     }
