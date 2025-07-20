@@ -52,7 +52,7 @@ namespace Film_website.Controllers
                 // Get all users with their roles for user management section
                 var usersWithRoles = await _userService.GetAllUsersWithRolesDictionaryAsync();
 
-                ViewBag.Message = "Chào mừng đến trang quản trị";
+                ViewBag.Message = "Welcome to AdminPage";
                 ViewBag.TotalUsers = usersWithRoles.Count;
 
                 return View(usersWithRoles);
