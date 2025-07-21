@@ -419,3 +419,10 @@ main .profile-container {
         transform: translate(-50%, -50%) rotate(360deg);
     }
 }
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}

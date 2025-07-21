@@ -81,6 +81,9 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartHeadersLengthLimit = int.MaxValue;
 });
 
+// Register Google Translation service
+builder.Services.AddHttpClient<IGoogleTranslationService, GoogleTranslationService>();
+builder.Services.AddScoped<IGoogleTranslationService, GoogleTranslationService>();
 
 var app = builder.Build();
 

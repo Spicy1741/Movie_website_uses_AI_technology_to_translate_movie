@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Logout confirmation with better styling
     window.confirmLogout = function () {
-        return confirm('Bạn có chắc chắn muốn đăng xuất?');
+        return confirm('Are you sure you want to log out?');
     };
 
     // Search function placeholder

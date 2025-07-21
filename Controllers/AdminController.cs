@@ -4,6 +4,7 @@ using Film_website.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Text;
 
 namespace Film_website.Controllers
 {
@@ -300,6 +301,185 @@ namespace Film_website.Controllers
                     Errors = { ex.Message }
                 });
             }
+        }
+
+        [HttpPost]
+        [Route("Admin/TranslateSubtitles")]
+        public async Task<IActionResult> TranslateSubtitles([FromBody] TranslateSubtitlesRequest request)
+        {
+            try
+            {
+                // Validate request
+                if (request.Subtitles == null || !request.Subtitles.Any())
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "No subtitles provided for translation"
+                    });
+                }
+
+                if (string.IsNullOrEmpty(request.SourceLanguage) || string.IsNullOrEmpty(request.TargetLanguage))
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "Source and target languages are required"
+                    });
+                }
+
+                if (request.SourceLanguage == request.TargetLanguage)
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "Source and target languages cannot be the same"
+                    });
+                }
+
+                // Get Google Translation service
+                var googleTranslationService = HttpContext.RequestServices.GetService<IGoogleTranslationService>();
+                if (googleTranslationService == null)
+                {
+                    return BadRequest(new TranslateSubtitlesResponse
+                    {
+                        Success = false,
+                        Message = "Translation service not available"
+                    });
+                }
+
+                // Translate subtitles
+                var translatedSubtitles = await googleTranslationService.TranslateSubtitlesAsync(
+                    request.Subtitles,
+                    request.SourceLanguage,
+                    request.TargetLanguage);
+
+                // Generate SRT content
+                var srtContent = GenerateSrtContent(translatedSubtitles);
+
+                // Log activity
+                if (_activityService != null && User.Identity?.Name != null)
+                {
+                    var adminUser = await _userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                    if (adminUser != null)
+                    {
+                        await _activityService.LogAdminAccessAsync(adminUser.Id,
+                            $"Translated subtitles from {request.SourceLanguage} to {request.TargetLanguage}", HttpContext);
+                    }
+                }
+
+                return Ok(new TranslateSubtitlesResponse
+                {
+                    Success = true,
+                    Message = "Translation completed successfully",
+                    TranslatedSubtitles = translatedSubtitles,
+                    SrtContent = srtContent
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error translating subtitles");
+                return StatusCode(500, new TranslateSubtitlesResponse
+                {
+                    Success = false,
+                    Message = "An error occurred during translation"
+                });
+            }
+        }
+
+        [HttpGet]
+        [Route("Admin/SupportedLanguages")]
+        public IActionResult GetSupportedLanguages()
+        {
+            var languages = new List<LanguageOption>
+    {
+        new() { Code = "auto", Name = "Auto Detect" },
+        new() { Code = "en", Name = "English" },
+        new() { Code = "es", Name = "Spanish" },
+        new() { Code = "fr", Name = "French" },
+        new() { Code = "de", Name = "German" },
+        new() { Code = "it", Name = "Italian" },
+        new() { Code = "pt", Name = "Portuguese" },
+        new() { Code = "zh", Name = "Chinese" },
+        new() { Code = "ja", Name = "Japanese" },
+        new() { Code = "ko", Name = "Korean" },
+        new() { Code = "vi", Name = "Vietnamese" },
+        new() { Code = "ru", Name = "Russian" },
+        new() { Code = "ar", Name = "Arabic" },
+        new() { Code = "hi", Name = "Hindi" },
+        new() { Code = "th", Name = "Thai" },
+        new() { Code = "nl", Name = "Dutch" },
+        new() { Code = "sv", Name = "Swedish" },
+        new() { Code = "no", Name = "Norwegian" },
+        new() { Code = "da", Name = "Danish" },
+        new() { Code = "fi", Name = "Finnish" }
+    };
+
+            return Ok(languages);
+        }
+
+        [HttpPost]
+        [Route("Admin/DownloadTranslatedSubtitle")]
+        public IActionResult DownloadTranslatedSubtitle([FromBody] DownloadSubtitleRequest request)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(request.Content))
+                {
+                    return BadRequest("No content to download");
+                }
+
+                var originalFileName = Path.GetFileNameWithoutExtension(request.FileName ?? "subtitle");
+                var newFileName = $"{originalFileName}_{request.TargetLanguage}.srt";
+
+                var bytes = Encoding.UTF8.GetBytes(request.Content);
+
+                return File(bytes, "application/octet-stream", newFileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating download file");
+                return BadRequest("Error generating download file");
+            }
+        }
+
+        // Helper method to generate SRT content
+        private string GenerateSrtContent(List<SubtitleParagraphViewModel> subtitles)
+        {
+            var result = new StringBuilder();
+
+            foreach (var subtitle in subtitles.OrderBy(s => s.Number))
+            {
+                result.AppendLine(subtitle.Number.ToString());
+                result.AppendLine($"{subtitle.StartTime} --> {subtitle.EndTime}");
+                result.AppendLine(subtitle.Text);
+                result.AppendLine();
+            }
+
+            return result.ToString();
+        }
+
+        // Request model for download
+        public class DownloadSubtitleRequest
+        {
+            public string? Content { get; set; }
+            public string? FileName { get; set; }
+            public string? TargetLanguage { get; set; }
+        }
+
+        public class TranslateSubtitlesRequest
+        {
+            public List<SubtitleParagraphViewModel> Subtitles { get; set; } = new();
+            public string SourceLanguage { get; set; } = "";
+            public string TargetLanguage { get; set; } = "";
+        }
+
+        public class TranslateSubtitlesResponse
+        {
+            public bool Success { get; set; }
+            public string? Message { get; set; }
+            public List<SubtitleParagraphViewModel> TranslatedSubtitles { get; set; } = new();
+            public string? SrtContent { get; set; }
         }
 
         [HttpPost]
