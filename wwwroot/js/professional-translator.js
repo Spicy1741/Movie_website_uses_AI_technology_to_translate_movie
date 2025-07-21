@@ -846,3 +846,230 @@ function showNotification(message, type = 'info') {
         toast.style.display = 'none';
     }, 5000);
 }
+
+// ADD TO THE END of your professional-translator.js file:
+
+// ===== VIDEO TAB BUTTON FUNCTIONALITY =====
+
+function initializeVideoTabButtons() {
+    // Video tab buttons
+    const saveEditsBtn = document.getElementById('saveEditsBtn');
+    const autoFormatBtn = document.getElementById('autoFormatBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    if (saveEditsBtn) saveEditsBtn.addEventListener('click', saveVideoTranslationEdits);
+    if (autoFormatBtn) autoFormatBtn.addEventListener('click', autoFormatVideoTranslation);
+    if (downloadBtn) downloadBtn.addEventListener('click', downloadVideoTranslation);
+}
+
+// Save edited translation
+async function saveVideoTranslationEdits() {
+    if (!translatedText || !translatedText.value.trim()) {
+        showNotification('No translated text to save', 'warning');
+        return;
+    }
+
+    try {
+        showLoading('Saving changes...');
+
+        const response = await fetch('/api/Translator/save-edited', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: translatedText.value,
+                fileName: uploadedMovieFile ? uploadedMovieFile.name : 'edited_subtitle'
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to save changes');
+        }
+
+        const result = await response.json();
+
+        if (result.success) {
+            // Update the stored translated text
+            translatedSubtitleText = translatedText.value;
+            showNotification('Changes saved successfully!', 'success');
+        } else {
+            throw new Error(result.message || 'Failed to save changes');
+        }
+    } catch (error) {
+        console.error('Save error:', error);
+        showNotification('Failed to save changes', 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Auto format the translated text
+function autoFormatVideoTranslation() {
+    if (!translatedText || !translatedText.value.trim()) {
+        showNotification('No translated text to format', 'warning');
+        return;
+    }
+
+    try {
+        let formattedText = translatedText.value;
+
+        // Basic SRT formatting
+        const lines = formattedText.split('\n');
+        const formattedLines = [];
+        let subtitleNumber = 1;
+        let currentSubtitle = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+
+            if (line === '') {
+                if (currentSubtitle.length > 0) {
+                    // Process current subtitle
+                    if (currentSubtitle.length >= 2) {
+                        formattedLines.push(subtitleNumber.toString());
+                        formattedLines.push(currentSubtitle[0]); // Timestamp
+                        for (let j = 1; j < currentSubtitle.length; j++) {
+                            formattedLines.push(currentSubtitle[j]); // Text lines
+                        }
+                        formattedLines.push(''); // Empty line
+                        subtitleNumber++;
+                    }
+                    currentSubtitle = [];
+                }
+            } else if (line.includes('-->')) {
+                // This is a timestamp line
+                currentSubtitle = [line];
+            } else if (!line.match(/^\d+$/)) {
+                // This is text (not a subtitle number)
+                if (currentSubtitle.length > 0) {
+                    currentSubtitle.push(line);
+                }
+            }
+        }
+
+        // Process last subtitle if exists
+        if (currentSubtitle.length >= 2) {
+            formattedLines.push(subtitleNumber.toString());
+            formattedLines.push(currentSubtitle[0]);
+            for (let j = 1; j < currentSubtitle.length; j++) {
+                formattedLines.push(currentSubtitle[j]);
+            }
+        }
+
+        const formatted = formattedLines.join('\n');
+        translatedText.value = formatted;
+        translatedSubtitleText = formatted;
+
+        showNotification('Text formatted successfully!', 'success');
+    } catch (error) {
+        console.error('Format error:', error);
+        showNotification('Failed to format text', 'error');
+    }
+}
+
+// Download the video translation
+function downloadVideoTranslation() {
+    if (!translatedSubtitleText && !translatedText?.value) {
+        showNotification('No translated text to download', 'warning');
+        return;
+    }
+
+    try {
+        const contentToDownload = translatedText?.value || translatedSubtitleText;
+        let fileName = 'translated_subtitle.srt';
+
+        if (uploadedMovieFile) {
+            const baseName = uploadedMovieFile.name.replace(/\.[^/.]+$/, '');
+            const targetLang = targetLanguageSelect?.value || 'translated';
+            fileName = `${baseName}_${targetLang}.srt`;
+        } else if (uploadedSubtitleFile) {
+            const baseName = uploadedSubtitleFile.name.replace(/\.[^/.]+$/, '');
+            const targetLang = targetLanguageSelect?.value || 'translated';
+            fileName = `${baseName}_${targetLang}.srt`;
+        }
+
+        // Create and download file
+        const blob = new Blob([contentToDownload], { type: 'text/plain;charset=utf-8' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        showNotification('File downloaded successfully!', 'success');
+    } catch (error) {
+        console.error('Download error:', error);
+        showNotification('Failed to download file', 'error');
+    }
+}
+
+// ===== UPDATE THE EXISTING initializeEventListeners FUNCTION =====
+
+// FIND your existing initializeEventListeners function and UPDATE it to include this:
+function initializeEventListeners() {
+    // Tab switching
+    const tabBtns = document.querySelectorAll('.pro-tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+
+    // Video tab events (existing)
+    if (movieUploadArea && movieFileInput) {
+        movieUploadArea.addEventListener('click', () => movieFileInput.click());
+        movieUploadArea.addEventListener('dragover', preventDefaults);
+        movieUploadArea.addEventListener('drop', handleVideoDrop);
+        movieFileInput.addEventListener('change', handleVideoFileSelect);
+    }
+
+    if (originalSubtitleUpload && originalSubtitleInput) {
+        originalSubtitleUpload.addEventListener('click', () => originalSubtitleInput.click());
+        originalSubtitleUpload.addEventListener('dragover', preventDefaults);
+        originalSubtitleUpload.addEventListener('drop', handleOriginalSubtitleDrop);
+        originalSubtitleInput.addEventListener('change', handleOriginalSubtitleSelect);
+    }
+
+    if (translateBtn) translateBtn.addEventListener('click', startVideoTranslation);
+    if (clearAllBtn) clearAllBtn.addEventListener('click', clearAll);
+    if (swapLanguagesBtn) swapLanguagesBtn.addEventListener('click', swapVideoLanguages);
+
+    // ADD THIS LINE - Initialize video tab buttons
+    initializeVideoTabButtons();
+
+    // Subtitle tab events (existing)
+    if (subtitleFileUpload && subtitleFileInput) {
+        subtitleFileUpload.addEventListener('click', () => subtitleFileInput.click());
+        subtitleFileUpload.addEventListener('dragover', preventDefaults);
+        subtitleFileUpload.addEventListener('drop', handleSubtitleFileDrop);
+        subtitleFileInput.addEventListener('change', handleSubtitleFileSelect);
+    }
+
+    if (uploadTranslateBtn) uploadTranslateBtn.addEventListener('click', startSubtitleTranslation);
+    if (downloadTranslatedBtn) downloadTranslatedBtn.addEventListener('click', downloadTranslatedFile);
+    if (translateAnotherBtn) translateAnotherBtn.addEventListener('click', translateAnotherFile);
+    if (copySrtBtn) copySrtBtn.addEventListener('click', copySrtToClipboard);
+}
+
+// ===== UPDATE THE enableVideoDownload FUNCTION =====
+
+function enableVideoDownload() {
+    const downloadBtn = document.getElementById('downloadBtn');
+    const saveEditsBtn = document.getElementById('saveEditsBtn');
+    const autoFormatBtn = document.getElementById('autoFormatBtn');
+
+    if (downloadBtn) {
+        downloadBtn.disabled = false;
+        downloadBtn.classList.add('enabled');
+    }
+
+    if (saveEditsBtn) {
+        saveEditsBtn.disabled = false;
+    }
+
+    if (autoFormatBtn) {
+        autoFormatBtn.disabled = false;
+    }
+}

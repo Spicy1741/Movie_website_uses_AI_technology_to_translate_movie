@@ -1303,3 +1303,73 @@ body {
         padding: 0 1rem;
     }
 }
+
+/* ADD TO your existing translator-styles.css */
+
+/* Video Tab Button States */
+.btn-control {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+    .btn-control:hover {
+        background: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .btn-control:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        opacity: 0.6;
+    }
+
+    .btn-control.enabled {
+        background: #28a745;
+    }
+
+        .btn-control.enabled:hover {
+            background: #1e7e34;
+        }
+
+    .btn-control i {
+        font-size: 1rem;
+    }
+
+/* Edit Controls Container */
+.edit-controls {
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+    .edit-controls h4 {
+        margin-bottom: 1rem;
+        color: #495057;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+/* Download Button Special Styling */
+#downloadBtn.enabled {
+    background: linear-gradient(45deg, #28a745, #20c997);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+    #downloadBtn.enabled:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    }
