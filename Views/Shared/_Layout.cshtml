@@ -203,7 +203,7 @@
     @if (User.Identity!.IsAuthenticated)
     {
         <form asp-controller="Account" asp-action="Logout" method="post">
-            <button type="submit" class="floating-logout d-md-none" onclick="return confirmLogout()" title="Đăng xuất">
+            <button type="submit" class="floating-logout d-md-none" onclick="return confirmLogout()" title="Log out">
                 <i class="fas fa-sign-out-alt"></i>
             </button>
         </form>
