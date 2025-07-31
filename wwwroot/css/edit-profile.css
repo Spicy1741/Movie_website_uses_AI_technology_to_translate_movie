@@ -60,7 +60,7 @@
     font-size: 1rem;
 }
 
-.profile-input, .form-control-file {
+.profile-input,  .form-control-file {
     width: 100%;
     padding: 0.75rem 1rem;
     background: var(--light-black);

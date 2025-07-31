@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "AI Video Translation - Film Website Admin";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-video me-2"></i>
+                        AI Video Translation System
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(ViewBag.Error))
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            @ViewBag.Error
+                        </div>
+                    }
+
+                    <form asp-action="ProcessVideo" method="post" enctype="multipart/form-data" id="uploadForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="videoFile" class="form-label">
+                                        <strong>Select Video File</strong>
+                                    </label>
+                                    <input type="file"
+                                           class="form-control"
+                                           id="videoFile"
+                                           name="videoFile"
+                                           accept=".mp4,.avi,.mov,.wmv,.flv,.webm,.mkv"
+                                           required>
+                                    <div class="form-text">
+                                        Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM, MKV (Max: 500MB)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="targetLanguage" class="form-label">
+                                        <strong>Translation Language</strong>
+                                    </label>
+                                    <select class="form-select" id="targetLanguage" name="targetLanguage">
+                                        <option value="Original">Original (No Translation)</option>
+                                        <option value="Vietnamese" selected>Vietnamese (Tiếng Việt)</option>
+                                        <option value="English">English</option>
+                                        <option value="Spanish">Spanish (Español)</option>
+                                        <option value="French">French (Français)</option>
+                                        <option value="German">German (Deutsch)</option>
+                                        <option value="Chinese">Chinese (中文)</option>
+                                        <option value="Japanese">Japanese (日本語)</option>
+                                        <option value="Korean">Korean (한국어)</option>
+                                        <option value="Portuguese">Portuguese (Português)</option>
+                                        <option value="Russian">Russian (Русский)</option>
+                                        <option value="Arabic">Arabic (العربية)</option>
+                                        <option value="Hindi">Hindi (हिन्दी)</option>
+                                        <option value="Thai">Thai (ไทย)</option>
+                                        <option value="Italian">Italian (Italiano)</option>
+                                        <option value="Dutch">Dutch (Nederlands)</option>
+                                    </select>
+                                    <div class="form-text">
+                                        Choose the language for subtitle translation
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="bg-light p-3 rounded mb-3">
+                                    <h5 class="text-primary">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        How it works:
+                                    </h5>
+                                    <ol class="mb-0">
+                                        <li><strong>Upload:</strong> Select your video file</li>
+                                        <li><strong>Extract:</strong> Audio is extracted from your video</li>
+                                        <li><strong>Transcribe:</strong> Speech-to-text using AI (OpenAI Whisper)</li>
+                                        <li><strong>Translate:</strong> Text translation to your chosen language</li>
+                                        <li><strong>Download:</strong> Get SRT subtitle files</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+                                    <i class="fas fa-upload me-2"></i>
+                                    Process Video & Generate Subtitles
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Progress indicator (hidden by default) -->
+                    <div id="progressSection" class="mt-4" style="display: none;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    <i class="fas fa-cog fa-spin me-2"></i>
+                                    Processing Your Video...
+                                </h5>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                         role="progressbar" style="width: 100%">
+                                        Processing...
+                                    </div>
+                                </div>
+                                <div class="text-muted">
+                                    <p><strong>Current Steps:</strong></p>
+                                    <ul class="list-unstyled">
+                                        <li><i class="fas fa-check text-success me-2"></i>Video uploaded successfully</li>
+                                        <li><i class="fas fa-spinner fa-spin text-primary me-2"></i>Extracting audio from video...</li>
+                                        <li><i class="fas fa-clock text-muted me-2"></i>Transcribing speech to text...</li>
+                                        <li><i class="fas fa-clock text-muted me-2"></i>Translating to target language...</li>
+                                        <li><i class="fas fa-clock text-muted me-2"></i>Generating subtitle files...</li>
+                                    </ul>
+                                    <p class="small">This process may take 1-3 minutes depending on video length.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Features section -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-language fa-3x text-primary mb-3"></i>
+                                    <h5>Multi-language Support</h5>
+                                    <p class="card-text">
+                                        Translate to 15+ languages including Vietnamese, English, Spanish, French, and more.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-robot fa-3x text-success mb-3"></i>
+                                    <h5>AI-Powered</h5>
+                                    <p class="card-text">
+                                        Uses OpenAI's Whisper for transcription and GPT for high-quality translations.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-download fa-3x text-info mb-3"></i>
+                                    <h5>SRT Format</h5>
+                                    <p class="card-text">
+                                        Download subtitles in standard SRT format, compatible with all video players.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('progressSection').style.display = 'block';
+
+        // Scroll to progress section
+        document.getElementById('progressSection').scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+</script>

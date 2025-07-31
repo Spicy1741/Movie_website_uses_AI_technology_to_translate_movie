@@ -1,104 +1,118 @@
-﻿// Services/WhisperService.cs
-using Film_website.Models;
-using System.Diagnostics;
+﻿using Film_website.Models;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace Film_website.Services
 {
     public class WhisperService : IWhisperService
     {
+        private readonly HttpClient _httpClient;
         private readonly IConfiguration _configuration;
         private readonly ILogger<WhisperService> _logger;
-        private readonly string _whisperPath;
-        private readonly string _modelPath;
+        private readonly string _apiKey;
 
-        public WhisperService(IConfiguration configuration, ILogger<WhisperService> logger)
+        public WhisperService(HttpClient httpClient, IConfiguration configuration, ILogger<WhisperService> logger)
         {
+            _httpClient = httpClient;
             _configuration = configuration;
             _logger = logger;
-            _whisperPath = _configuration["WhisperSettings:ExecutablePath"] ?? "Whisper/WhisperDesktop.exe";
-            _modelPath = _configuration["WhisperSettings:ModelPath"] ?? "Whisper/ggml-large-v1.bin";
+            _apiKey = _configuration["OpenAI:ApiKey"] ?? throw new InvalidOperationException("OpenAI API key not found");
+
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
         }
 
-        public async Task<TranslationResponse> TranscribeAudioAsync(string audioFilePath, string language = "en")
+        public async Task<TranscriptionResponse> TranscribeAudioAsync(string audioFilePath, string language = "auto")
         {
-            var response = new TranslationResponse();
-            var startTime = DateTime.Now;
-
             try
             {
-                var outputPath = Path.ChangeExtension(audioFilePath, ".srt");
+                if (!File.Exists(audioFilePath))
+                    throw new FileNotFoundException($"Audio file not found: {audioFilePath}");
 
-                var processInfo = new ProcessStartInfo
+                _logger.LogInformation($"Starting transcription for: {audioFilePath}");
+
+                using var form = new MultipartFormDataContent();
+
+                byte[] fileBytes = await File.ReadAllBytesAsync(audioFilePath);
+                using var fileContent = new ByteArrayContent(fileBytes);
+
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("audio/mpeg");
+                form.Add(fileContent, "file", Path.GetFileName(audioFilePath));
+                form.Add(new StringContent("whisper-1"), "model");
+                form.Add(new StringContent("verbose_json"), "response_format");
+                form.Add(new StringContent("segment"), "timestamp_granularities[]");
+
+                if (language != "auto")
+                    form.Add(new StringContent(language), "language");
+
+                _logger.LogInformation("Sending request to OpenAI Whisper API...");
+                var response = await _httpClient.PostAsync("https://api.openai.com/v1/audio/transcriptions", form);
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
                 {
-                    FileName = _whisperPath,
-                    Arguments = $"-m \"{_modelPath}\" -f \"{audioFilePath}\" -l {language} -osrt",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true,
-                    WorkingDirectory = Path.GetDirectoryName(_whisperPath)
+                    _logger.LogError($"Whisper API error: {response.StatusCode} - {responseContent}");
+                    throw new HttpRequestException($"Whisper API error: {response.StatusCode} - {responseContent}");
+                }
+
+                _logger.LogInformation("Transcription API call completed successfully");
+                var whisperResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
+
+                var segments = new List<SrtEntry>();
+                if (whisperResponse?.segments != null)
+                {
+                    int index = 1;
+                    foreach (var segment in whisperResponse.segments)
+                    {
+                        segments.Add(new SrtEntry
+                        {
+                            Index = index++,
+                            StartTime = TimeSpan.FromSeconds((double)(segment.start ?? 0)),
+                            EndTime = TimeSpan.FromSeconds((double)(segment.end ?? 0)),
+                            Text = segment.text?.ToString()?.Trim() ?? ""
+                        });
+                    }
+                }
+
+                return new TranscriptionResponse
+                {
+                    Success = true,
+                    Text = whisperResponse?.text ?? "",
+                    Segments = segments,
+                    Message = "Transcription completed successfully"
                 };
-
-                using var process = Process.Start(processInfo);
-                if (process == null)
-                {
-                    response.Success = false;
-                    response.Message = "Failed to start Whisper process";
-                    return response;
-                }
-
-                var output = await process.StandardOutput.ReadToEndAsync();
-                var error = await process.StandardError.ReadToEndAsync();
-
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode == 0 && System.IO.File.Exists(outputPath))
-                {
-                    response.Success = true;
-                    response.OriginalText = await System.IO.File.ReadAllTextAsync(outputPath);
-                    response.Message = "Transcription completed successfully";
-                    response.FileName = Path.GetFileName(outputPath);
-                }
-                else
-                {
-                    response.Success = false;
-                    response.Message = $"Whisper process failed: {error}";
-                    response.Errors.Add(error);
-                }
-
-                response.ProcessingTime = DateTime.Now - startTime;
-                _logger.LogInformation($"Whisper transcription completed in {response.ProcessingTime.TotalSeconds} seconds");
             }
             catch (Exception ex)
             {
-                response.Success = false;
-                response.Message = $"Error during transcription: {ex.Message}";
-                response.Errors.Add(ex.ToString());
                 _logger.LogError(ex, "Error during Whisper transcription");
+                return new TranscriptionResponse
+                {
+                    Success = false,
+                    Message = $"Error during transcription: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<string> GenerateSrtAsync(string audioFilePath, string language = "auto")
+        {
+            var response = await TranscribeAudioAsync(audioFilePath, language);
+            if (!response.Success || !response.Segments.Any())
+                return "";
+
+            var srtBuilder = new StringBuilder();
+            foreach (var segment in response.Segments)
+            {
+                srtBuilder.AppendLine(segment.Index.ToString());
+                srtBuilder.AppendLine($"{FormatTime(segment.StartTime)} --> {FormatTime(segment.EndTime)}");
+                srtBuilder.AppendLine(segment.Text);
+                srtBuilder.AppendLine();
             }
 
-            return response;
+            return srtBuilder.ToString();
         }
 
-        public async Task<string> ConvertVideoToAudioAsync(string videoFilePath)
+        private string FormatTime(TimeSpan time)
         {
-            // Simple implementation - in production, you'd use FFmpeg
-            // For now, we'll assume Whisper can handle video files directly
-            return videoFilePath;
-        }
-
-        public bool IsVideoFile(string filePath)
-        {
-            var videoExtensions = new[] { ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv" };
-            var extension = Path.GetExtension(filePath).ToLower();
-            return videoExtensions.Contains(extension);
-        }
-
-        public bool IsAudioFile(string filePath)
-        {
-            var audioExtensions = new[] { ".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac" };
-            var extension = Path.GetExtension(filePath).ToLower();
-            return audioExtensions.Contains(extension);
+            return $"{time.Hours:00}:{time.Minutes:00}:{time.Seconds:00},{time.Milliseconds:000}";
         }
     }
 }

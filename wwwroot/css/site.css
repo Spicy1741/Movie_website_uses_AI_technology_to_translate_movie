@@ -418,8 +418,9 @@ footer.enhanced-footer {
 }
 
 /* ========== NAVBAR IMPROVEMENTS ========== */
+
 .navbar {
-    padding: 1rem 0;
+    padding: 0.875rem 0;
     transition: all 0.3s ease;
 }
 
@@ -1608,3 +1609,4 @@ main {
     height: 32px;
     font-size: 0.8rem;
 }
+
