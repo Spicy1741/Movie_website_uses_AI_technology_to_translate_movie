@@ -4,15 +4,15 @@ namespace Film_website.Models.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email hoặc tên người dùng là bắt buộc")]
-        [Display(Name = "Email hoặc tên người dùng")]
+        [Required(ErrorMessage = "Email or username is required")]
+        [Display(Name = "Email or username")]
         public string EmailOrUserName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
-        [Display(Name = "Ghi nhớ đăng nhập")]
+        [Display(Name = "Remember login")]
         public bool RememberMe { get; set; }
     }
 }

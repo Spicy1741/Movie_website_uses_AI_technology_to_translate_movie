@@ -18,6 +18,16 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register HttpClient for services
+builder.Services.AddHttpClient<IWhisperService, WhisperService>();
+builder.Services.AddHttpClient<IGptTranslationService, GptTranslationService>();
+
+// Register application services
+builder.Services.AddScoped<IWhisperService, WhisperService>();
+builder.Services.AddScoped<IGptTranslationService, GptTranslationService>();
+builder.Services.AddScoped<IAudioExtractionService, AudioExtractionService>();
+builder.Services.AddScoped<ISrtGeneratorService, SrtGeneratorService>();
+
 // Identity configuration
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -63,9 +73,7 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserActivityService>();
 builder.Services.AddScoped<MovieService>();
 
-// Register Whisper AI services
-builder.Services.AddScoped<IWhisperService, WhisperService>();
-builder.Services.AddScoped<ITranslationService, TranslationService>();
+
 
 // Configure file upload size for Whisper AI
 builder.Services.Configure<IISServerOptions>(options =>
@@ -80,6 +88,7 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartBodyLengthLimit = 524288000; // 500MB
     options.MultipartHeadersLengthLimit = int.MaxValue;
 });
+
 
 
 var app = builder.Build();
