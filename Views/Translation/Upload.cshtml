@@ -23,7 +23,7 @@
 
                     <form asp-action="ProcessVideo" method="post" enctype="multipart/form-data" id="uploadForm">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="videoFile" class="form-label">
                                         <strong>Select Video File</strong>
@@ -39,21 +39,21 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="targetLanguage" class="form-label">
-                                        <strong>Translation Language</strong>
+                                    <label for="sourceLanguage" class="form-label">
+                                        <strong>Source Language (Audio)</strong>
                                     </label>
-                                    <select class="form-select" id="targetLanguage" name="targetLanguage">
-                                        <option value="Original">Original (No Translation)</option>
-                                        <option value="Vietnamese" selected>Vietnamese (Tiếng Việt)</option>
+                                    <select class="form-select" id="sourceLanguage" name="sourceLanguage">
+                                        <option value="auto" selected>Auto-detect</option>
                                         <option value="English">English</option>
+                                        <option value="Japanese">Japanese (日本語)</option>
+                                        <option value="Chinese">Chinese (中文)</option>
+                                        <option value="Korean">Korean (한국어)</option>
                                         <option value="Spanish">Spanish (Español)</option>
                                         <option value="French">French (Français)</option>
                                         <option value="German">German (Deutsch)</option>
-                                        <option value="Chinese">Chinese (中文)</option>
-                                        <option value="Japanese">Japanese (日本語)</option>
-                                        <option value="Korean">Korean (한국어)</option>
+                                        <option value="Vietnamese">Vietnamese (Tiếng Việt)</option>
                                         <option value="Portuguese">Portuguese (Português)</option>
                                         <option value="Russian">Russian (Русский)</option>
                                         <option value="Arabic">Arabic (العربية)</option>
@@ -63,7 +63,35 @@
                                         <option value="Dutch">Dutch (Nederlands)</option>
                                     </select>
                                     <div class="form-text">
-                                        Choose the language for subtitle translation
+                                        Language of the speech in your video
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="targetLanguage" class="form-label">
+                                        <strong>Translation Language</strong>
+                                    </label>
+                                    <select class="form-select" id="targetLanguage" name="targetLanguage">
+                                        <option value="Original">Original (No Translation)</option>
+                                        <option value="Vietnamese" selected>Vietnamese (Tiếng Việt)</option>
+                                        <option value="English">English</option>
+                                        <option value="Japanese">Japanese (日本語)</option>
+                                        <option value="Chinese">Chinese (中文)</option>
+                                        <option value="Korean">Korean (한국어)</option>
+                                        <option value="Spanish">Spanish (Español)</option>
+                                        <option value="French">French (Français)</option>
+                                        <option value="German">German (Deutsch)</option>
+                                        <option value="Portuguese">Portuguese (Português)</option>
+                                        <option value="Russian">Russian (Русский)</option>
+                                        <option value="Arabic">Arabic (العربية)</option>
+                                        <option value="Hindi">Hindi (हिन्दी)</option>
+                                        <option value="Thai">Thai (ไทย)</option>
+                                        <option value="Italian">Italian (Italiano)</option>
+                                        <option value="Dutch">Dutch (Nederlands)</option>
+                                    </select>
+                                    <div class="form-text">
+                                        Language to translate the subtitles to
                                     </div>
                                 </div>
                             </div>

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Film_website.Services
 {
@@ -22,7 +23,10 @@ namespace Film_website.Services
                 if (!File.Exists(videoFilePath))
                     throw new FileNotFoundException($"Video file not found: {videoFilePath}");
 
-                var audioFileName = Path.GetFileNameWithoutExtension(videoFilePath) + ".mp3";
+                // Sanitize filename to avoid FFmpeg issues
+                var originalFileName = Path.GetFileNameWithoutExtension(videoFilePath);
+                var sanitizedFileName = SanitizeFileName(originalFileName);
+                var audioFileName = $"{sanitizedFileName}.mp3";
                 var audioFilePath = Path.Combine(outputPath, audioFileName);
 
                 _logger.LogInformation($"Extracting audio from {videoFilePath} to {audioFilePath}");
@@ -34,14 +38,21 @@ namespace Film_website.Services
                     _logger.LogInformation($"Deleted existing audio file: {audioFilePath}");
                 }
 
-                // Use absolute paths and add timeout
+                // Use absolute paths
                 var absoluteVideoPath = Path.GetFullPath(videoFilePath);
                 var absoluteAudioPath = Path.GetFullPath(audioFilePath);
 
-                // Simplified FFmpeg command for better compatibility
-                var arguments = $"-y -i \"{absoluteVideoPath}\" -vn -acodec libmp3lame -ab 128k -ar 22050 \"{absoluteAudioPath}\"";
+                // Escape paths properly for FFmpeg (use 8.3 format for problematic paths)
+                var escapedVideoPath = GetShortPath(absoluteVideoPath) ?? absoluteVideoPath;
+                var escapedAudioPath = GetShortPath(absoluteAudioPath) ?? absoluteAudioPath;
 
-                _logger.LogInformation($"Running FFmpeg: {_ffmpegPath} {arguments}");
+                // Simplified FFmpeg command with better error handling
+                var arguments = $"-y -hide_banner -loglevel error -i \"{escapedVideoPath}\" -vn -acodec libmp3lame -ab 128k -ar 16000 -ac 1 \"{escapedAudioPath}\"";
+
+                _logger.LogInformation($"Running FFmpeg with escaped paths:");
+                _logger.LogInformation($"Input: {escapedVideoPath}");
+                _logger.LogInformation($"Output: {escapedAudioPath}");
+                _logger.LogInformation($"Command: {_ffmpegPath} {arguments}");
 
                 var processInfo = new ProcessStartInfo
                 {
@@ -51,40 +62,64 @@ namespace Film_website.Services
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     CreateNoWindow = true,
-                    WorkingDirectory = Path.GetDirectoryName(absoluteVideoPath)
+                    StandardOutputEncoding = System.Text.Encoding.UTF8,
+                    StandardErrorEncoding = System.Text.Encoding.UTF8
                 };
 
                 using var process = Process.Start(processInfo);
                 if (process == null)
                     throw new InvalidOperationException("Failed to start FFmpeg process");
 
-                // Add timeout (5 minutes max)
-                var timeoutTask = Task.Delay(TimeSpan.FromMinutes(5));
+                // Create tasks for reading output and error streams
+                var outputTask = process.StandardOutput.ReadToEndAsync();
+                var errorTask = process.StandardError.ReadToEndAsync();
+
+                // Add timeout (3 minutes max for audio extraction)
+                var timeoutTask = Task.Delay(TimeSpan.FromMinutes(3));
                 var processTask = process.WaitForExitAsync();
 
                 var completedTask = await Task.WhenAny(processTask, timeoutTask);
 
                 if (completedTask == timeoutTask)
                 {
-                    _logger.LogError("FFmpeg process timed out after 5 minutes");
-                    process.Kill(true);
-                    throw new TimeoutException("FFmpeg process timed out");
+                    _logger.LogError("FFmpeg process timed out after 3 minutes");
+                    try
+                    {
+                        process.Kill(true);
+                    }
+                    catch { }
+                    throw new TimeoutException("FFmpeg process timed out during audio extraction");
                 }
 
-                var output = await process.StandardOutput.ReadToEndAsync();
-                var error = await process.StandardError.ReadToEndAsync();
+                // Get output and error messages
+                var output = await outputTask;
+                var error = await errorTask;
 
-                _logger.LogInformation($"FFmpeg output: {output}");
+                _logger.LogInformation($"FFmpeg completed with exit code: {process.ExitCode}");
+
+                if (!string.IsNullOrEmpty(output))
+                {
+                    _logger.LogInformation($"FFmpeg output: {output}");
+                }
+
                 if (!string.IsNullOrEmpty(error))
                 {
-                    _logger.LogWarning($"FFmpeg stderr: {error}");
+                    if (process.ExitCode == 0)
+                    {
+                        _logger.LogInformation($"FFmpeg info: {error}");
+                    }
+                    else
+                    {
+                        _logger.LogError($"FFmpeg error: {error}");
+                    }
                 }
 
                 if (process.ExitCode != 0)
                 {
-                    throw new InvalidOperationException($"FFmpeg failed with exit code {process.ExitCode}: {error}");
+                    throw new InvalidOperationException($"FFmpeg failed with exit code {process.ExitCode}. Error: {error}");
                 }
 
+                // Verify output file exists and has content
                 if (!File.Exists(audioFilePath))
                 {
                     throw new FileNotFoundException($"Audio extraction failed - output file not created: {audioFilePath}");
@@ -111,6 +146,80 @@ namespace Film_website.Services
             var videoExtensions = new[] { ".mp4", ".avi", ".mov", ".mkv", ".wmv", ".flv", ".webm" };
             var extension = Path.GetExtension(filePath).ToLower();
             return videoExtensions.Contains(extension);
+        }
+
+        private string SanitizeFileName(string fileName)
+        {
+            // Remove or replace problematic characters
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sanitized = fileName;
+
+            // Replace invalid characters with underscores
+            foreach (var c in invalidChars)
+            {
+                sanitized = sanitized.Replace(c, '_');
+            }
+
+            // Replace other problematic characters
+            sanitized = sanitized.Replace(":", "_")
+                                 .Replace(";", "_")
+                                 .Replace(",", "_")
+                                 .Replace("'", "_")
+                                 .Replace("\"", "_")
+                                 .Replace("(", "_")
+                                 .Replace(")", "_")
+                                 .Replace("[", "_")
+                                 .Replace("]", "_")
+                                 .Replace("{", "_")
+                                 .Replace("}", "_");
+
+            // Remove multiple consecutive underscores
+            sanitized = Regex.Replace(sanitized, "_+", "_");
+
+            // Remove leading/trailing underscores
+            sanitized = sanitized.Trim('_');
+
+            // Ensure it's not empty
+            if (string.IsNullOrEmpty(sanitized))
+            {
+                sanitized = "audio_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            }
+
+            // Limit length to avoid path issues
+            if (sanitized.Length > 100)
+            {
+                sanitized = sanitized.Substring(0, 100);
+            }
+
+            return sanitized;
+        }
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        private static extern int GetShortPathName(
+            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)]
+            string path,
+            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)]
+            System.Text.StringBuilder shortPath,
+            int shortPathLength);
+
+        private string GetShortPath(string path)
+        {
+            try
+            {
+                var shortPath = new System.Text.StringBuilder(255);
+                int result = GetShortPathName(path, shortPath, shortPath.Capacity);
+
+                if (result != 0 && shortPath.Length > 0)
+                {
+                    return shortPath.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to get short path for: {Path}", path);
+            }
+
+            return path; // Return original path if conversion fails
         }
     }
 }
