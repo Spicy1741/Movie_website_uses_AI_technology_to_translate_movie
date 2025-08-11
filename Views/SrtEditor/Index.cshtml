@@ -1,0 +1,182 @@
+﻿@{
+    ViewData["Title"] = "SRT Editor - Film Website Admin";
+}
+
+<link href="~/css/srt-editor.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+
+<div class="container-fluid srt-editor-container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Admin")">Admin Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active">SRT Editor</li>
+                </ol>
+            </nav>
+            <h1 class="page-title">🎬 SRT Subtitle Editor</h1>
+            <p class="page-description">Professional subtitle editing for your film collection</p>
+        </div>
+    </div>
+
+    <div class="row editor-main">
+        <!-- Original Subtitle Section -->
+        <div class="col-lg-4">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <h5><i class="fas fa-file-video"></i> Original Subtitle</h5>
+                    <span class="language-badge">Source File</span>
+                </div>
+                <div class="panel-body">
+                    <!-- File Upload Area -->
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="upload-icon"><i class="fas fa-film"></i></div>
+                        <p class="upload-text">Drop subtitle file here or click to browse</p>
+                        <input type="file" id="srtFileInput" accept=".srt,.vtt,.ass,.ssa,.sub" style="display: none;" />
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('srtFileInput').click()">
+                            <i class="fas fa-upload me-1"></i> Choose File
+                        </button>
+                    </div>
+
+                    <!-- Original Text Display Area -->
+                    <div class="text-display-area">
+                        <textarea id="originalSubtitleText" class="form-control subtitle-textarea" rows="15" readonly
+                                  placeholder="Original subtitle content will be displayed here after upload"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Controls Section -->
+        <div class="col-lg-4">
+            <div class="edit-controls-panel">
+                <div class="control-buttons">
+                    <button type="button" id="startEditBtn" class="btn btn-edit btn-lg" onclick="startEditing()">
+                        <i class="fas fa-edit"></i>
+                        Start Edit
+                    </button>
+                    <button type="button" id="clearAllBtn" class="btn btn-clear btn-lg" onclick="clearAll()">
+                        <i class="fas fa-trash-alt"></i>
+                        Clear All
+                    </button>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions mt-4">
+                    <h6><i class="fas fa-tools"></i> Quick Actions</h6>
+                    <div class="action-grid">
+                        <button type="button" class="btn btn-action" onclick="translateSubtitle()">
+                            <i class="fas fa-language"></i>
+                            Translate
+                        </button>
+                        <button type="button" class="btn btn-action" onclick="autoFormat()">
+                            <i class="fas fa-magic"></i>
+                            Format
+                        </button>
+                        <button type="button" class="btn btn-action" onclick="previewSubtitle()">
+                            <i class="fas fa-eye"></i>
+                            Preview
+                        </button>
+                        <button type="button" class="btn btn-action" onclick="validateContent()">
+                            <i class="fas fa-check-circle"></i>
+                            Validate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Display -->
+                <div class="stats-display mt-4">
+                    <h6><i class="fas fa-chart-bar"></i> File Statistics</h6>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Entries:</span>
+                            <span class="stat-value" id="entryCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Duration:</span>
+                            <span class="stat-value" id="totalDuration">00:00</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Characters:</span>
+                            <span class="stat-value" id="charCount">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Status:</span>
+                            <span class="stat-value status-ready" id="fileStatus">Ready</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Indicator -->
+                <div id="progressIndicator" class="progress-indicator" style="display: none;">
+                    <div class="spinner-border text-light" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Processing...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Translated Subtitle Section -->
+        <div class="col-lg-4">
+            <div class="editor-panel">
+                <div class="panel-header">
+                    <h5><i class="fas fa-language"></i> Edited Subtitle</h5>
+                    <span class="language-badge">Output File</span>
+                </div>
+                <div class="panel-body">
+                    <div class="text-display-area">
+                        <textarea id="translatedSubtitleText" class="form-control subtitle-textarea" rows="15"
+                                  placeholder="Edited subtitle content will appear here&#10;Click 'Start Edit' to begin making changes"></textarea>
+                    </div>
+
+                    <!-- Edit Action Buttons -->
+                    <div class="edit-actions mt-3">
+                        <button type="button" id="saveEditsBtn" class="btn btn-success" onclick="saveEdits()">
+                            💾 Save Edits
+                        </button>
+                        <button type="button" id="autoFormatBtn" class="btn btn-info" onclick="autoFormat()">
+                            🎨 Auto Format
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="download-section">
+                <h5><i class="fas fa-download me-2"></i>Export Edited Subtitle</h5>
+                <div class="download-area">
+                    <div id="downloadStatus" class="download-status">
+                        <p class="text-muted">Your edited subtitle file will be ready for download here</p>
+                    </div>
+                    <button type="button" id="downloadBtn" class="btn btn-success btn-lg" onclick="downloadEditedSubtitle()" disabled>
+                        <i class="fas fa-download me-2"></i>Download Subtitle File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Modal -->
+<div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5>Processing your subtitle file...</h5>
+                <p class="text-muted">Please wait while we process your request.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/srt-editor.js"></script>

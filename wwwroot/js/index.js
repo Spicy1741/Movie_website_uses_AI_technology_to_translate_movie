@@ -1,47 +1,47 @@
 ﻿// Toggle between main admin view and user management view
-    function showUserManagement() {
-        document.getElementById('mainAdminSection').style.display = 'none';
+function showUserManagement() {
+    document.getElementById('mainAdminSection').style.display = 'none';
     document.getElementById('userManagementSection').style.display = 'block';
 
     // Smooth scroll to top
-    window.scrollTo({top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-    function backToMainAdmin() {
-        document.getElementById('userManagementSection').style.display = 'none';
+function backToMainAdmin() {
+    document.getElementById('userManagementSection').style.display = 'none';
     document.getElementById('mainAdminSection').style.display = 'block';
 
     // Smooth scroll to top
-    window.scrollTo({top: 0, behavior: 'smooth' });
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
-    // User management functionality (only loaded when user management is shown)
-    document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality
-        const searchInput = document.getElementById('userSearch');
+// User management functionality (only loaded when user management is shown)
+document.addEventListener('DOMContentLoaded', function () {
+    // Search functionality
+    const searchInput = document.getElementById('userSearch');
     const roleFilter = document.getElementById('roleFilter');
     const userRows = document.querySelectorAll('.user-row');
 
     function filterUsers() {
-            const searchTerm = searchInput?.value.toLowerCase() || '';
-    const selectedRole = roleFilter?.value || '';
+        const searchTerm = searchInput?.value.toLowerCase() || '';
+        const selectedRole = roleFilter?.value || '';
 
-            userRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-    const roleColumn = row.querySelector('td:nth-child(4)')?.textContent || '';
+        userRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const roleColumn = row.querySelector('td:nth-child(4)')?.textContent || '';
 
-    const matchesSearch = text.includes(searchTerm);
-    const matchesRole = !selectedRole || roleColumn.includes(selectedRole);
+            const matchesSearch = text.includes(searchTerm);
+            const matchesRole = !selectedRole || roleColumn.includes(selectedRole);
 
-    if (matchesSearch && matchesRole) {
-        row.classList.remove('filtered-out');
-                } else {
-        row.classList.add('filtered-out');
-                }
-            });
+            if (matchesSearch && matchesRole) {
+                row.classList.remove('filtered-out');
+            } else {
+                row.classList.add('filtered-out');
+            }
+        });
 
-    updatePaginationInfo();
-        }
+        updatePaginationInfo();
+    }
 
     if (searchInput) searchInput.addEventListener('input', filterUsers);
     if (roleFilter) roleFilter.addEventListener('change', filterUsers);
@@ -56,22 +56,22 @@
                 checkbox.checked = this.checked;
             });
         });
-        }
+    }
 
     function updatePaginationInfo() {
-            const visibleRows = document.querySelectorAll('.user-row:not(.filtered-out)').length;
-    const showingEndElement = document.getElementById('showingEnd');
-    const totalEntriesElement = document.getElementById('totalEntries');
+        const visibleRows = document.querySelectorAll('.user-row:not(.filtered-out)').length;
+        const showingEndElement = document.getElementById('showingEnd');
+        const totalEntriesElement = document.getElementById('totalEntries');
 
-    if (showingEndElement) showingEndElement.textContent = visibleRows;
-    if (totalEntriesElement) totalEntriesElement.textContent = visibleRows;
-        }
-    });
+        if (showingEndElement) showingEndElement.textContent = visibleRows;
+        if (totalEntriesElement) totalEntriesElement.textContent = visibleRows;
+    }
+});
 
-    // User action functions
-    function viewUser(userId) {
-        // Find user data from the table row
-        const userRow = document.querySelector(`tr[data-user-id="${userId}"]`);
+// User action functions
+function viewUser(userId) {
+    // Find user data from the table row
+    const userRow = document.querySelector(`tr[data-user-id="${userId}"]`);
     if (!userRow) return;
 
     // Extract user information from the table row
@@ -86,7 +86,7 @@
     const username = userInfo.querySelector('small').textContent.trim();
     const email = contactInfo.querySelector('.fa-envelope').parentNode.textContent.replace('✉', '').trim();
     const phone = contactInfo.querySelector('.fa-phone')?.parentNode.textContent.replace('📞', '').trim() || 'Not provided';
-        const roles = Array.from(roleInfo.querySelectorAll('.badge')).map(badge => badge.textContent.trim()).join(', ');
+    const roles = Array.from(roleInfo.querySelectorAll('.badge')).map(badge => badge.textContent.trim()).join(', ');
     const status = statusInfo.querySelector('.badge').textContent.trim();
     const joinDate = joinedInfo.textContent.trim();
 
@@ -115,107 +115,107 @@
     // Show modal
     const modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
     modal.show();
-    }
+}
 
-    // Modal action functions
-    function editUserFromModal() {
-        const userId = document.getElementById('viewUserModal').getAttribute('data-user-id');
+// Modal action functions
+function editUserFromModal() {
+    const userId = document.getElementById('viewUserModal').getAttribute('data-user-id');
     // Close the view modal first
     const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewUserModal'));
     if (viewModal) {
         viewModal.hide();
-        }
-
-        // Then call edit function
-        setTimeout(() => {
-        editUser(userId);
-        }, 300);
     }
 
-    function viewUserActivity() {
-        const userId = document.getElementById('viewUserModal').getAttribute('data-user-id');
+    // Then call edit function
+    setTimeout(() => {
+        editUser(userId);
+    }, 300);
+}
+
+function viewUserActivity() {
+    const userId = document.getElementById('viewUserModal').getAttribute('data-user-id');
 
     // Close the user details modal
     const userModal = bootstrap.Modal.getInstance(document.getElementById('viewUserModal'));
     if (userModal) {
         userModal.hide();
-        }
-
-        // Load activities and show activity modal
-        setTimeout(() => {
-        loadUserActivities(userId);
-        }, 300);
     }
 
-    // Load and display user activities
-    async function loadUserActivities(userId) {
-        try {
+    // Load activities and show activity modal
+    setTimeout(() => {
+        loadUserActivities(userId);
+    }, 300);
+}
+
+// Load and display user activities
+async function loadUserActivities(userId) {
+    try {
         // Show loading state
         document.getElementById('activityLoadingSpinner').style.display = 'block';
-    document.getElementById('activityContent').style.display = 'none';
-    document.getElementById('activityErrorMessage').style.display = 'none';
+        document.getElementById('activityContent').style.display = 'none';
+        document.getElementById('activityErrorMessage').style.display = 'none';
 
-    // Show the modal
-    const activityModal = new bootstrap.Modal(document.getElementById('userActivityModal'));
-    activityModal.show();
+        // Show the modal
+        const activityModal = new bootstrap.Modal(document.getElementById('userActivityModal'));
+        activityModal.show();
 
-    // Fetch activities
-    const response = await fetch(`/Admin/GetUserActivities?userId=${userId}`);
+        // Fetch activities
+        const response = await fetch(`/Admin/GetUserActivities?userId=${userId}`);
 
-    if (!response.ok) {
-                throw new Error('Failed to load activities');
-            }
+        if (!response.ok) {
+            throw new Error('Failed to load activities');
+        }
 
-    const data = await response.json();
+        const data = await response.json();
 
-    // Hide loading and show content
-    document.getElementById('activityLoadingSpinner').style.display = 'none';
-    document.getElementById('activityContent').style.display = 'block';
+        // Hide loading and show content
+        document.getElementById('activityLoadingSpinner').style.display = 'none';
+        document.getElementById('activityContent').style.display = 'block';
 
-    // Populate user info
-    if (data.user) {
-        document.getElementById('activityUserName').textContent = data.user.name;
-    document.getElementById('activityUserEmail').textContent = data.user.email;
-    document.getElementById('activityUserUsername').textContent = data.user.username;
-    document.getElementById('activityTotalCount').textContent = data.totalCount;
-            }
+        // Populate user info
+        if (data.user) {
+            document.getElementById('activityUserName').textContent = data.user.name;
+            document.getElementById('activityUserEmail').textContent = data.user.email;
+            document.getElementById('activityUserUsername').textContent = data.user.username;
+            document.getElementById('activityTotalCount').textContent = data.totalCount;
+        }
 
-    // Populate activities
-    const activitiesContainer = document.getElementById('activitiesContainer');
-    activitiesContainer.innerHTML = '';
+        // Populate activities
+        const activitiesContainer = document.getElementById('activitiesContainer');
+        activitiesContainer.innerHTML = '';
 
-            if (data.activities && data.activities.length > 0) {
-        data.activities.forEach(activity => {
-            const activityElement = createActivityElement(activity);
-            activitiesContainer.appendChild(activityElement);
-        });
-            } else {
-        activitiesContainer.innerHTML = `
+        if (data.activities && data.activities.length > 0) {
+            data.activities.forEach(activity => {
+                const activityElement = createActivityElement(activity);
+                activitiesContainer.appendChild(activityElement);
+            });
+        } else {
+            activitiesContainer.innerHTML = `
                     <div class="text-center py-4">
                         <i class="fas fa-history text-muted" style="font-size: 3rem;"></i>
                         <h5 class="mt-3 text-muted">No Activities Found</h5>
                         <p class="text-muted">This user has no recorded activities yet.</p>
                     </div>
                 `;
-            }
+        }
 
-        } catch (error) {
+    } catch (error) {
         console.error('Error loading activities:', error);
 
-    // Hide loading and show error
-    document.getElementById('activityLoadingSpinner').style.display = 'none';
-    document.getElementById('activityContent').style.display = 'none';
-    document.getElementById('activityErrorMessage').style.display = 'block';
-        }
+        // Hide loading and show error
+        document.getElementById('activityLoadingSpinner').style.display = 'none';
+        document.getElementById('activityContent').style.display = 'none';
+        document.getElementById('activityErrorMessage').style.display = 'block';
     }
+}
 
-    // Create activity element
-    function createActivityElement(activity) {
-        const div = document.createElement('div');
+// Create activity element
+function createActivityElement(activity) {
+    const div = document.createElement('div');
     div.className = 'activity-item';
 
     // Get activity icon and color based on type
-    const {icon, color} = getActivityIconAndColor(activity.activityType);
+    const { icon, color } = getActivityIconAndColor(activity.activityType);
 
     div.innerHTML = `
     <div class="d-flex align-items-start">
@@ -248,56 +248,56 @@
     `;
 
     return div;
-    }
+}
 
-    // Get icon and color for activity type
-    function getActivityIconAndColor(activityType) {
-        const iconMap = {
-        'Login': {icon: 'fa-sign-in-alt', color: 'bg-success' },
-    'Logout': {icon: 'fa-sign-out-alt', color: 'bg-secondary' },
-    'Register': {icon: 'fa-user-plus', color: 'bg-primary' },
-    'Profile Update': {icon: 'fa-user-edit', color: 'bg-info' },
-    'Password Change': {icon: 'fa-key', color: 'bg-warning' },
-    'Password Reset': {icon: 'fa-unlock-alt', color: 'bg-warning' },
-    'Role Changed': {icon: 'fa-shield-alt', color: 'bg-danger' },
-    'Admin Access': {icon: 'fa-crown', color: 'bg-purple' },
-    'Data Export': {icon: 'fa-download', color: 'bg-dark' },
-    'Movie Viewed': {icon: 'fa-play', color: 'bg-success' }
-        };
+// Get icon and color for activity type
+function getActivityIconAndColor(activityType) {
+    const iconMap = {
+        'Login': { icon: 'fa-sign-in-alt', color: 'bg-success' },
+        'Logout': { icon: 'fa-sign-out-alt', color: 'bg-secondary' },
+        'Register': { icon: 'fa-user-plus', color: 'bg-primary' },
+        'Profile Update': { icon: 'fa-user-edit', color: 'bg-info' },
+        'Password Change': { icon: 'fa-key', color: 'bg-warning' },
+        'Password Reset': { icon: 'fa-unlock-alt', color: 'bg-warning' },
+        'Role Changed': { icon: 'fa-shield-alt', color: 'bg-danger' },
+        'Admin Access': { icon: 'fa-crown', color: 'bg-purple' },
+        'Data Export': { icon: 'fa-download', color: 'bg-dark' },
+        'Movie Viewed': { icon: 'fa-play', color: 'bg-success' }
+    };
 
-    return iconMap[activityType] || {icon: 'fa-circle', color: 'bg-secondary' };
-    }
+    return iconMap[activityType] || { icon: 'fa-circle', color: 'bg-secondary' };
+}
 
-    function editUser(userId) {
-        console.log('Edit user:', userId);
+function editUser(userId) {
+    console.log('Edit user:', userId);
     alert('Edit user functionality will be implemented in the next step');
-    }
+}
 
-    function deleteUser(userId) {
-        if (confirm('Are you sure you want to delete this user?')) {
+function deleteUser(userId) {
+    if (confirm('Are you sure you want to delete this user?')) {
         console.log('Delete user:', userId);
-    alert('Delete user functionality will be implemented in the next step');
-        }
+        alert('Delete user functionality will be implemented in the next step');
     }
+}
 
-    function exportUsers() {
-        console.log('Export users');
+function exportUsers() {
+    console.log('Export users');
     alert('Export functionality will be implemented in the next step');
-    }
+}
 
-    // Additional activity modal functions
-    function refreshActivities() {
-        const userId = document.getElementById('viewUserModal')?.getAttribute('data-user-id');
+// Additional activity modal functions
+function refreshActivities() {
+    const userId = document.getElementById('viewUserModal')?.getAttribute('data-user-id');
     if (userId) {
         loadUserActivities(userId);
-        }
     }
+}
 
-    function exportUserActivities() {
-        const userId = document.getElementById('viewUserModal')?.getAttribute('data-user-id');
+function exportUserActivities() {
+    const userId = document.getElementById('viewUserModal')?.getAttribute('data-user-id');
     console.log('Export activities for user:', userId);
     alert('Export activities functionality will be implemented in a future update');
-    }
+}
 
 // ========== FIXED ADMIN SEARCH FUNCTIONALITY ========== 
 // Replace the existing search functionality in your Admin/Index.cshtml with this corrected version
