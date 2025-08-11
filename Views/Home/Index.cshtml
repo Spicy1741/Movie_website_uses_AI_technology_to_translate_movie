@@ -4,230 +4,244 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!-- Link to homepage-specific CSS -->
+<!-- Enhanced CSS with Three.js integration -->
 <link rel="stylesheet" href="~/css/homepage.css" asp-append-version="true" />
 
-@if (User.Identity!.IsAuthenticated)
-{
-    <!-- Authenticated User Content - Show Movies -->
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <div class="hero-content">
-            <!-- Enhanced Poster-Only Slideshow -->
-            <div class="poster-slideshow" id="posterSlideshow">
-                @if (Model.FeaturedMovie != null)
-                {
-                    <!-- Create array of all movies for slideshow -->
-                    var allMovies = new List<Film_website.Models.Movie> { Model.FeaturedMovie };
-                    if (Model.AvailableCategories != null)
+<!-- Loading Screen -->
+<div class="loading" id="loading">
+    <div class="loading-text">CINEHUB</div>
+</div>
+
+<!-- Three.js Canvas Background -->
+<canvas id="canvas"></canvas>
+
+<!-- Content Wrapper -->
+<div class="content-wrapper">
+    @if (User.Identity!.IsAuthenticated)
+    {
+        <!-- Authenticated User Content - Show Movies -->
+        <!-- Hero Section -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <!-- Enhanced Poster-Only Slideshow -->
+                <div class="poster-slideshow" id="posterSlideshow">
+                    @if (Model.FeaturedMovie != null)
                     {
-                        foreach (var category in Model.AvailableCategories)
+                        <!-- Create array of all movies for slideshow -->
+                        var allMovies = new List<Film_website.Models.Movie> { Model.FeaturedMovie };
+                        if (Model.AvailableCategories != null)
                         {
-                            var categoryMovies = Model.GetMoviesForCategory(category);
-                            allMovies.AddRange(categoryMovies.Where(m => m.Id != Model.FeaturedMovie.Id).Take(4));
+                            foreach (var category in Model.AvailableCategories)
+                            {
+                                var categoryMovies = Model.GetMoviesForCategory(category);
+                                allMovies.AddRange(categoryMovies.Where(m => m.Id != Model.FeaturedMovie.Id).Take(4));
+                            }
                         }
-                    }
 
-                    @for (int i = 0; i < Math.Min(allMovies.Count, 5); i++)
-                    {
-                        var movie = allMovies[i];
-                        <div class="poster-slide @(i == 0 ? "active" : "")" data-movie-id="@movie.Id" data-movie-title="@movie.Title">
-                            <div class="poster-backdrop">
-                                @if (!string.IsNullOrEmpty(movie.ThumbnailPath))
-                                {
-                                    <img src="@movie.ThumbnailPath" alt="@movie.Title" />
-                                }
-                                else
-                                {
-                                    <div class="poster-placeholder">
-                                        <i class="fas fa-film"></i>
-                                        <span>@movie.Title</span>
-                                    </div>
-                                }
-                                <!-- Subtle overlay for better readability of controls -->
-                                <div class="poster-overlay"></div>
-                            </div>
-
-                            <!-- Movie info tooltip (appears on hover) -->
-                            <div class="movie-tooltip">
-                                <h3>@movie.Title</h3>
-                                <p>@movie.Genre • @movie.ReleaseYear</p>
-                                <div class="tooltip-actions">
-                                    <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="tooltip-btn">
-                                        <i class="fas fa-play"></i> Watch
-                                    </a>
-                                    @if (!string.IsNullOrEmpty(movie.FilePath))
-                                    {
-                                        <a href="@movie.FilePath" class="tooltip-btn trailer-btn" target="_blank">
-                                            <i class="fas fa-film"></i> Trailer
-                                        </a>
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                    <!-- Slideshow Controls -->
-                    <div class="slideshow-controls">
-                        <button class="slide-control prev-slide" id="prevSlide">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="slide-control next-slide" id="nextSlide">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-
-                    <!-- Slideshow Indicators -->
-                    <div class="slide-indicators">
                         @for (int i = 0; i < Math.Min(allMovies.Count, 5); i++)
                         {
-                            <button class="slide-indicator @(i == 0 ? "active" : "")" data-slide="@i"></button>
-                        }
-                    </div>
-
-                    <!-- Current Movie Title Display -->
-                    <div class="current-movie-title">
-                        <h2 id="currentMovieTitle">@Model.FeaturedMovie.Title</h2>
-                    </div>
-                }
-                else
-                {
-                    <!-- Fallback when no featured movie -->
-                    <div class="poster-slide active">
-                        <div class="poster-backdrop">
-                            <div class="no-poster-content">
-                                <i class="fas fa-film no-poster-icon"></i>
-                                <h2>No Featured Movie</h2>
-                                <p>Browse our movie collection</p>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-
-    <!-- Dynamic Category Sections -->
-    @if (Model.AvailableCategories != null && Model.AvailableCategories.Any())
-    {
-        @foreach (var category in Model.AvailableCategories)
-        {
-            var moviesInCategory = Model.GetMoviesForCategory(category);
-            if (moviesInCategory.Any())
-            {
-                <div class="movie-section">
-                    <div class="section-header">
-                        <h3 class="section-title">@Model.GetCategoryDisplayName(category)</h3>
-                        <div class="section-controls">
-                            <button class="control-btn prev-btn" data-category="@category">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="control-btn next-btn" data-category="@category">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="movie-grid" id="grid-@category.Replace(" ", "-").ToLower()">
-                        @foreach (var movie in moviesInCategory)
-                        {
-                            <div class="movie-card" data-movie-id="@movie.Id">
-                                <div class="movie-poster">
+                            var movie = allMovies[i];
+                            <div class="poster-slide @(i == 0 ? "active" : "")" data-movie-id="@movie.Id" data-movie-title="@movie.Title">
+                                <div class="poster-backdrop">
                                     @if (!string.IsNullOrEmpty(movie.ThumbnailPath))
                                     {
-                                        <img src="@movie.ThumbnailPath" alt="@movie.Title" loading="lazy" />
+                                        <img src="@movie.ThumbnailPath" alt="@movie.Title" />
                                     }
                                     else
                                     {
-                                        <div class="placeholder-poster">
+                                        <div class="poster-placeholder">
                                             <i class="fas fa-film"></i>
                                             <span>@movie.Title</span>
                                         </div>
                                     }
-                                  
-                                    <div class="movie-overlay">
-                                        <div class="movie-overlay-content">
-                                            <h4>@movie.Title</h4>
-                                            <p class="movie-genre">@movie.Genre</p>
-                                            <p class="movie-year">@movie.ReleaseYear</p>
-                                          
-                                            <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="watch-btn">
-                                                <i class="fas fa-play"></i> Watch Now
-                                            </a>
-                                        </div>
-                                    </div>
+                                    <!-- Subtle overlay for better readability of controls -->
+                                    <div class="poster-overlay"></div>
                                 </div>
-                                <div class="movie-info">
-                                    <h4>@movie.Title</h4>
+
+                                <!-- Movie info tooltip (appears on hover) -->
+                                <div class="movie-tooltip">
+                                    <h3>@movie.Title</h3>
                                     <p>@movie.Genre • @movie.ReleaseYear</p>
+                                    <div class="tooltip-actions">
+                                        <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="tooltip-btn">
+                                            <i class="fas fa-play"></i> Watch
+                                        </a>
+                                        @if (!string.IsNullOrEmpty(movie.FilePath))
+                                        {
+                                            <a href="@movie.FilePath" class="tooltip-btn trailer-btn" target="_blank">
+                                                <i class="fas fa-film"></i> Trailer
+                                            </a>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         }
-                    </div>
+
+                        <!-- Slideshow Controls -->
+                        <div class="slideshow-controls">
+                            <button class="slide-control prev-slide" id="prevSlide">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="slide-control next-slide" id="nextSlide">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Slideshow Indicators -->
+                        <div class="slide-indicators">
+                            @for (int i = 0; i < Math.Min(allMovies.Count, 5); i++)
+                            {
+                                <button class="slide-indicator @(i == 0 ? "active" : "")" data-slide="@i"></button>
+                            }
+                        </div>
+
+                        <!-- Current Movie Title Display -->
+                        <div class="current-movie-title">
+                            <h2 id="currentMovieTitle">@Model.FeaturedMovie.Title</h2>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Fallback when no featured movie -->
+                        <div class="poster-slide active">
+                            <div class="poster-backdrop">
+                                <div class="no-poster-content">
+                                    <i class="fas fa-film no-poster-icon"></i>
+                                    <h2>No Featured Movie</h2>
+                                    <p>Browse our movie collection</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Category Sections -->
+        @if (Model.AvailableCategories != null && Model.AvailableCategories.Any())
+        {
+            @foreach (var category in Model.AvailableCategories)
+            {
+                var moviesInCategory = Model.GetMoviesForCategory(category);
+                if (moviesInCategory.Any())
+                {
+                    <div class="movie-section">
+                        <div class="section-header">
+                            <h3 class="section-title">@Model.GetCategoryDisplayName(category)</h3>
+                            <div class="section-controls">
+                                <button class="control-btn prev-btn" data-category="@category">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="control-btn next-btn" data-category="@category">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="movie-grid" id="grid-@category.Replace(" ", "-").ToLower()">
+                            @foreach (var movie in moviesInCategory)
+                            {
+                                <div class="movie-card" data-movie-id="@movie.Id">
+                                    <div class="movie-poster">
+                                        @if (!string.IsNullOrEmpty(movie.ThumbnailPath))
+                                        {
+                                            <img src="@movie.ThumbnailPath" alt="@movie.Title" loading="lazy" />
+                                        }
+                                        else
+                                        {
+                                            <div class="placeholder-poster">
+                                                <i class="fas fa-film"></i>
+                                                <span>@movie.Title</span>
+                                            </div>
+                                        }
+
+                                        <div class="movie-overlay">
+                                            <div class="movie-overlay-content">
+                                                <h4>@movie.Title</h4>
+                                                <p class="movie-genre">@movie.Genre</p>
+                                                <p class="movie-year">@movie.ReleaseYear</p>
+
+                                                <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="watch-btn">
+                                                    <i class="fas fa-play"></i> Watch Now
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="movie-info">
+                                        <h4>@movie.Title</h4>
+                                        <p>@movie.Genre • @movie.ReleaseYear</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             }
+        }
+        else
+        {
+            <!-- No categorized movies available -->
+            <div class="no-content-section">
+                <div class="no-content-container">
+                    <i class="fas fa-film no-content-icon"></i>
+                    <h3>No movies available yet</h3>
+                    <p>Movies will appear here once they are added with categories.</p>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a href="@Url.Action("AddMovie", "Admin")" class="action-btn">
+                            <i class="fas fa-plus"></i> Add Movies
+                        </a>
+                    }
+                </div>
+            </div>
         }
     }
     else
     {
-        <!-- No categorized movies available -->
-        <div class="no-content-section">
-            <div class="no-content-container">
-                <i class="fas fa-film no-content-icon"></i>
-                <h3>No movies available yet</h3>
-                <p>Movies will appear here once they are added with categories.</p>
-                @if (User.IsInRole("Admin"))
-                {
-                    <a href="@Url.Action("AddMovie", "Admin")" class="action-btn">
-                        <i class="fas fa-plus"></i> Add Movies
-                    </a>
-                }
+        <!-- Non-Authenticated User Content - Welcome Message -->
+        <div class="welcome-section">
+            <div class="welcome-container">
+                <div class="welcome-content">
+                    <div class="welcome-hero">
+                        <i class="fas fa-film welcome-icon"></i>
+                        <h1 class="welcome-title">Welcome to Film Website</h1>
+                        <p class="welcome-subtitle">Please login or register to watch the movie.</p>
+                    </div>
+
+                    <div class="welcome-actions">
+                        <a href="@Url.Action("Login", "Account")" class="welcome-btn btn-login">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </a>
+                        <a href="@Url.Action("Register", "Account")" class="welcome-btn btn-register">
+                            <i class="fas fa-user-plus"></i>
+                            Register
+                        </a>
+                    </div>
+
+                    <div class="welcome-features">
+                        <div class="feature-item">
+                            <i class="fas fa-play-circle"></i>
+                            <span>Watch High Quality Movies</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-download"></i>
+                            <span>Download for Offline Viewing</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Join Our Community</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     }
-}
-else
-{
-    <!-- Non-Authenticated User Content - Welcome Message -->
-    <div class="welcome-section">
-        <div class="welcome-container">
-            <div class="welcome-content">
-                <div class="welcome-hero">
-                    <i class="fas fa-film welcome-icon"></i>
-                    <h1 class="welcome-title">Welcome to Film Website</h1>
-                    <p class="welcome-subtitle">Please login or register to watch the movie.</p>
-                </div>
+</div>
 
-                <div class="welcome-actions">
-                    <a href="@Url.Action("Login", "Account")" class="welcome-btn btn-login">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Login
-                    </a>
-                    <a href="@Url.Action("Register", "Account")" class="welcome-btn btn-register">
-                        <i class="fas fa-user-plus"></i>
-                        Register
-                    </a>
-                </div>
+<!-- Include Three.js and GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-                <div class="welcome-features">
-                    <div class="feature-item">
-                        <i class="fas fa-play-circle"></i>
-                        <span>Watch High Quality Movies</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-download"></i>
-                        <span>Download for Offline Viewing</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-users"></i>
-                        <span>Join Our Community</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-
-<script>
-   
-</script>
+<!-- Enhanced JavaScript -->
+<script src="~/js/home-page.js" asp-append-version="true"></script>
