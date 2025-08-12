@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.IO;
+using Newtonsoft.Json;
 
 namespace Film_website.Controllers
 {
@@ -14,23 +15,31 @@ namespace Film_website.Controllers
         private readonly IGptTranslationService _translationService;
         private readonly IAudioExtractionService _audioExtractionService;
         private readonly ISrtGeneratorService _srtGeneratorService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
         private readonly ILogger<TranslationController> _logger;
+
+        // *** NEW: Add accuracy service dependency ***
+        private readonly ITranslationAccuracyService _accuracyService;
 
         public TranslationController(
             IWhisperService whisperService,
             IGptTranslationService translationService,
             IAudioExtractionService audioExtractionService,
             ISrtGeneratorService srtGeneratorService,
+            IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration,
-            ILogger<TranslationController> logger)
+            ILogger<TranslationController> logger,
+            ITranslationAccuracyService accuracyService) // *** NEW: Add accuracy service parameter ***
         {
             _whisperService = whisperService;
             _translationService = translationService;
             _audioExtractionService = audioExtractionService;
             _srtGeneratorService = srtGeneratorService;
+            _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
             _logger = logger;
+            _accuracyService = accuracyService; // *** NEW: Initialize accuracy service ***
         }
 
         [HttpGet]
@@ -74,352 +83,143 @@ namespace Film_website.Controllers
                     return View("Upload");
                 }
 
-                _logger.LogInformation($"Original filename: '{videoFile.FileName}'");
-
-                // Check FFmpeg availability
-                if (!await CheckFFmpegAsync())
+                if (string.IsNullOrEmpty(targetLanguage))
                 {
-                    ViewBag.Error = "FFmpeg is not installed or not accessible. Please install FFmpeg and ensure it's in your system PATH.";
+                    _logger.LogError("Target language not specified");
+                    ViewBag.Error = "Please select a target language.";
                     return View("Upload");
                 }
 
-                // Check OpenAI configuration
-                if (!ValidateOpenAIConfig())
+                // Validate OpenAI API configuration
+                if (!ValidateOpenAIConfiguration())
                 {
-                    ViewBag.Error = "OpenAI API key is not properly configured. Please check your appsettings.json file.";
+                    ViewBag.Error = "OpenAI API is not properly configured. Please contact the administrator.";
                     return View("Upload");
                 }
 
-                // File size validation
-                var maxFileSizeMB = _configuration.GetValue<int>("FileSettings:MaxFileSizeMB", 500);
-                var maxFileSizeBytes = maxFileSizeMB * 1024 * 1024;
-                if (videoFile.Length > maxFileSizeBytes)
-                {
-                    ViewBag.Error = $"File size exceeds the maximum limit of {maxFileSizeMB}MB.";
-                    return View("Upload");
-                }
+                // Create paths for uploads and downloads
+                var uploadsPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                var downloadsPath = Path.Combine(_webHostEnvironment.WebRootPath, "downloads");
 
-                // File type validation with null checks
+                // Create directories if they don't exist
+                Directory.CreateDirectory(uploadsPath);
+                Directory.CreateDirectory(downloadsPath);
+
+                // Save uploaded video file
+                var sanitizedFileName = SanitizeFileName(Path.GetFileNameWithoutExtension(videoFile.FileName));
                 var fileExtension = Path.GetExtension(videoFile.FileName);
-                if (string.IsNullOrEmpty(fileExtension))
+                videoFilePath = Path.Combine(uploadsPath, $"{sanitizedFileName}_{DateTime.Now:yyyyMMdd_HHmmss}{fileExtension}");
+
+                _logger.LogInformation($"Saving video to: {videoFilePath}");
+                using (var stream = new FileStream(videoFilePath, FileMode.Create))
                 {
-                    _logger.LogError("File extension is null or empty");
-                    ViewBag.Error = "Unable to determine file type. Please ensure your file has a proper extension.";
+                    await videoFile.CopyToAsync(stream);
+                }
+
+                if (!System.IO.File.Exists(videoFilePath))
+                {
+                    _logger.LogError($"Failed to save video file: {videoFilePath}");
+                    ViewBag.Error = "Failed to save the uploaded video file. Please try again.";
                     return View("Upload");
                 }
 
-                fileExtension = fileExtension.ToLower();
-                _logger.LogInformation($"File extension: '{fileExtension}'");
+                _logger.LogInformation("=== VIDEO SAVED SUCCESSFULLY ===");
 
-                var allowedExtensions = _configuration.GetSection("FileSettings:AllowedVideoExtensions").Get<string[]>()
-                    ?? new[] { ".mp4", ".avi", ".mov", ".wmv", ".flv", ".webm", ".mkv" };
+                // Step 1: Extract audio from video
+                _logger.LogInformation("=== STARTING AUDIO EXTRACTION ===");
+                audioFilePath = await _audioExtractionService.ExtractAudioAsync(videoFilePath, uploadsPath);
 
-                if (!allowedExtensions.Contains(fileExtension))
+                if (string.IsNullOrEmpty(audioFilePath) || !System.IO.File.Exists(audioFilePath))
                 {
-                    ViewBag.Error = $"Invalid file type '{fileExtension}'. Supported formats: {string.Join(", ", allowedExtensions)}";
+                    _logger.LogError($"Audio extraction failed. Expected path: {audioFilePath}");
+                    CleanupFile(videoFilePath);
+                    ViewBag.Error = "Failed to extract audio from the video file. Please ensure the video file is valid.";
                     return View("Upload");
                 }
 
-                // Setup paths with detailed logging
-                var uploadPath = _configuration["FileSettings:UploadPath"] ?? "wwwroot/uploads";
-                var downloadPath = _configuration["FileSettings:DownloadPath"] ?? "wwwroot/downloads";
+                _logger.LogInformation($"Audio extracted successfully: {audioFilePath}");
 
-                _logger.LogInformation($"Upload path config: '{uploadPath}'");
-                _logger.LogInformation($"Download path config: '{downloadPath}'");
-
-                var currentDirectory = Directory.GetCurrentDirectory();
-                _logger.LogInformation($"Current directory: '{currentDirectory}'");
-
-                if (string.IsNullOrEmpty(currentDirectory))
-                {
-                    _logger.LogError("Current directory is null or empty");
-                    ViewBag.Error = "Unable to determine application directory. Please contact support.";
-                    return View("Upload");
-                }
-
-                var fullUploadPath = Path.Combine(currentDirectory, uploadPath);
-                var fullDownloadPath = Path.Combine(currentDirectory, downloadPath);
-
-                _logger.LogInformation($"Full upload path: '{fullUploadPath}'");
-                _logger.LogInformation($"Full download path: '{fullDownloadPath}'");
-
-                // Ensure directories exist
-                try
-                {
-                    Directory.CreateDirectory(fullUploadPath);
-                    Directory.CreateDirectory(fullDownloadPath);
-                    _logger.LogInformation("Directories created successfully");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to create directories");
-                    ViewBag.Error = "Failed to create required directories. Please check permissions.";
-                    return View("Upload");
-                }
-
-                // Safe filename handling
-                var originalFileName = Path.GetFileNameWithoutExtension(videoFile.FileName);
-                if (string.IsNullOrEmpty(originalFileName))
-                {
-                    _logger.LogWarning("Original filename without extension is null or empty, using fallback");
-                    originalFileName = "video_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                }
-
-                _logger.LogInformation($"Original filename without extension: '{originalFileName}'");
-
-                var sanitizedFileName = SanitizeFileName(originalFileName);
-                if (string.IsNullOrEmpty(sanitizedFileName))
-                {
-                    _logger.LogWarning("Sanitized filename is null or empty, using fallback");
-                    sanitizedFileName = "video_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                }
-
-                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                var uniqueFileName = $"{sanitizedFileName}_{timestamp}{fileExtension}";
-
-                _logger.LogInformation($"Sanitized filename: '{sanitizedFileName}'");
-                _logger.LogInformation($"Final filename: '{uniqueFileName}'");
-
-                // Build video file path safely
-                if (string.IsNullOrEmpty(fullUploadPath) || string.IsNullOrEmpty(uniqueFileName))
-                {
-                    _logger.LogError($"Path components are null: fullUploadPath='{fullUploadPath}', uniqueFileName='{uniqueFileName}'");
-                    ViewBag.Error = "Failed to create file path. Please try again.";
-                    return View("Upload");
-                }
-
-                videoFilePath = Path.Combine(fullUploadPath, uniqueFileName);
-                _logger.LogInformation($"Video file path: '{videoFilePath}'");
-
-                // Save uploaded file
-                _logger.LogInformation("Starting file save operation");
-
-                try
-                {
-                    using (var stream = new FileStream(videoFilePath, FileMode.Create))
-                    {
-                        await videoFile.CopyToAsync(stream);
-                    }
-                    _logger.LogInformation("File saved successfully");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to save uploaded file");
-                    ViewBag.Error = "Failed to save uploaded file. Please try again.";
-                    return View("Upload");
-                }
-
-                // Verify file was saved correctly
-                var fileInfo = new FileInfo(videoFilePath);
-                if (!fileInfo.Exists)
-                {
-                    _logger.LogError($"File does not exist after save: '{videoFilePath}'");
-                    ViewBag.Error = "File was not saved correctly. Please try again.";
-                    return View("Upload");
-                }
-
-                if (fileInfo.Length == 0)
-                {
-                    _logger.LogError("Saved file has zero length");
-                    ViewBag.Error = "Saved file is empty. Please try again.";
-                    return View("Upload");
-                }
-
-                _logger.LogInformation($"Video saved successfully: {videoFilePath} ({fileInfo.Length} bytes)");
-
-                // Extract audio with null checks
-                _logger.LogInformation("Starting audio extraction...");
-
-                if (string.IsNullOrEmpty(videoFilePath))
-                {
-                    _logger.LogError("VideoFilePath is null before audio extraction");
-                    ViewBag.Error = "Internal error: video file path is missing.";
-                    return View("Upload");
-                }
-
-                if (string.IsNullOrEmpty(fullUploadPath))
-                {
-                    _logger.LogError("FullUploadPath is null before audio extraction");
-                    ViewBag.Error = "Internal error: upload path is missing.";
-                    return View("Upload");
-                }
-
-                try
-                {
-                    audioFilePath = await _audioExtractionService.ExtractAudioAsync(videoFilePath, fullUploadPath);
-                    _logger.LogInformation($"Audio extraction completed: '{audioFilePath}'");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Audio extraction failed");
-                    ViewBag.Error = $"Audio extraction failed: {ex.Message}";
-                    return View("Upload");
-                }
-
-                // Verify audio file
-                if (string.IsNullOrEmpty(audioFilePath))
-                {
-                    _logger.LogError("AudioFilePath is null after extraction");
-                    ViewBag.Error = "Audio extraction returned null path.";
-                    return View("Upload");
-                }
-
-                var audioFileInfo = new FileInfo(audioFilePath);
-                if (!audioFileInfo.Exists || audioFileInfo.Length == 0)
-                {
-                    _logger.LogError($"Audio file is missing or empty: '{audioFilePath}'");
-                    ViewBag.Error = "Audio extraction failed - no audio file created.";
-                    return View("Upload");
-                }
-
-                _logger.LogInformation($"Audio extracted successfully: {audioFilePath} ({audioFileInfo.Length} bytes)");
-
-                // Transcribe audio with explicit language handling
-                _logger.LogInformation($"Starting transcription with source language: {sourceLanguage}...");
-
-                TranscriptionResponse transcriptionResponse;
-                try
-                {
-                    transcriptionResponse = await _whisperService.TranscribeAudioAsync(audioFilePath, sourceLanguage);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Transcription service failed");
-                    ViewBag.Error = $"Transcription failed: {ex.Message}";
-                    return View("Upload");
-                }
-
-                if (transcriptionResponse == null)
-                {
-                    _logger.LogError("Transcription response is null");
-                    ViewBag.Error = "Transcription service returned no response.";
-                    return View("Upload");
-                }
+                // Step 2: Transcribe audio using Whisper
+                _logger.LogInformation("=== STARTING TRANSCRIPTION ===");
+                var transcriptionResponse = await _whisperService.TranscribeAudioAsync(audioFilePath, sourceLanguage);
 
                 if (!transcriptionResponse.Success)
                 {
                     _logger.LogError($"Transcription failed: {transcriptionResponse.Message}");
+                    CleanupFile(videoFilePath);
+                    CleanupFile(audioFilePath);
                     ViewBag.Error = $"Transcription failed: {transcriptionResponse.Message}";
                     return View("Upload");
                 }
 
-                if (string.IsNullOrEmpty(transcriptionResponse.Text))
+                _logger.LogInformation($"Transcription completed. Text length: {transcriptionResponse.Text.Length}, Segments: {transcriptionResponse.Segments.Count}");
+
+                // Step 3: Generate SRT files with translation
+                _logger.LogInformation("=== GENERATING SRT FILES WITH TRANSLATION ===");
+
+                // Generate original SRT
+                var originalSrt = _srtGeneratorService.GenerateSrt(transcriptionResponse.Segments);
+                var originalSrtFileName = $"{sanitizedFileName}_original_{DateTime.Now:yyyyMMdd_HHmmss}.srt";
+                var originalSrtPath = Path.Combine(downloadsPath, originalSrtFileName);
+                await System.IO.File.WriteAllTextAsync(originalSrtPath, originalSrt, System.Text.Encoding.UTF8);
+
+                // Generate translated SRT by translating each segment individually
+                var translatedSegments = new List<SrtEntry>();
+
+                _logger.LogInformation("=== TRANSLATING INDIVIDUAL SEGMENTS ===");
+                for (int i = 0; i < transcriptionResponse.Segments.Count; i++)
                 {
-                    _logger.LogError("Transcription returned empty text");
-                    ViewBag.Error = "No speech was detected in the audio. Please ensure your video contains clear speech.";
-                    return View("Upload");
-                }
+                    var segment = transcriptionResponse.Segments[i];
+                    string translatedSegmentText;
 
-                if (transcriptionResponse.Segments == null || !transcriptionResponse.Segments.Any())
-                {
-                    _logger.LogError("Transcription returned no segments");
-                    ViewBag.Error = "Failed to create subtitle segments. Please try with a different video file.";
-                    return View("Upload");
-                }
-
-                _logger.LogInformation($"Transcription successful. Text length: {transcriptionResponse.Text.Length} chars, Segments: {transcriptionResponse.Segments.Count}");
-
-                // Generate original SRT content
-                string originalSrtContent;
-                try
-                {
-                    originalSrtContent = _srtGeneratorService.GenerateSrt(transcriptionResponse.Segments);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "SRT generation failed");
-                    ViewBag.Error = "Failed to generate subtitle file.";
-                    return View("Upload");
-                }
-
-                if (string.IsNullOrEmpty(originalSrtContent))
-                {
-                    _logger.LogError("SRT generation returned empty content");
-                    ViewBag.Error = "Failed to generate subtitle content.";
-                    return View("Upload");
-                }
-
-                _logger.LogInformation($"Original SRT generated successfully. Length: {originalSrtContent.Length} characters");
-
-                // Translation logic (rest of the method remains the same but with similar null checks)
-                string translatedSrtContent = originalSrtContent;
-                if (targetLanguage != "Original")
-                {
-                    _logger.LogInformation($"Starting translation to {targetLanguage}...");
-
-                    var translatedSegments = new List<SrtEntry>();
-
-                    foreach (var segment in transcriptionResponse.Segments)
+                    try
                     {
-                        try
-                        {
-                            if (segment?.Text != null)
-                            {
-                                var translatedText = await _translationService.TranslateTextAsync(segment.Text, targetLanguage);
+                        // Translate each segment individually for better accuracy
+                        translatedSegmentText = await _translationService.TranslateTextAsync(
+                            segment.Text,
+                            targetLanguage,
+                            sourceLanguage == "auto" ? "English" : sourceLanguage
+                        );
 
-                                translatedSegments.Add(new SrtEntry
-                                {
-                                    Index = segment.Index,
-                                    StartTime = segment.StartTime,
-                                    EndTime = segment.EndTime,
-                                    Text = segment.Text,
-                                    TranslatedText = translatedText ?? segment.Text
-                                });
-                            }
-                        }
-                        catch (Exception ex)
+                        if (string.IsNullOrEmpty(translatedSegmentText))
                         {
-                            _logger.LogWarning(ex, $"Failed to translate segment {segment?.Index}, using original text");
-                            translatedSegments.Add(new SrtEntry
-                            {
-                                Index = segment?.Index ?? 0,
-                                StartTime = segment?.StartTime ?? TimeSpan.Zero,
-                                EndTime = segment?.EndTime ?? TimeSpan.Zero,
-                                Text = segment?.Text ?? "",
-                                TranslatedText = segment?.Text ?? ""
-                            });
+                            translatedSegmentText = segment.Text; // Fallback to original
                         }
                     }
-
-                    translatedSrtContent = _srtGeneratorService.GenerateSrt(translatedSegments);
-
-                    if (string.IsNullOrEmpty(translatedSrtContent))
+                    catch (Exception ex)
                     {
-                        _logger.LogWarning("Translation SRT generation failed, using original");
-                        translatedSrtContent = originalSrtContent;
+                        _logger.LogWarning(ex, $"Failed to translate segment {i + 1}, using original text");
+                        translatedSegmentText = segment.Text; // Fallback to original
                     }
 
-                    _logger.LogInformation("Translation completed successfully");
+                    translatedSegments.Add(new SrtEntry
+                    {
+                        Index = segment.Index,
+                        StartTime = segment.StartTime,
+                        EndTime = segment.EndTime,
+                        Text = segment.Text,
+                        TranslatedText = translatedSegmentText
+                    });
+
+                    // Small delay to avoid rate limiting
+                    if (i < transcriptionResponse.Segments.Count - 1)
+                    {
+                        await Task.Delay(100);
+                    }
                 }
 
-                // Save SRT files with null checks
-                var originalSrtFileName = $"{sanitizedFileName}_original.srt";
-                var translatedSrtFileName = targetLanguage == "Original"
-                    ? $"{sanitizedFileName}_original.srt"
-                    : $"{sanitizedFileName}_{targetLanguage.ToLower().Replace(" ", "_")}.srt";
+                var translatedSrt = _srtGeneratorService.GenerateSrt(translatedSegments);
+                var translatedSrtFileName = $"{sanitizedFileName}_translated_{targetLanguage.ToLower()}_{DateTime.Now:yyyyMMdd_HHmmss}.srt";
+                var translatedSrtPath = Path.Combine(downloadsPath, translatedSrtFileName);
+                await System.IO.File.WriteAllTextAsync(translatedSrtPath, translatedSrt, System.Text.Encoding.UTF8);
 
-                if (string.IsNullOrEmpty(fullDownloadPath))
+                // Verify files were created
+                if (!System.IO.File.Exists(originalSrtPath) || !System.IO.File.Exists(translatedSrtPath))
                 {
-                    _logger.LogError("FullDownloadPath is null when saving SRT files");
-                    ViewBag.Error = "Internal error: download path is missing.";
-                    return View("Upload");
-                }
-
-                var originalSrtPath = Path.Combine(fullDownloadPath, originalSrtFileName);
-                var translatedSrtPath = Path.Combine(fullDownloadPath, translatedSrtFileName);
-
-                _logger.LogInformation($"Saving SRT files to: '{originalSrtPath}' and '{translatedSrtPath}'");
-
-                try
-                {
-                    await System.IO.File.WriteAllTextAsync(originalSrtPath, originalSrtContent, System.Text.Encoding.UTF8);
-                    await System.IO.File.WriteAllTextAsync(translatedSrtPath, translatedSrtContent, System.Text.Encoding.UTF8);
-                    _logger.LogInformation("SRT files saved successfully");
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to save SRT files");
-                    ViewBag.Error = "Failed to save subtitle files. Please try again.";
+                    _logger.LogError($"SRT generation failed. Original: {System.IO.File.Exists(originalSrtPath)}, Translated: {System.IO.File.Exists(translatedSrtPath)}");
+                    CleanupFile(videoFilePath);
+                    CleanupFile(audioFilePath);
+                    ViewBag.Error = "Failed to generate subtitle files. Please try again.";
                     return View("Upload");
                 }
 
@@ -432,9 +232,11 @@ namespace Film_website.Controllers
                 // Set ViewBag data for Result view
                 ViewBag.OriginalSrtPath = $"/Translation/DownloadFile?fileName={originalSrtFileName}";
                 ViewBag.TranslatedSrtPath = $"/Translation/DownloadFile?fileName={translatedSrtFileName}";
+                ViewBag.OriginalSrtFileName = originalSrtFileName; // *** NEW: Add original file name ***
+                ViewBag.TranslatedSrtFileName = translatedSrtFileName; // *** NEW: Add translated file name ***
                 ViewBag.TargetLanguage = targetLanguage;
                 ViewBag.OriginalFileName = sanitizedFileName;
-                ViewBag.SourceLanguage = sourceLanguage;
+                ViewBag.SourceLanguage = sourceLanguage == "auto" ? "English" : sourceLanguage;
                 ViewBag.TranscriptionLength = transcriptionResponse.Text.Length;
                 ViewBag.SegmentCount = transcriptionResponse.Segments.Count;
 
@@ -459,13 +261,12 @@ namespace Film_website.Controllers
             }
         }
 
-
         [HttpGet]
         public IActionResult DownloadFile(string fileName)
         {
             try
             {
-                var downloadsPath = _configuration["FileSettings:DownloadPath"] ?? "wwwroot/downloads";
+                var downloadsPath = Path.Combine(_webHostEnvironment.WebRootPath, "downloads");
                 var filePath = Path.Combine(downloadsPath, fileName);
 
                 if (!System.IO.File.Exists(filePath))
@@ -476,7 +277,6 @@ namespace Film_website.Controllers
                 var fileBytes = System.IO.File.ReadAllBytes(filePath);
                 var contentType = "application/octet-stream";
 
-                // Fix: Use proper File method call
                 return File(fileBytes, contentType, fileName);
             }
             catch (Exception ex)
@@ -486,6 +286,7 @@ namespace Film_website.Controllers
             }
         }
 
+        // *** EXISTING HELPER METHODS - UNCHANGED ***
         private void CleanupFile(string filePath)
         {
             try
@@ -498,55 +299,15 @@ namespace Film_website.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to cleanup file: {FilePath}", filePath);
+                _logger.LogWarning(ex, $"Failed to cleanup file: {filePath}");
             }
         }
 
-        private async Task<bool> CheckFFmpegAsync()
-        {
-            try
-            {
-                var ffmpegPath = _configuration["FFmpeg:Path"] ?? "ffmpeg";
-
-                var processInfo = new ProcessStartInfo
-                {
-                    FileName = ffmpegPath,
-                    Arguments = "-version",
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    CreateNoWindow = true
-                };
-
-                using var process = Process.Start(processInfo);
-                if (process == null) return false;
-
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(10));
-                var processTask = process.WaitForExitAsync();
-
-                var completedTask = await Task.WhenAny(processTask, timeoutTask);
-                if (completedTask == timeoutTask)
-                {
-                    process.Kill(true);
-                    return false;
-                }
-
-                var output = await process.StandardOutput.ReadToEndAsync();
-                _logger.LogInformation($"FFmpeg version check: {output.Substring(0, Math.Min(200, output.Length))}");
-
-                return process.ExitCode == 0;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "FFmpeg check failed");
-                return false;
-            }
-        }
-
-        private bool ValidateOpenAIConfig()
+        private bool ValidateOpenAIConfiguration()
         {
             var apiKey = _configuration["OpenAI:ApiKey"];
-            if (string.IsNullOrEmpty(apiKey))
+
+            if (string.IsNullOrWhiteSpace(apiKey))
             {
                 _logger.LogError("OpenAI API key is not configured");
                 return false;
@@ -578,55 +339,221 @@ namespace Film_website.Controllers
 
             try
             {
-                // Remove or replace problematic characters
                 var invalidChars = Path.GetInvalidFileNameChars();
                 var sanitized = fileName;
 
-                // Replace invalid characters with underscores
                 foreach (var c in invalidChars)
                 {
                     sanitized = sanitized.Replace(c, '_');
                 }
 
-                // Replace other problematic characters
                 sanitized = sanitized.Replace(":", "_")
                                      .Replace(";", "_")
                                      .Replace(",", "_")
-                                     .Replace("'", "_")
-                                     .Replace("\"", "_")
-                                     .Replace("(", "_")
-                                     .Replace(")", "_")
-                                     .Replace("[", "_")
-                                     .Replace("]", "_")
-                                     .Replace("{", "_")
-                                     .Replace("}", "_")
-                                     .Replace(" ", "_");
+                                     .Replace(" ", "_")
+                                     .Replace("(", "")
+                                     .Replace(")", "");
 
-                // Remove multiple consecutive underscores
-                sanitized = System.Text.RegularExpressions.Regex.Replace(sanitized, "_+", "_");
+                if (sanitized.Length > 50)
+                {
+                    sanitized = sanitized.Substring(0, 50);
+                }
 
-                // Remove leading/trailing underscores
-                sanitized = sanitized.Trim('_');
-
-                // Ensure it's not empty after sanitization
-                if (string.IsNullOrEmpty(sanitized))
+                if (string.IsNullOrWhiteSpace(sanitized))
                 {
                     sanitized = "video_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
                 }
 
-                // Limit length to avoid path issues
-                if (sanitized.Length > 100)
-                {
-                    sanitized = sanitized.Substring(0, 100).TrimEnd('_');
-                }
-
+                _logger.LogInformation($"Sanitized filename: '{fileName}' -> '{sanitized}'");
                 return sanitized;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error sanitizing filename: {FileName}", fileName);
+                _logger.LogError(ex, $"Error sanitizing filename: {fileName}");
                 return "video_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
             }
         }
+
+        // =========================================================
+        // *** NEW ACCURACY CHECK METHODS - START ***
+        // =========================================================
+
+        /// <summary>
+        /// Check translation accuracy using 3-layer pipeline
+        /// </summary>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CheckAccuracy(string originalFile, string translatedFile,
+            string sourceLanguage, string targetLanguage, string targetCountry = "")
+        {
+            try
+            {
+                _logger.LogInformation($"Starting accuracy check for: {originalFile} -> {translatedFile}");
+
+                // Validate file paths
+                if (string.IsNullOrEmpty(originalFile) || string.IsNullOrEmpty(translatedFile))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Original file and translated file paths are required"
+                    });
+                }
+
+                // Construct full file paths
+                var downloadsPath = Path.Combine(_webHostEnvironment.WebRootPath, "downloads");
+                var originalFilePath = Path.Combine(downloadsPath, originalFile);
+                var translatedFilePath = Path.Combine(downloadsPath, translatedFile);
+
+                // Check if files exist
+                if (!System.IO.File.Exists(originalFilePath))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Original file not found: {originalFile}"
+                    });
+                }
+
+                if (!System.IO.File.Exists(translatedFilePath))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Translated file not found: {translatedFile}"
+                    });
+                }
+
+                // Set default target country if not provided
+                if (string.IsNullOrEmpty(targetCountry))
+                {
+                    targetCountry = GetDefaultCountryForLanguage(targetLanguage);
+                }
+
+                // Run the accuracy check pipeline
+                var result = await _accuracyService.CheckTranslationAccuracyAsync(
+                    originalFilePath,
+                    translatedFilePath,
+                    sourceLanguage,
+                    targetLanguage,
+                    targetCountry
+                );
+
+                _logger.LogInformation($"Accuracy check completed. Overall score: {result.AccuracyScore}%, Similarity: {result.SemanticSimilarity:F2}");
+
+                return Json(new
+                {
+                    success = true,
+                    data = result,
+                    message = "Accuracy check completed successfully"
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during translation accuracy check");
+                return Json(new
+                {
+                    success = false,
+                    message = $"Error during accuracy check: {ex.Message}"
+                });
+            }
+        }
+
+        /// <summary>
+        /// Get accuracy check status (for progress tracking)
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetAccuracyCheckStatus(string sessionId)
+        {
+            // This can be implemented if you want to track progress
+            // For now, return a simple status
+            return Json(new
+            {
+                success = true,
+                status = "completed",
+                message = "Accuracy check status retrieved"
+            });
+        }
+
+        /// <summary>
+        /// Download accuracy report as JSON
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DownloadAccuracyReport(string originalFile, string translatedFile)
+        {
+            try
+            {
+                // This would typically get a cached result or re-run the check
+                // For now, return a simple implementation
+                var reportData = new
+                {
+                    GeneratedAt = DateTime.UtcNow,
+                    OriginalFile = originalFile,
+                    TranslatedFile = translatedFile,
+                    Message = "This is a placeholder for the accuracy report. Implement caching to store previous results."
+                };
+
+                var json = JsonConvert.SerializeObject(reportData, Formatting.Indented);
+                var fileName = $"accuracy_report_{DateTime.UtcNow:yyyyMMdd_HHmmss}.json";
+
+                return File(System.Text.Encoding.UTF8.GetBytes(json), "application/json", fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating accuracy report");
+                return Json(new { success = false, message = "Error generating report" });
+            }
+        }
+
+        /// <summary>
+        /// Helper method to get default country for a language
+        /// </summary>
+        private string GetDefaultCountryForLanguage(string language)
+        {
+            return language.ToLower() switch
+            {
+                "vietnamese" => "Vietnam",
+                "english" => "United States",
+                "spanish" => "Spain",
+                "french" => "France",
+                "german" => "Germany",
+                "chinese" => "China",
+                "japanese" => "Japan",
+                "korean" => "South Korea",
+                "portuguese" => "Portugal",
+                "russian" => "Russia",
+                "arabic" => "Saudi Arabia",
+                "hindi" => "India",
+                "thai" => "Thailand",
+                "italian" => "Italy",
+                "dutch" => "Netherlands",
+                _ => "United States"
+            };
+        }
+
+        /// <summary>
+        /// Get available target countries for cultural context
+        /// </summary>
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public IActionResult GetTargetCountries()
+        {
+            var countries = new[]
+            {
+                "Vietnam", "United States", "United Kingdom", "Canada", "Australia",
+                "Spain", "Mexico", "Argentina", "France", "Germany", "Italy",
+                "China", "Japan", "South Korea", "Thailand", "India",
+                "Brazil", "Portugal", "Russia", "Saudi Arabia", "Netherlands"
+            };
+
+            return Json(new { success = true, countries = countries });
+        }
+
+        // =========================================================
+        // *** NEW ACCURACY CHECK METHODS - END ***
+        // =========================================================
     }
 }

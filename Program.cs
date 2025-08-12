@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add after your existing service registrations
+builder.Services.AddHttpClient<ITranslationAccuracyService, TranslationAccuracyService>();
+builder.Services.AddScoped<ITranslationAccuracyService, TranslationAccuracyService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
