@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Film_website.Models
 {
@@ -32,30 +33,44 @@ namespace Film_website.Models
         public List<string> SensitiveWords { get; set; } = new();
     }
 
-    // API request/response models for OpenAI
+    // API request/response models for OpenAI Embeddings
     public class OpenAIEmbeddingRequest
     {
+        [JsonProperty("model")]
         public string Model { get; set; } = "text-embedding-3-large";
+
+        [JsonProperty("input")]
         public List<string> Input { get; set; } = new();
-        public string Encoding_format { get; set; } = "float";
+
+        [JsonProperty("encoding_format")]
+        public string EncodingFormat { get; set; } = "float";
     }
 
     public class OpenAIEmbeddingResponse
     {
+        [JsonProperty("data")]
         public List<EmbeddingData> Data { get; set; } = new();
+
+        [JsonProperty("usage")]
         public EmbeddingUsage Usage { get; set; } = new();
     }
 
     public class EmbeddingData
     {
+        [JsonProperty("embedding")]
         public List<double> Embedding { get; set; } = new();
+
+        [JsonProperty("index")]
         public int Index { get; set; }
     }
 
     public class EmbeddingUsage
     {
-        public int Prompt_tokens { get; set; }
-        public int Total_tokens { get; set; }
+        [JsonProperty("prompt_tokens")]
+        public int PromptTokens { get; set; }
+
+        [JsonProperty("total_tokens")]
+        public int TotalTokens { get; set; }
     }
 
     // GPT accuracy check models
@@ -69,24 +84,34 @@ namespace Film_website.Models
 
     public class AccuracyCheckResponse
     {
+        [JsonProperty("score")]
         public int Score { get; set; }
+
+        [JsonProperty("feedback")]
         public string Feedback { get; set; } = string.Empty;
     }
 
-    // Cultural check models
+    // Cultural sensitivity check models
     public class CulturalCheckRequest
     {
         public string OriginalText { get; set; } = string.Empty;
         public string TranslatedText { get; set; } = string.Empty;
-        public string TargetCountry { get; set; } = string.Empty;
         public string TargetLanguage { get; set; } = string.Empty;
+        public string TargetCountry { get; set; } = string.Empty;
     }
 
     public class CulturalCheckResponse
     {
-        public string Risk { get; set; } = string.Empty; // "Safe", "Potentially sensitive", "Inappropriate"
+        [JsonProperty("risk")]
+        public string Risk { get; set; } = "Safe";
+
+        [JsonProperty("comment")]
         public string Comment { get; set; } = string.Empty;
+
+        [JsonProperty("suggestion")]
         public string Suggestion { get; set; } = string.Empty;
+
+        [JsonProperty("sensitiveWords")]
         public List<string> SensitiveWords { get; set; } = new();
     }
 }

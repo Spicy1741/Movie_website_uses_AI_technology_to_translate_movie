@@ -39,6 +39,9 @@ namespace Film_website.Services
                 var originalTexts = await ReadSubtitleFileAsync(originalFilePath);
                 var translatedTexts = await ReadSubtitleFileAsync(translatedFilePath);
 
+                _logger.LogInformation($"Read {originalTexts.Count} sentences from {originalFilePath}");
+                _logger.LogInformation($"Read {translatedTexts.Count} sentences from {translatedFilePath}");
+
                 if (originalTexts.Count != translatedTexts.Count)
                 {
                     _logger.LogWarning($"Mismatch in sentence count: Original({originalTexts.Count}) vs Translated({translatedTexts.Count})");
@@ -89,38 +92,33 @@ namespace Film_website.Services
                                 TargetLanguage = targetLanguage
                             };
 
-                            var accuracyResponse = await CheckAccuracyWithGptAsync(accuracyRequest);
-                            sentenceResult.AccuracyScore = accuracyResponse.Score;
-                            sentenceResult.Feedback = accuracyResponse.Feedback;
-                            totalAccuracy += accuracyResponse.Score;
+                            var accuracyResult = await CheckAccuracyWithGptAsync(accuracyRequest);
+                            sentenceResult.AccuracyScore = accuracyResult.Score;
+                            sentenceResult.Feedback = accuracyResult.Feedback;
+                            totalAccuracy += accuracyResult.Score;
                         }
                         else
                         {
                             sentenceResult.AccuracyScore = 0;
-                            sentenceResult.Feedback = "Low semantic similarity - requires manual review";
+                            sentenceResult.Feedback = "Low semantic similarity - translation may be inaccurate";
                         }
 
-                        // Layer 3: Cultural sensitivity check
+                        // Layer 3: Cultural sensitivity
                         _logger.LogInformation($"Processing sentence {i + 1}: Layer 3 - Cultural sensitivity");
                         var culturalRequest = new CulturalCheckRequest
                         {
                             OriginalText = originalText,
                             TranslatedText = translatedText,
-                            TargetCountry = targetCountry,
-                            TargetLanguage = targetLanguage
+                            TargetLanguage = targetLanguage,
+                            TargetCountry = targetCountry
                         };
 
-                        var culturalResponse = await CheckCulturalSensitivityAsync(culturalRequest);
-                        sentenceResult.CulturalRisk = culturalResponse.Risk;
-                        sentenceResult.CulturalComment = culturalResponse.Comment;
-                        sentenceResult.CulturalSuggestion = culturalResponse.Suggestion;
-                        sentenceResult.SensitiveWords = culturalResponse.SensitiveWords;
-                        sentenceResult.IsSensitive = culturalResponse.Risk != "Safe";
-
-                        if (sentenceResult.IsSensitive)
-                        {
-                            result.HasSensitiveContent = true;
-                        }
+                        var culturalResult = await CheckCulturalSensitivityAsync(culturalRequest);
+                        sentenceResult.CulturalRisk = culturalResult.Risk;
+                        sentenceResult.CulturalComment = culturalResult.Comment;
+                        sentenceResult.CulturalSuggestion = culturalResult.Suggestion;
+                        sentenceResult.SensitiveWords = culturalResult.SensitiveWords;
+                        sentenceResult.IsSensitive = culturalResult.Risk != "Safe";
 
                         processedCount++;
                     }
@@ -131,52 +129,37 @@ namespace Film_website.Services
                     }
 
                     sentenceResults.Add(sentenceResult);
-
-                    // Add small delay to avoid rate limiting
-                    await Task.Delay(100);
                 }
 
                 // Calculate overall results
-                if (processedCount > 0)
-                {
-                    result.SemanticSimilarity = totalSimilarity / processedCount;
-                    result.AccuracyScore = (int)(totalAccuracy / processedCount);
-                }
-
                 result.SentenceResults = sentenceResults;
+                result.SemanticSimilarity = processedCount > 0 ? totalSimilarity / processedCount : 0.0;
+                result.AccuracyScore = processedCount > 0 ? totalAccuracy / processedCount : 0;
+                result.HasSensitiveContent = sentenceResults.Any(s => s.IsSensitive);
 
-                // Overall cultural risk assessment
-                var riskCounts = sentenceResults.GroupBy(s => s.CulturalRisk)
-                    .ToDictionary(g => g.Key, g => g.Count());
-
-                if (riskCounts.ContainsKey("Inappropriate") && riskCounts["Inappropriate"] > 0)
+                // Aggregate cultural risks
+                var culturalRisks = sentenceResults.Where(s => s.CulturalRisk != "Safe").ToList();
+                if (culturalRisks.Any())
                 {
-                    result.CulturalRisk = "Inappropriate";
-                    result.CulturalComment = $"Found {riskCounts["Inappropriate"]} inappropriate content(s) that require immediate attention.";
-                }
-                else if (riskCounts.ContainsKey("Potentially sensitive") && riskCounts["Potentially sensitive"] > 0)
-                {
-                    result.CulturalRisk = "Potentially sensitive";
-                    result.CulturalComment = $"Found {riskCounts["Potentially sensitive"]} potentially sensitive content(s) that may need review.";
+                    var highestRisk = culturalRisks.Any(r => r.CulturalRisk == "Inappropriate") ? "Inappropriate" :
+                                     culturalRisks.Any(r => r.CulturalRisk == "Potentially sensitive") ? "Potentially sensitive" : "Safe";
+                    result.CulturalRisk = highestRisk;
+                    result.CulturalComment = string.Join("; ", culturalRisks.Select(r => r.CulturalComment).Distinct());
                 }
                 else
                 {
                     result.CulturalRisk = "Safe";
-                    result.CulturalComment = "No cultural or political sensitivity issues detected.";
+                    result.CulturalComment = "No cultural sensitivity issues detected";
                 }
 
                 // Generate overall feedback
-                var sensitiveCount = sentenceResults.Count(s => s.IsSensitive);
-                var lowAccuracyCount = sentenceResults.Count(s => s.AccuracyScore < 70);
-
                 var feedbackParts = new List<string>();
-                if (lowAccuracyCount > 0)
-                    feedbackParts.Add($"{lowAccuracyCount} sentence(s) have accuracy below 70%");
-                if (sensitiveCount > 0)
-                    feedbackParts.Add($"{sensitiveCount} sentence(s) contain sensitive content");
+                if (result.SemanticSimilarity < 0.7) feedbackParts.Add("low semantic similarity");
+                if (result.AccuracyScore < 70) feedbackParts.Add("accuracy concerns");
+                if (result.HasSensitiveContent) feedbackParts.Add("cultural sensitivity issues");
 
-                result.AccuracyFeedback = feedbackParts.Any()
-                    ? string.Join(", ", feedbackParts) + ". Manual review recommended."
+                result.AccuracyFeedback = feedbackParts.Any() ?
+                    string.Join(", ", feedbackParts) + ". Manual review recommended."
                     : "Translation quality looks good overall.";
 
                 _logger.LogInformation($"Translation accuracy check completed. Overall similarity: {result.SemanticSimilarity:F2}, Accuracy: {result.AccuracyScore}%");
@@ -206,11 +189,12 @@ namespace Film_website.Services
                     return 0.0;
                 }
 
-                var requestBody = new OpenAIEmbeddingRequest
+                // FIX: Use proper JSON structure with lowercase property names for OpenAI API
+                var requestBody = new
                 {
-                    Model = "text-embedding-3-large",
-                    Input = new List<string> { originalText.Trim(), translatedText.Trim() },
-                    Encoding_format = "float"
+                    model = "text-embedding-3-large",
+                    input = new string[] { originalText.Trim(), translatedText.Trim() },
+                    encoding_format = "float"
                 };
 
                 var jsonContent = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
@@ -274,7 +258,7 @@ Focus on:
 - Natural language flow
 - Context appropriateness
 
-Respond in this JSON format:
+Respond ONLY with valid JSON in this exact format:
 {{
     ""score"": <number 0-100>,
     ""feedback"": ""<brief explanation>""
@@ -285,7 +269,7 @@ Respond in this JSON format:
                     model = "gpt-4o",
                     messages = new[]
                     {
-                        new { role = "system", content = "You are a professional translation quality assessor. Always respond with valid JSON." },
+                        new { role = "system", content = "You are a professional translation quality assessor. Always respond with valid JSON only. Do not include any text before or after the JSON." },
                         new { role = "user", content = prompt }
                     },
                     max_tokens = 300,
@@ -307,8 +291,19 @@ Respond in this JSON format:
 
                 if (!string.IsNullOrEmpty(gptResponse))
                 {
-                    var accuracyResponse = JsonConvert.DeserializeObject<AccuracyCheckResponse>(gptResponse);
-                    return accuracyResponse ?? new AccuracyCheckResponse { Score = 0, Feedback = "Failed to parse response" };
+                    // FIX: Clean the response and ensure it's valid JSON
+                    var cleanResponse = CleanJsonResponse(gptResponse);
+                    try
+                    {
+                        var accuracyResponse = JsonConvert.DeserializeObject<AccuracyCheckResponse>(cleanResponse);
+                        return accuracyResponse ?? new AccuracyCheckResponse { Score = 0, Feedback = "Failed to parse response" };
+                    }
+                    catch (JsonException ex)
+                    {
+                        _logger.LogError($"JSON parsing error for accuracy response: {ex.Message}. Response: {cleanResponse}");
+                        // Extract score and feedback manually if JSON parsing fails
+                        return ExtractAccuracyFromText(gptResponse);
+                    }
                 }
 
                 return new AccuracyCheckResponse { Score = 0, Feedback = "No response from GPT" };
@@ -341,7 +336,7 @@ Please assess for:
 - Social taboos
 - Potentially offensive content
 
-Respond in this JSON format:
+Respond ONLY with valid JSON in this exact format:
 {{
     ""risk"": ""<Safe|Potentially sensitive|Inappropriate>"",
     ""comment"": ""<explanation of any issues found>"",
@@ -356,7 +351,7 @@ If no issues found, use ""Safe"" for risk and empty arrays for sensitiveWords.";
                     model = "gpt-4o",
                     messages = new[]
                     {
-                        new { role = "system", content = "You are a cultural sensitivity expert. Always respond with valid JSON." },
+                        new { role = "system", content = "You are a cultural sensitivity expert. Always respond with valid JSON only. Do not include any text before or after the JSON." },
                         new { role = "user", content = prompt }
                     },
                     max_tokens = 400,
@@ -384,14 +379,31 @@ If no issues found, use ""Safe"" for risk and empty arrays for sensitiveWords.";
 
                 if (!string.IsNullOrEmpty(gptResponse))
                 {
-                    var culturalResponse = JsonConvert.DeserializeObject<CulturalCheckResponse>(gptResponse);
-                    return culturalResponse ?? new CulturalCheckResponse
+                    // FIX: Clean the response and ensure it's valid JSON
+                    var cleanResponse = CleanJsonResponse(gptResponse);
+                    try
                     {
-                        Risk = "Safe",
-                        Comment = "Failed to parse response",
-                        Suggestion = "",
-                        SensitiveWords = new List<string>()
-                    };
+                        var culturalResponse = JsonConvert.DeserializeObject<CulturalCheckResponse>(cleanResponse);
+                        return culturalResponse ?? new CulturalCheckResponse
+                        {
+                            Risk = "Safe",
+                            Comment = "Failed to parse response",
+                            Suggestion = "",
+                            SensitiveWords = new List<string>()
+                        };
+                    }
+                    catch (JsonException ex)
+                    {
+                        _logger.LogError($"JSON parsing error for cultural response: {ex.Message}. Response: {cleanResponse}");
+                        // Return safe default if parsing fails
+                        return new CulturalCheckResponse
+                        {
+                            Risk = "Safe",
+                            Comment = "Response parsing failed - manual review recommended",
+                            Suggestion = "",
+                            SensitiveWords = new List<string>()
+                        };
+                    }
                 }
 
                 return new CulturalCheckResponse
@@ -428,29 +440,19 @@ If no issues found, use ""Safe"" for risk and empty arrays for sensitiveWords.";
                 var lines = await File.ReadAllLinesAsync(filePath);
                 var sentences = new List<string>();
 
-                if (Path.GetExtension(filePath).ToLower() == ".srt")
+                foreach (var line in lines)
                 {
-                    // Parse SRT format
-                    for (int i = 0; i < lines.Length; i++)
+                    var trimmedLine = line.Trim();
+
+                    // Skip empty lines, SRT indices, and timecodes
+                    if (string.IsNullOrWhiteSpace(trimmedLine) ||
+                        Regex.IsMatch(trimmedLine, @"^\d+$") ||
+                        Regex.IsMatch(trimmedLine, @"^\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}$"))
                     {
-                        var line = lines[i].Trim();
-
-                        // Skip empty lines, sequence numbers, and timestamps
-                        if (string.IsNullOrEmpty(line) ||
-                            Regex.IsMatch(line, @"^\d+$") ||
-                            Regex.IsMatch(line, @"^\d{2}:\d{2}:\d{2},\d{3}\s*-->\s*\d{2}:\d{2}:\d{2},\d{3}$"))
-                        {
-                            continue;
-                        }
-
-                        // This is subtitle text
-                        sentences.Add(line);
+                        continue;
                     }
-                }
-                else
-                {
-                    // Assume plain text format
-                    sentences = lines.Where(line => !string.IsNullOrWhiteSpace(line)).ToList();
+
+                    sentences.Add(trimmedLine);
                 }
 
                 _logger.LogInformation($"Read {sentences.Count} sentences from {filePath}");
@@ -486,6 +488,50 @@ If no issues found, use ""Safe"" for risk and empty arrays for sensitiveWords.";
                 return 0.0;
 
             return dotProduct / (magnitude1 * magnitude2);
+        }
+
+        private string CleanJsonResponse(string response)
+        {
+            if (string.IsNullOrWhiteSpace(response))
+                return "{}";
+
+            // Remove any text before the first { and after the last }
+            var startIndex = response.IndexOf('{');
+            var endIndex = response.LastIndexOf('}');
+
+            if (startIndex >= 0 && endIndex >= 0 && endIndex > startIndex)
+            {
+                return response.Substring(startIndex, endIndex - startIndex + 1);
+            }
+
+            return "{}";
+        }
+
+        private AccuracyCheckResponse ExtractAccuracyFromText(string text)
+        {
+            try
+            {
+                // Try to extract score and feedback from plain text response
+                var scoreMatch = Regex.Match(text, @"score["":\s]*(\d+)", RegexOptions.IgnoreCase);
+                var score = scoreMatch.Success ? int.Parse(scoreMatch.Groups[1].Value) : 50;
+
+                var feedbackMatch = Regex.Match(text, @"feedback["":\s]*[""']([^""']+)[""']", RegexOptions.IgnoreCase);
+                var feedback = feedbackMatch.Success ? feedbackMatch.Groups[1].Value : "Could not parse detailed feedback";
+
+                return new AccuracyCheckResponse
+                {
+                    Score = Math.Max(0, Math.Min(100, score)),
+                    Feedback = feedback
+                };
+            }
+            catch
+            {
+                return new AccuracyCheckResponse
+                {
+                    Score = 50,
+                    Feedback = "Could not parse accuracy response"
+                };
+            }
         }
     }
 }
