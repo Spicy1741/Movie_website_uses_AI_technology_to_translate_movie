@@ -81,9 +81,9 @@ namespace Film_website.Services
                         totalSimilarity += sentenceResult.SemanticSimilarity;
 
                         // Layer 2: Accuracy check (only if similarity >= 0.8)
-                        if (sentenceResult.SemanticSimilarity >= 0.8)
+                        if (sentenceResult.SemanticSimilarity >= 0.5) // CHANGED: Lowered from 0.8 to 0.5
                         {
-                            _logger.LogInformation($"Processing sentence {i + 1}: Layer 2 - Accuracy check");
+                            _logger.LogInformation($"Processing sentence {i + 1}: Layer 2 - Accuracy check (High confidence)");
                             var accuracyRequest = new AccuracyCheckRequest
                             {
                                 OriginalText = originalText,
@@ -99,9 +99,16 @@ namespace Film_website.Services
                         }
                         else
                         {
-                            sentenceResult.AccuracyScore = 0;
-                            sentenceResult.Feedback = "Low semantic similarity - translation may be inaccurate";
+                            _logger.LogInformation($"Processing sentence {i + 1}: Layer 2 - Accuracy check (Low confidence - using similarity-based score)");
+                            // CHANGED: Use similarity-based scoring instead of 0
+                            var estimatedAccuracy = (int)(sentenceResult.SemanticSimilarity * 100);
+                            sentenceResult.AccuracyScore = Math.Max(estimatedAccuracy, 20); // Minimum 20% for any translation attempt
+                            sentenceResult.Feedback = $"Low semantic similarity ({sentenceResult.SemanticSimilarity:P1}) - estimated accuracy based on similarity";
+                            totalAccuracy += sentenceResult.AccuracyScore;
                         }
+
+                        // Make sure we count all processed sentences
+                        processedCount++;
 
                         // Layer 3: Cultural sensitivity
                         _logger.LogInformation($"Processing sentence {i + 1}: Layer 3 - Cultural sensitivity");
