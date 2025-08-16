@@ -224,57 +224,57 @@
 <!-- Detail Modal for Sentence Analysis -->
 <div class="modal fade" id="sentenceDetailModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content" style="background: #111827; color: #ffffff;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #dc2626, #b91c1c); color: #ffffff;">
                 <h5 class="modal-title">Sentence Analysis Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="background: #1f2937; color: #ffffff;">
                 <div class="row mb-3">
                     <div class="col-md-6">
-                        <h6>Original Text</h6>
-                        <div class="border p-2 bg-light" id="modalOriginalText">--</div>
+                        <h6 style="color: #e5e7eb;">Original Text</h6>
+                        <div class="border p-2" style="background: #374151; color: #ffffff; border-color: #6b7280;" id="modalOriginalText">--</div>
                     </div>
                     <div class="col-md-6">
-                        <h6>Translated Text</h6>
-                        <div class="border p-2 bg-light" id="modalTranslatedText">--</div>
+                        <h6 style="color: #e5e7eb;">Translated Text</h6>
+                        <div class="border p-2" style="background: #374151; color: #ffffff; border-color: #6b7280;" id="modalTranslatedText">--</div>
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-md-4">
-                        <h6>Semantic Similarity</h6>
-                        <div class="h4" id="modalSimilarity">--</div>
+                        <h6 style="color: #e5e7eb;">Semantic Similarity</h6>
+                        <div class="h4" style="color: #4ade80;" id="modalSimilarity">--</div>
                     </div>
                     <div class="col-md-4">
-                        <h6>Accuracy Score</h6>
-                        <div class="h4" id="modalAccuracy">--</div>
+                        <h6 style="color: #e5e7eb;">Accuracy Score</h6>
+                        <div class="h4" style="color: #4ade80;" id="modalAccuracy">--</div>
                     </div>
                     <div class="col-md-4">
-                        <h6>Cultural Risk</h6>
-                        <div id="modalRisk">--</div>
+                        <h6 style="color: #e5e7eb;">Cultural Risk</h6>
+                        <div style="color: #4ade80;" id="modalRisk">--</div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <h6>Accuracy Feedback</h6>
-                    <div class="alert alert-info" id="modalFeedback">--</div>
+                    <h6 style="color: #e5e7eb;">Accuracy Feedback</h6>
+                    <div class="alert" style="background: #1e40af; color: #ffffff; border-color: #3b82f6;" id="modalFeedback">--</div>
                 </div>
 
                 <div class="mb-3" id="modalCulturalSection" style="display: none;">
-                    <h6>Cultural Analysis</h6>
-                    <div class="alert alert-warning">
+                    <h6 style="color: #e5e7eb;">Cultural Analysis</h6>
+                    <div class="alert" style="background: #92400e; color: #ffffff; border-color: #d97706;">
                         <div id="modalCulturalComment">--</div>
                         <div id="modalCulturalSuggestion" class="mt-2 fw-bold">--</div>
                     </div>
                 </div>
 
                 <div id="modalSensitiveWords" style="display: none;">
-                    <h6>Sensitive Words Detected</h6>
-                    <div id="sensitiveWordsList">--</div>
+                    <h6 style="color: #e5e7eb;">Sensitive Words Detected</h6>
+                    <div style="background: #dc2626; color: #ffffff; padding: 12px; border-radius: 6px;" id="sensitiveWordsList">--</div>
                 </div>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer" style="background: #1f2937; border-top: 1px solid #374151;">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
@@ -689,6 +689,8 @@
             showInfo('No sensitive content detected in this translation.');
         }
     }
+
+
 
     // Utility functions
     function getRiskColor(risk) {
