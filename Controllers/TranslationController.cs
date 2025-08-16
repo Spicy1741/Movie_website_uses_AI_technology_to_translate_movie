@@ -261,8 +261,6 @@ namespace Film_website.Controllers
             }
         }
 
-
-
         [HttpGet]
         public IActionResult DownloadFile(string fileName)
         {

@@ -2,190 +2,732 @@
     ViewData["Title"] = "AI Video Translation - Film Website Admin";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0">
-                        <i class="fas fa-video me-2"></i>
-                        AI Video Translation System
-                    </h3>
-                </div>
-                <div class="card-body">
-                    @if (!string.IsNullOrEmpty(ViewBag.Error))
-                    {
-                        <div class="alert alert-danger" role="alert">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            @ViewBag.Error
-                        </div>
-                    }
+<style>
+    /* AI Translation Styles - Blue & Dark Theme */
+    .ai-translation-container {
+        background: #0f172a;
+        min-height: 100vh;
+        padding: 20px 0;
+        color: #ffffff;
+    }
 
-                    <form asp-action="ProcessVideo" method="post" enctype="multipart/form-data" id="uploadForm">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="videoFile" class="form-label">
-                                        <strong>Select Video File</strong>
-                                    </label>
-                                    <input type="file"
-                                           class="form-control"
-                                           id="videoFile"
-                                           name="videoFile"
-                                           accept=".mp4,.avi,.mov,.wmv,.flv,.webm,.mkv"
-                                           required>
-                                    <div class="form-text">
-                                        Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM, MKV (Max: 500MB)
+    /* Main Translation Card */
+    .translation-card {
+        background: #1e293b;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        border: 1px solid #334155;
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+        .translation-card .card-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+            padding: 20px 24px;
+            border-bottom: none;
+        }
+
+        .translation-card .card-title {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .translation-card .card-body {
+            padding: 30px;
+            background: #1e293b;
+        }
+
+    /* Upload Section */
+    .upload-section {
+        margin-bottom: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+
+    .form-text {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        margin-top: 6px;
+    }
+
+    /* File Upload Styling */
+    .file-upload-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+
+    .file-input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+    }
+
+    .file-upload-display {
+        background: #334155;
+        border: 2px dashed #475569;
+        border-radius: 8px;
+        padding: 40px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .file-upload-display:hover {
+            border-color: #0ea5e9;
+            background: #334155;
+        }
+
+        .file-upload-display i {
+            font-size: 2.5rem;
+            color: #0ea5e9;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .file-upload-display span {
+            color: #ffffff;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+    .file-upload-wrapper.file-selected .file-upload-display {
+        border-color: #06d6a0;
+        background: rgba(6, 214, 160, 0.1);
+    }
+
+        .file-upload-wrapper.file-selected .file-upload-display i {
+            color: #06d6a0;
+        }
+
+        .file-upload-wrapper.file-selected .file-upload-display span {
+            color: #06d6a0;
+        }
+
+    /* Language Selects */
+    .language-select {
+        background: #334155;
+        border: 1px solid #475569;
+        color: #ffffff;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+        .language-select:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+            background: #334155;
+            color: #ffffff;
+            outline: none;
+        }
+
+        .language-select option {
+            background: #334155;
+            color: #ffffff;
+        }
+
+    /* How it Works Section */
+    .how-it-works-section {
+        background: #334155;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 30px;
+        border: 1px solid #475569;
+    }
+
+    .section-title {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        font-size: 1.1rem;
+    }
+
+    .process-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+    }
+
+    .step {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .step-number {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+    }
+
+    .step-content {
+        color: #ffffff;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+        .step-content strong {
+            color: #0ea5e9;
+        }
+
+    /* Submit Section */
+    .submit-section {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn-process {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        border: none;
+        color: white;
+        padding: 16px 40px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 300px;
+        cursor: pointer;
+    }
+
+        .btn-process:hover {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            transform: translateY(-1px);
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-process:active {
+            transform: translateY(0);
+        }
+
+        .btn-process:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+    /* Progress Section */
+    .progress-section {
+        margin-top: 30px;
+    }
+
+    .progress-card {
+        background: #334155;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #475569;
+    }
+
+    .progress-title {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .progress-bar-wrapper {
+        margin-bottom: 20px;
+    }
+
+    .progress-bar {
+        background: #475569;
+        height: 8px;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        background: linear-gradient(90deg, #0ea5e9, #0284c7);
+        height: 100%;
+        width: 100%;
+        border-radius: 4px;
+        animation: progressAnimation 2s ease-in-out infinite;
+    }
+
+    @@keyframes progressAnimation {
+        0%
+
+    {
+        transform: translateX(-100%);
+    }
+
+    50% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+
+    }
+
+    .processing-steps {
+        margin-bottom: 16px;
+    }
+
+    .processing-step {
+        color: #ffffff;
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+
+    .progress-note {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        margin: 0;
+        font-style: italic;
+    }
+
+    /* Features Section */
+    .features-section {
+        margin-top: 40px;
+    }
+
+    .feature-card {
+        background: #1e293b;
+        border-radius: 12px;
+        padding: 24px;
+        text-align: center;
+        border: 1px solid #334155;
+        height: 100%;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            border-color: #0ea5e9;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1);
+        }
+
+    .feature-icon {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+    }
+
+        .feature-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+    .feature-title {
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 12px;
+        font-size: 1.1rem;
+    }
+
+    .feature-description {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* Alert Styling */
+    .alert {
+        border: none;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    .alert-danger {
+        background: rgba(239, 68, 68, 0.1);
+        border-left: 4px solid #ef4444;
+        color: #ef4444;
+    }
+
+    .alert-success {
+        background: rgba(6, 214, 160, 0.1);
+        border-left: 4px solid #06d6a0;
+        color: #06d6a0;
+    }
+
+    .alert-warning {
+        background: rgba(251, 191, 36, 0.1);
+        border-left: 4px solid #fbbf24;
+        color: #fbbf24;
+    }
+
+    .alert-info {
+        background: rgba(14, 165, 233, 0.1);
+        border-left: 4px solid #0ea5e9;
+        color: #0ea5e9;
+    }
+
+    /* Text Colors */
+    .text-success {
+        color: #06d6a0 !important;
+    }
+
+    .text-warning {
+        color: #fbbf24 !important;
+    }
+
+    .text-muted {
+        color: #64748b !important;
+    }
+
+    /* Bootstrap overrides for dark theme */
+    .container {
+        max-width: 100%;
+    }
+
+    .row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .col-md-4, .col-lg-8 {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Loading Animation */
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .fa-spin {
+        animation: spin 1s infinite linear;
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 768px) {
+        .ai-translation-container
+
+    {
+        padding: 10px 0;
+    }
+
+    .translation-card .card-body {
+        padding: 20px;
+    }
+
+    .process-steps {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-process {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .how-it-works-section {
+        padding: 20px;
+    }
+
+    .feature-card {
+        margin-bottom: 15px;
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .translation-card .card-title
+
+    {
+        font-size: 1.3rem;
+    }
+
+    .file-upload-display {
+        padding: 30px 15px;
+    }
+
+        .file-upload-display i {
+            font-size: 2rem;
+        }
+
+    .step {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    .step-number {
+        align-self: center;
+    }
+
+    }
+</style>
+
+<div class="ai-translation-container">
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="translation-card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-video me-2"></i>
+                            AI Video Translation System
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        @if (!string.IsNullOrEmpty(ViewBag.Error))
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                @ViewBag.Error
+                            </div>
+                        }
+
+                        <form asp-action="ProcessVideo" method="post" enctype="multipart/form-data" id="uploadForm">
+                            <div class="upload-section">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="videoFile" class="form-label">
+                                                <i class="fas fa-file-video me-2"></i>
+                                                <strong>Select Video File</strong>
+                                            </label>
+                                            <div class="file-upload-wrapper">
+                                                <input type="file"
+                                                       class="file-input"
+                                                       id="videoFile"
+                                                       name="videoFile"
+                                                       accept=".mp4,.avi,.mov,.wmv,.flv,.webm,.mkv"
+                                                       required>
+                                                <div class="file-upload-display">
+                                                    <i class="fas fa-cloud-upload-alt"></i>
+                                                    <span>Choose Video File</span>
+                                                </div>
+                                            </div>
+                                            <div class="form-text">
+                                                Supported formats: MP4, AVI, MOV, WMV, FLV, WEBM, MKV (Max: 500MB)
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="sourceLanguage" class="form-label">
+                                                <i class="fas fa-microphone me-2"></i>
+                                                <strong>Source Language (Audio)</strong>
+                                            </label>
+                                            <select class="language-select" id="sourceLanguage" name="sourceLanguage">
+                                                <option value="auto" selected>Auto-detect</option>
+                                                <option value="English">English</option>
+                                                <option value="Japanese">Japanese (日本語)</option>
+                                                <option value="Chinese">Chinese (中文)</option>
+                                                <option value="Korean">Korean (한국어)</option>
+                                                <option value="Spanish">Spanish (Español)</option>
+                                                <option value="French">French (Français)</option>
+                                                <option value="German">German (Deutsch)</option>
+                                                <option value="Vietnamese">Vietnamese (Tiếng Việt)</option>
+                                                <option value="Portuguese">Portuguese (Português)</option>
+                                                <option value="Russian">Russian (Русский)</option>
+                                                <option value="Arabic">Arabic (العربية)</option>
+                                                <option value="Hindi">Hindi (हिन्दी)</option>
+                                                <option value="Thai">Thai (ไทย)</option>
+                                                <option value="Italian">Italian (Italiano)</option>
+                                                <option value="Dutch">Dutch (Nederlands)</option>
+                                            </select>
+                                            <div class="form-text">
+                                                Language of the speech in your video
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="targetLanguage" class="form-label">
+                                                <i class="fas fa-language me-2"></i>
+                                                <strong>Translation Language</strong>
+                                            </label>
+                                            <select class="language-select" id="targetLanguage" name="targetLanguage">
+                                                <option value="Original">Original (No Translation)</option>
+                                                <option value="Vietnamese" selected>Vietnamese (Tiếng Việt)</option>
+                                                <option value="English">English</option>
+                                                <option value="Japanese">Japanese (日本語)</option>
+                                                <option value="Chinese">Chinese (中文)</option>
+                                                <option value="Korean">Korean (한국어)</option>
+                                                <option value="Spanish">Spanish (Español)</option>
+                                                <option value="French">French (Français)</option>
+                                                <option value="German">German (Deutsch)</option>
+                                                <option value="Portuguese">Portuguese (Português)</option>
+                                                <option value="Russian">Russian (Русский)</option>
+                                                <option value="Arabic">Arabic (العربية)</option>
+                                                <option value="Hindi">Hindi (हिन्दी)</option>
+                                                <option value="Thai">Thai (ไทย)</option>
+                                                <option value="Italian">Italian (Italiano)</option>
+                                                <option value="Dutch">Dutch (Nederlands)</option>
+                                            </select>
+                                            <div class="form-text">
+                                                Language to translate the subtitles to
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="sourceLanguage" class="form-label">
-                                        <strong>Source Language (Audio)</strong>
-                                    </label>
-                                    <select class="form-select" id="sourceLanguage" name="sourceLanguage">
-                                        <option value="auto" selected>Auto-detect</option>
-                                        <option value="English">English</option>
-                                        <option value="Japanese">Japanese (日本語)</option>
-                                        <option value="Chinese">Chinese (中文)</option>
-                                        <option value="Korean">Korean (한국어)</option>
-                                        <option value="Spanish">Spanish (Español)</option>
-                                        <option value="French">French (Français)</option>
-                                        <option value="German">German (Deutsch)</option>
-                                        <option value="Vietnamese">Vietnamese (Tiếng Việt)</option>
-                                        <option value="Portuguese">Portuguese (Português)</option>
-                                        <option value="Russian">Russian (Русский)</option>
-                                        <option value="Arabic">Arabic (العربية)</option>
-                                        <option value="Hindi">Hindi (हिन्दी)</option>
-                                        <option value="Thai">Thai (ไทย)</option>
-                                        <option value="Italian">Italian (Italiano)</option>
-                                        <option value="Dutch">Dutch (Nederlands)</option>
-                                    </select>
-                                    <div class="form-text">
-                                        Language of the speech in your video
+
+                            <div class="how-it-works-section">
+                                <h5 class="section-title">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    How it works:
+                                </h5>
+                                <div class="process-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <strong>Upload:</strong> Select your video file
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <strong>Extract:</strong> Audio is extracted from your video
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <strong>Transcribe:</strong> Speech-to-text using AI (OpenAI Whisper)
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <strong>Translate:</strong> Text translation to your chosen language
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">5</div>
+                                        <div class="step-content">
+                                            <strong>Download:</strong> Get SRT subtitle files
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label for="targetLanguage" class="form-label">
-                                        <strong>Translation Language</strong>
-                                    </label>
-                                    <select class="form-select" id="targetLanguage" name="targetLanguage">
-                                        <option value="Original">Original (No Translation)</option>
-                                        <option value="Vietnamese" selected>Vietnamese (Tiếng Việt)</option>
-                                        <option value="English">English</option>
-                                        <option value="Japanese">Japanese (日本語)</option>
-                                        <option value="Chinese">Chinese (中文)</option>
-                                        <option value="Korean">Korean (한국어)</option>
-                                        <option value="Spanish">Spanish (Español)</option>
-                                        <option value="French">French (Français)</option>
-                                        <option value="German">German (Deutsch)</option>
-                                        <option value="Portuguese">Portuguese (Português)</option>
-                                        <option value="Russian">Russian (Русский)</option>
-                                        <option value="Arabic">Arabic (العربية)</option>
-                                        <option value="Hindi">Hindi (हिन्दी)</option>
-                                        <option value="Thai">Thai (ไทย)</option>
-                                        <option value="Italian">Italian (Italiano)</option>
-                                        <option value="Dutch">Dutch (Nederlands)</option>
-                                    </select>
-                                    <div class="form-text">
-                                        Language to translate the subtitles to
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="bg-light p-3 rounded mb-3">
-                                    <h5 class="text-primary">
-                                        <i class="fas fa-info-circle me-2"></i>
-                                        How it works:
-                                    </h5>
-                                    <ol class="mb-0">
-                                        <li><strong>Upload:</strong> Select your video file</li>
-                                        <li><strong>Extract:</strong> Audio is extracted from your video</li>
-                                        <li><strong>Transcribe:</strong> Speech-to-text using AI (OpenAI Whisper)</li>
-                                        <li><strong>Translate:</strong> Text translation to your chosen language</li>
-                                        <li><strong>Download:</strong> Get SRT subtitle files</li>
-                                    </ol>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <button type="submit" class="btn btn-primary btn-lg w-100" id="submitBtn">
+                            <div class="submit-section">
+                                <button type="submit" class="btn-process" id="submitBtn">
                                     <i class="fas fa-upload me-2"></i>
                                     Process Video & Generate Subtitles
                                 </button>
                             </div>
-                        </div>
-                    </form>
+                        </form>
 
-                    <!-- Progress indicator (hidden by default) -->
-                    <div id="progressSection" class="mt-4" style="display: none;">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">
+                        <!-- Progress indicator (hidden by default) -->
+                        <div id="progressSection" class="progress-section" style="display: none;">
+                            <div class="progress-card">
+                                <h5 class="progress-title">
                                     <i class="fas fa-cog fa-spin me-2"></i>
                                     Processing Your Video...
                                 </h5>
-                                <div class="progress mb-3">
-                                    <div class="progress-bar progress-bar-striped progress-bar-animated"
-                                         role="progressbar" style="width: 100%">
-                                        Processing...
+                                <div class="progress-bar-wrapper">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill"></div>
                                     </div>
                                 </div>
-                                <div class="text-muted">
+                                <div class="processing-steps">
                                     <p><strong>Current Steps:</strong></p>
-                                    <ul class="list-unstyled">
-                                        <li><i class="fas fa-check text-success me-2"></i>Video uploaded successfully</li>
-                                        <li><i class="fas fa-spinner fa-spin text-primary me-2"></i>Extracting audio from video...</li>
-                                        <li><i class="fas fa-clock text-muted me-2"></i>Transcribing speech to text...</li>
-                                        <li><i class="fas fa-clock text-muted me-2"></i>Translating to target language...</li>
-                                        <li><i class="fas fa-clock text-muted me-2"></i>Generating subtitle files...</li>
-                                    </ul>
-                                    <p class="small">This process may take 1-3 minutes depending on video length.</p>
+                                    <div class="processing-step">
+                                        <i class="fas fa-check text-success me-2"></i>Video uploaded successfully
+                                    </div>
+                                    <div class="processing-step">
+                                        <i class="fas fa-spinner fa-spin me-2" style="color: #0ea5e9;"></i>Extracting audio from video...
+                                    </div>
+                                    <div class="processing-step">
+                                        <i class="fas fa-clock text-muted me-2"></i>Transcribing speech to text...
+                                    </div>
+                                    <div class="processing-step">
+                                        <i class="fas fa-clock text-muted me-2"></i>Translating to target language...
+                                    </div>
+                                    <div class="processing-step">
+                                        <i class="fas fa-clock text-muted me-2"></i>Generating subtitle files...
+                                    </div>
                                 </div>
+                                <p class="progress-note">This process may take 1-3 minutes depending on video length.</p>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Features section -->
-                    <div class="row mt-4">
-                        <div class="col-md-4">
-                            <div class="card h-100">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-language fa-3x text-primary mb-3"></i>
-                                    <h5>Multi-language Support</h5>
-                                    <p class="card-text">
-                                        Translate to 15+ languages including Vietnamese, English, Spanish, French, and more.
-                                    </p>
+                        <!-- Features section -->
+                        <div class="features-section">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-language"></i>
+                                        </div>
+                                        <h5 class="feature-title">Multi-language Support</h5>
+                                        <p class="feature-description">
+                                            Translate to 15+ languages including Vietnamese, English, Spanish, French, and more.
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card h-100">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-robot fa-3x text-success mb-3"></i>
-                                    <h5>AI-Powered</h5>
-                                    <p class="card-text">
-                                        Uses OpenAI's Whisper for transcription and GPT for high-quality translations.
-                                    </p>
+                                <div class="col-md-4">
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-robot"></i>
+                                        </div>
+                                        <h5 class="feature-title">AI-Powered</h5>
+                                        <p class="feature-description">
+                                            Uses OpenAI's Whisper for transcription and GPT for high-quality translations.
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="card h-100">
-                                <div class="card-body text-center">
-                                    <i class="fas fa-download fa-3x text-info mb-3"></i>
-                                    <h5>SRT Format</h5>
-                                    <p class="card-text">
-                                        Download subtitles in standard SRT format, compatible with all video players.
-                                    </p>
+                                <div class="col-md-4">
+                                    <div class="feature-card">
+                                        <div class="feature-icon">
+                                            <i class="fas fa-download"></i>
+                                        </div>
+                                        <h5 class="feature-title">SRT Format</h5>
+                                        <p class="feature-description">
+                                            Download subtitles in standard SRT format, compatible with all video players.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -196,9 +738,23 @@
     </div>
 </div>
 
-
-
 <script>
+    // File upload handling
+    document.getElementById('videoFile').addEventListener('change', function(e) {
+        const wrapper = this.closest('.file-upload-wrapper');
+        const display = wrapper.querySelector('.file-upload-display');
+        const span = display.querySelector('span');
+
+        if (this.files.length > 0) {
+            wrapper.classList.add('file-selected');
+            span.textContent = this.files[0].name;
+        } else {
+            wrapper.classList.remove('file-selected');
+            span.textContent = 'Choose Video File';
+        }
+    });
+
+    // Form submission handling
     document.getElementById('uploadForm').addEventListener('submit', function() {
         document.getElementById('submitBtn').disabled = true;
         document.getElementById('progressSection').style.display = 'block';
