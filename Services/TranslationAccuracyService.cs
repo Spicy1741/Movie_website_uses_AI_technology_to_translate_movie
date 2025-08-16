@@ -81,7 +81,7 @@ namespace Film_website.Services
                         totalSimilarity += sentenceResult.SemanticSimilarity;
 
                         // Layer 2: Accuracy check (only if similarity >= 0.8)
-                        if (sentenceResult.SemanticSimilarity >= 0.5) // CHANGED: Lowered from 0.8 to 0.5
+                        if (sentenceResult.SemanticSimilarity >= 0.2) // CHANGED: Lowered from 0.8 to 0.5
                         {
                             _logger.LogInformation($"Processing sentence {i + 1}: Layer 2 - Accuracy check (High confidence)");
                             var accuracyRequest = new AccuracyCheckRequest
@@ -273,7 +273,7 @@ Respond ONLY with valid JSON in this exact format:
 
                 var requestBody = new
                 {
-                    model = "gpt-4o",
+                    model = "gpt-4.1-mini",
                     messages = new[]
                     {
                         new { role = "system", content = "You are a professional translation quality assessor. Always respond with valid JSON only. Do not include any text before or after the JSON." },
@@ -355,7 +355,7 @@ If no issues found, use ""Safe"" for risk and empty arrays for sensitiveWords.";
 
                 var requestBody = new
                 {
-                    model = "gpt-4o",
+                    model = "gpt-4.1",
                     messages = new[]
                     {
                         new { role = "system", content = "You are a cultural sensitivity expert. Always respond with valid JSON only. Do not include any text before or after the JSON." },
