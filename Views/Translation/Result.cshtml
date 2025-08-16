@@ -17,6 +17,23 @@
                     Your video "<strong>@ViewBag.OriginalFileName</strong>" has been successfully processed.
                 </div>
 
+                <!-- *** Session Persistence Information *** -->
+                @if (ViewBag.ProcessedDate != null)
+                {
+                    <div class="alert alert-info" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-bookmark me-2"></i>
+                            <div>
+                                <strong>Your Results Are Saved!</strong><br>
+                                <small>
+                                    Processed on @ViewBag.ProcessedDate.ToString("MMM dd, yyyy 'at' HH:mm").
+                                    You can bookmark this page or return to it anytime within the next 2 hours to access your translation results and accuracy checks.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                }
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card h-100">
@@ -68,6 +85,9 @@
                             </h5>
                         </div>
                         <div class="card-body">
+                            <!-- CSRF Token for AJAX requests -->
+                            @Html.AntiForgeryToken()
+
                             <!-- Check Accuracy Button -->
                             <div id="accuracyCheckControls" class="mb-3">
                                 <div class="row">
@@ -122,7 +142,7 @@
                                         </div>
                                         <div class="col-md-3">
                                             <div class="metric-card">
-                                                <div class="risk-badge" id="culturalRisk">--</div>
+                                                <div class="metric-value" id="culturalRisk">--</div>
                                                 <div class="metric-label">Cultural Risk</div>
                                             </div>
                                         </div>
@@ -135,17 +155,24 @@
                                     </div>
                                 </div>
 
-                                <!-- Overall Feedback -->
-                                <div class="alert alert-info">
-                                    <h6><i class="fas fa-info-circle me-2"></i>Overall Assessment</h6>
-                                    <div id="overallFeedback">--</div>
-                                    <div id="culturalComment" class="mt-2">--</div>
+                                <!-- Feedback Section -->
+                                <div class="feedback-section mb-4">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6>Overall Assessment</h6>
+                                            <div class="alert alert-light" id="overallFeedback">--</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6>Cultural Sensitivity</h6>
+                                            <div class="alert alert-light" id="culturalComment">--</div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Detailed Results Table -->
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
-                                        <thead class="table-dark">
+                                    <table class="table table-striped">
+                                        <thead>
                                             <tr>
                                                 <th>#</th>
                                                 <th>Original Text</th>
@@ -251,45 +278,31 @@
                         <div class="h4" id="modalAccuracy">--</div>
                     </div>
                     <div class="col-md-4">
-                        <h6>Cultural Risk</h6>
-                        <div id="modalRisk">--</div>
+                        <h6>Risk Level</h6>
+                        <div class="h4" id="modalRisk">--</div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <h6>Accuracy Feedback</h6>
+                    <h6>Feedback</h6>
                     <div class="alert alert-info" id="modalFeedback">--</div>
                 </div>
 
-                <div class="mb-3" id="modalCulturalSection" style="display: none;">
-                    <h6>Cultural Analysis</h6>
-                    <div class="alert alert-warning">
-                        <div id="modalCulturalComment">--</div>
-                        <div id="modalCulturalSuggestion" class="mt-2 fw-bold">--</div>
-                    </div>
+                <div class="mb-3">
+                    <h6>Cultural Comment</h6>
+                    <div class="alert alert-warning" id="modalCultural">--</div>
                 </div>
-
-                <div id="modalSensitiveWords" style="display: none;">
-                    <h6>Sensitive Words Detected</h6>
-                    <div id="sensitiveWordsList">--</div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Anti-forgery token for AJAX requests -->
-@Html.AntiForgeryToken()
-
 <style>
     .accuracy-check-section {
-        animation: slideIn 0.5s ease-in-out;
+        animation: fadeIn 0.5s ease-in;
     }
 
-    @@keyframes slideIn {
+    @@keyframes fadeIn {
         from {
             opacity: 0;
             transform: translateY(20px);
@@ -302,35 +315,35 @@
     }
 
     .metric-card {
-        padding: 1rem;
+        background: #f8f9fa;
         border: 1px solid #dee2e6;
         border-radius: 8px;
-        background: #f8f9fa;
+        padding: 1rem;
         margin-bottom: 1rem;
     }
 
     .metric-value {
         font-size: 2rem;
         font-weight: bold;
-        color: #0066cc;
+        color: #0d6efd;
     }
 
     .metric-label {
-        font-size: 0.875rem;
         color: #6c757d;
-        margin-top: 0.25rem;
+        font-size: 0.875rem;
+        font-weight: 500;
     }
 
     .risk-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: bold;
-        font-size: 1rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 600;
     }
 
     .risk-safe {
-        background: #d4edda;
-        color: #155724;
+        background: #d1edff;
+        color: #0c63e4;
     }
 
     .risk-potentially-sensitive {
@@ -421,6 +434,7 @@
     // Global variables to store translation result data
     let translationResult = null;
     let accuracyCheckInProgress = false;
+    let currentAccuracyData = null; // Store accuracy results for detail view
 
     // Initialize accuracy check functionality when page loads
     document.addEventListener('DOMContentLoaded', function() {
@@ -431,11 +445,13 @@
         const targetLanguage = '@ViewBag.TargetLanguage';
 
         // Extract just the filename from the full path
-        const originalFileName = originalSrtPath.split('fileName=')[1];
-        const translatedFileName = translatedSrtPath.split('fileName=')[1];
+        if (originalSrtPath && translatedSrtPath) {
+            const originalFileName = originalSrtPath.split('fileName=')[1];
+            const translatedFileName = translatedSrtPath.split('fileName=')[1];
 
-        if (originalFileName && translatedFileName) {
-            initializeAccuracyCheck(originalFileName, translatedFileName, sourceLanguage, targetLanguage);
+            if (originalFileName && translatedFileName) {
+                initializeAccuracyCheck(originalFileName, translatedFileName, sourceLanguage, targetLanguage);
+            }
         }
     });
 
@@ -452,9 +468,13 @@
         loadTargetCountries();
 
         // Bind event handlers
-        document.getElementById('checkAccuracyBtn').addEventListener('click', startAccuracyCheck);
-        document.getElementById('exportReportBtn').addEventListener('click', exportAccuracyReport);
-        document.getElementById('highlightSensitiveBtn').addEventListener('click', highlightSensitiveContent);
+        const checkBtn = document.getElementById('checkAccuracyBtn');
+        const exportBtn = document.getElementById('exportReportBtn');
+        const highlightBtn = document.getElementById('highlightSensitiveBtn');
+
+        if (checkBtn) checkBtn.addEventListener('click', startAccuracyCheck);
+        if (exportBtn) exportBtn.addEventListener('click', exportAccuracyReport);
+        if (highlightBtn) highlightBtn.addEventListener('click', highlightSensitiveContent);
     }
 
     // Load available target countries
@@ -465,14 +485,16 @@
 
             if (result.success) {
                 const select = document.getElementById('targetCountry');
-                select.innerHTML = '<option value="">Auto-detect</option>';
+                if (select) {
+                    select.innerHTML = '<option value="">Auto-detect</option>';
 
-                result.countries.forEach(country => {
-                    const option = document.createElement('option');
-                    option.value = country;
-                    option.textContent = country;
-                    select.appendChild(option);
-                });
+                    result.countries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country;
+                        option.textContent = country;
+                        select.appendChild(option);
+                    });
+                }
             }
         } catch (error) {
             console.error('Error loading target countries:', error);
@@ -486,9 +508,13 @@
         accuracyCheckInProgress = true;
 
         // Hide controls and results, show loading
-        document.getElementById('accuracyCheckControls').style.display = 'none';
-        document.getElementById('accuracyResults').style.display = 'none';
-        document.getElementById('accuracyCheckLoading').style.display = 'block';
+        const controls = document.getElementById('accuracyCheckControls');
+        const results = document.getElementById('accuracyResults');
+        const loading = document.getElementById('accuracyCheckLoading');
+
+        if (controls) controls.style.display = 'none';
+        if (results) results.style.display = 'none';
+        if (loading) loading.style.display = 'block';
 
         // Start progress animation
         let progress = 0;
@@ -509,19 +535,19 @@
             progress += Math.random() * 15 + 5; // Random progress increment
             if (progress > 95) progress = 95;
 
-            progressBar.style.width = progress + '%';
+            if (progressBar) progressBar.style.width = progress + '%';
 
             if (stepIndex < steps.length - 1 && progress > (stepIndex + 1) * 15) {
                 stepIndex++;
-                currentStep.textContent = steps[stepIndex];
+                if (currentStep) currentStep.textContent = steps[stepIndex];
             }
         }, 800);
 
         try {
-            const targetCountry = document.getElementById('targetCountry').value;
+            const targetCountry = document.getElementById('targetCountry')?.value || '';
 
             // Get CSRF token
-            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
             const formData = new FormData();
             formData.append('originalFile', translationResult.originalFile);
@@ -529,7 +555,7 @@
             formData.append('sourceLanguage', translationResult.sourceLanguage);
             formData.append('targetLanguage', translationResult.targetLanguage);
             formData.append('targetCountry', targetCountry);
-            formData.append('__RequestVerificationToken', token);
+            if (token) formData.append('__RequestVerificationToken', token);
 
             const response = await fetch('/Translation/CheckAccuracy', {
                 method: 'POST',
@@ -540,17 +566,18 @@
 
             // Complete progress
             clearInterval(progressInterval);
-            progressBar.style.width = '100%';
-            currentStep.textContent = 'Analysis complete!';
+            if (progressBar) progressBar.style.width = '100%';
+            if (currentStep) currentStep.textContent = 'Analysis complete!';
 
             setTimeout(() => {
-                document.getElementById('accuracyCheckLoading').style.display = 'none';
+                if (loading) loading.style.display = 'none';
 
                 if (result.success) {
                     displayAccuracyResults(result.data);
+                    showSuccess('Accuracy check completed successfully! Review the detailed analysis below.');
                 } else {
                     showError('Accuracy check failed: ' + result.message);
-                    document.getElementById('accuracyCheckControls').style.display = 'block';
+                    if (controls) controls.style.display = 'block';
                 }
 
                 accuracyCheckInProgress = false;
@@ -561,163 +588,243 @@
             console.error('Error during accuracy check:', error);
             showError('Error during accuracy check: ' + error.message);
 
-            document.getElementById('accuracyCheckLoading').style.display = 'none';
-            document.getElementById('accuracyCheckControls').style.display = 'block';
+            if (loading) loading.style.display = 'none';
+            if (controls) controls.style.display = 'block';
             accuracyCheckInProgress = false;
         }
     }
 
     // Display accuracy check results
     function displayAccuracyResults(data) {
+        // Store data globally for detail view
+        currentAccuracyData = data;
+
         // Update overall metrics
-        document.getElementById('overallSimilarity').textContent = (data.semanticSimilarity * 100).toFixed(1) + '%';
-        document.getElementById('overallAccuracy').textContent = data.accuracyScore + '%';
-        document.getElementById('sensitiveCount').textContent = data.sentenceResults.filter(s => s.isSensitive).length;
+        const similarityEl = document.getElementById('overallSimilarity');
+        const accuracyEl = document.getElementById('overallAccuracy');
+        const sensitiveEl = document.getElementById('sensitiveCount');
+        const riskEl = document.getElementById('culturalRisk');
+
+        if (similarityEl) similarityEl.textContent = (data.semanticSimilarity * 100).toFixed(1) + '%';
+        if (accuracyEl) accuracyEl.textContent = data.accuracyScore + '%';
+        if (sensitiveEl) sensitiveEl.textContent = data.sentenceResults.filter(s => s.isSensitive).length;
 
         // Update cultural risk badge
-        const riskBadge = document.getElementById('culturalRisk');
-        riskBadge.textContent = data.culturalRisk;
-        riskBadge.className = 'risk-badge risk-' + data.culturalRisk.toLowerCase().replace(' ', '-');
+        if (riskEl) {
+            riskEl.textContent = data.culturalRisk;
+            riskEl.className = 'risk-badge risk-' + data.culturalRisk.toLowerCase().replace(' ', '-');
+        }
 
         // Update feedback
-        document.getElementById('overallFeedback').textContent = data.accuracyFeedback;
-        document.getElementById('culturalComment').textContent = data.culturalComment;
+        const feedbackEl = document.getElementById('overallFeedback');
+        const commentEl = document.getElementById('culturalComment');
+        if (feedbackEl) feedbackEl.textContent = data.accuracyFeedback;
+        if (commentEl) commentEl.textContent = data.culturalComment;
 
         // Populate results table
         const tableBody = document.getElementById('accuracyTableBody');
-        tableBody.innerHTML = '';
+        if (tableBody) {
+            tableBody.innerHTML = '';
 
-        data.sentenceResults.forEach((sentence, index) => {
-            const row = document.createElement('tr');
-            if (sentence.isSensitive) {
-                row.classList.add('table-warning');
-            }
+            data.sentenceResults.forEach((sentence, index) => {
+                const row = document.createElement('tr');
+                if (sentence.isSensitive) {
+                    row.classList.add('table-warning');
+                }
 
-            const similarityClass = sentence.semanticSimilarity >= 0.8 ? 'similarity-high' :
-                                   sentence.semanticSimilarity >= 0.6 ? 'similarity-medium' : 'similarity-low';
+                const similarityClass = sentence.semanticSimilarity >= 0.8 ? 'similarity-high' :
+                                       sentence.semanticSimilarity >= 0.6 ? 'similarity-medium' : 'similarity-low';
 
-            const accuracyClass = sentence.accuracyScore >= 80 ? 'accuracy-high' :
-                                 sentence.accuracyScore >= 60 ? 'accuracy-medium' : 'accuracy-low';
+                const accuracyClass = sentence.accuracyScore >= 80 ? 'accuracy-high' :
+                                     sentence.accuracyScore >= 60 ? 'accuracy-medium' : 'accuracy-low';
 
-            row.innerHTML = `
-                <td>${sentence.index}</td>
-                <td title="${escapeHtml(sentence.originalText)}">${truncateText(sentence.originalText, 50)}</td>
-                <td title="${escapeHtml(sentence.translatedText)}">${truncateText(sentence.translatedText, 50)}</td>
-                <td class="${similarityClass}">${(sentence.semanticSimilarity * 100).toFixed(1)}%</td>
-                <td class="${accuracyClass}">${sentence.accuracyScore}%</td>
-                <td>
-                    <span class="badge bg-${getRiskColor(sentence.culturalRisk)}">
-                        ${sentence.culturalRisk}
-                    </span>
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-outline-info btn-detail" onclick="showSentenceDetail(${index})">
-                        <i class="fas fa-eye"></i> Details
-                    </button>
-                </td>
-            `;
+                row.innerHTML = `
+                    <td>${sentence.index}</td>
+                    <td title="${sentence.originalText}">${sentence.originalText}</td>
+                    <td title="${sentence.translatedText}">${sentence.translatedText}</td>
+                    <td class="${similarityClass}">${(sentence.semanticSimilarity * 100).toFixed(1)}%</td>
+                    <td class="${accuracyClass}">${sentence.accuracyScore}%</td>
+                    <td><span class="risk-badge risk-${sentence.culturalRisk.toLowerCase().replace(' ', '-')}">${sentence.culturalRisk}</span></td>
+                    <td>
+                        <button class="btn btn-outline-info btn-detail" onclick="showSentenceDetail(${index})">
+                            <i class="fas fa-eye"></i> Details
+                        </button>
+                    </td>
+                `;
 
-            tableBody.appendChild(row);
-        });
+                tableBody.appendChild(row);
+            });
+        }
 
         // Show results
-        document.getElementById('accuracyResults').style.display = 'block';
-
-        // Store results for later use
-        window.currentAccuracyResults = data;
+        const results = document.getElementById('accuracyResults');
+        if (results) results.style.display = 'block';
     }
 
-    // Show detailed sentence analysis
+    // Show sentence detail modal
     function showSentenceDetail(index) {
-        const sentence = window.currentAccuracyResults.sentenceResults[index];
-
-        document.getElementById('modalOriginalText').textContent = sentence.originalText;
-        document.getElementById('modalTranslatedText').textContent = sentence.translatedText;
-        document.getElementById('modalSimilarity').textContent = (sentence.semanticSimilarity * 100).toFixed(1) + '%';
-        document.getElementById('modalAccuracy').textContent = sentence.accuracyScore + '%';
-        document.getElementById('modalRisk').innerHTML = `<span class="badge bg-${getRiskColor(sentence.culturalRisk)}">${sentence.culturalRisk}</span>`;
-        document.getElementById('modalFeedback').textContent = sentence.feedback;
-
-        // Cultural analysis section
-        if (sentence.culturalComment || sentence.culturalSuggestion) {
-            document.getElementById('modalCulturalSection').style.display = 'block';
-            document.getElementById('modalCulturalComment').textContent = sentence.culturalComment;
-            document.getElementById('modalCulturalSuggestion').textContent = sentence.culturalSuggestion;
-        } else {
-            document.getElementById('modalCulturalSection').style.display = 'none';
+        if (!currentAccuracyData || !currentAccuracyData.sentenceResults[index]) {
+            console.error('No data available for sentence index:', index);
+            return;
         }
 
-        // Sensitive words
-        if (sentence.sensitiveWords && sentence.sensitiveWords.length > 0) {
-            document.getElementById('modalSensitiveWords').style.display = 'block';
-            const wordsList = sentence.sensitiveWords.map(word =>
-                `<span class="badge bg-warning me-1">${escapeHtml(word)}</span>`
-            ).join('');
-            document.getElementById('sensitiveWordsList').innerHTML = wordsList;
-        } else {
-            document.getElementById('modalSensitiveWords').style.display = 'none';
-        }
+        const sentence = currentAccuracyData.sentenceResults[index];
 
-        // Show modal
-        new bootstrap.Modal(document.getElementById('sentenceDetailModal')).show();
+        // Populate modal with sentence data
+        const modalOriginalText = document.getElementById('modalOriginalText');
+        const modalTranslatedText = document.getElementById('modalTranslatedText');
+        const modalSimilarity = document.getElementById('modalSimilarity');
+        const modalAccuracy = document.getElementById('modalAccuracy');
+        const modalRisk = document.getElementById('modalRisk');
+        const modalFeedback = document.getElementById('modalFeedback');
+        const modalCultural = document.getElementById('modalCultural');
+
+        if (modalOriginalText) modalOriginalText.textContent = sentence.originalText || '--';
+        if (modalTranslatedText) modalTranslatedText.textContent = sentence.translatedText || '--';
+        if (modalSimilarity) {
+            modalSimilarity.textContent = (sentence.semanticSimilarity * 100).toFixed(1) + '%';
+            modalSimilarity.className = 'h4 ' + (sentence.semanticSimilarity >= 0.8 ? 'similarity-high' :
+                                                 sentence.semanticSimilarity >= 0.6 ? 'similarity-medium' : 'similarity-low');
+        }
+        if (modalAccuracy) {
+            modalAccuracy.textContent = sentence.accuracyScore + '%';
+            modalAccuracy.className = 'h4 ' + (sentence.accuracyScore >= 80 ? 'accuracy-high' :
+                                               sentence.accuracyScore >= 60 ? 'accuracy-medium' : 'accuracy-low');
+        }
+        if (modalRisk) {
+            modalRisk.textContent = sentence.culturalRisk || 'Safe';
+            modalRisk.className = 'h4 risk-badge risk-' + (sentence.culturalRisk || 'safe').toLowerCase().replace(' ', '-');
+        }
+        if (modalFeedback) modalFeedback.textContent = sentence.feedback || 'No feedback available';
+        if (modalCultural) modalCultural.textContent = sentence.culturalComment || 'No cultural concerns detected';
+
+        // Show the modal using Bootstrap 5 modal API
+        const modal = document.getElementById('sentenceDetailModal');
+        if (modal) {
+            const bootstrapModal = new bootstrap.Modal(modal);
+            bootstrapModal.show();
+        }
     }
 
     // Export accuracy report
-    async function exportAccuracyReport() {
-        try {
-            const url = `/Translation/DownloadAccuracyReport?originalFile=${encodeURIComponent(translationResult.originalFile)}&translatedFile=${encodeURIComponent(translationResult.translatedFile)}`;
-            window.open(url, '_blank');
-        } catch (error) {
-            console.error('Error exporting report:', error);
-            showError('Error exporting report: ' + error.message);
+    function exportAccuracyReport() {
+        if (!translationResult) {
+            showError('No translation data available for export.');
+            return;
         }
+
+        // Show loading state on export button
+        const exportBtn = document.getElementById('exportReportBtn');
+        if (exportBtn) {
+            const originalText = exportBtn.innerHTML;
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Generating...';
+            exportBtn.disabled = true;
+
+            // Reset button after delay
+            setTimeout(() => {
+                exportBtn.innerHTML = originalText;
+                exportBtn.disabled = false;
+            }, 2000);
+        }
+
+        const url = `/Translation/DownloadAccuracyReport?originalFile=${encodeURIComponent(translationResult.originalFile)}&translatedFile=${encodeURIComponent(translationResult.translatedFile)}`;
+
+        // Create a temporary link to trigger download
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `accuracy_report_${new Date().toISOString().slice(0,10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
-    // Highlight sensitive content in the results
+    // Highlight sensitive content
     function highlightSensitiveContent() {
-        const tableBody = document.getElementById('accuracyTableBody');
-        const sensitiveRows = tableBody.querySelectorAll('tr.table-warning');
+        if (!currentAccuracyData) return;
 
-        sensitiveRows.forEach(row => {
+        const rows = document.querySelectorAll('#accuracyTableBody tr.table-warning');
+        if (rows.length === 0) {
+            showError('No sensitive content found to highlight.');
+            return;
+        }
+
+        rows.forEach(row => {
             row.classList.add('sensitive-highlight');
             setTimeout(() => {
                 row.classList.remove('sensitive-highlight');
             }, 3000);
         });
 
-        if (sensitiveRows.length === 0) {
-            showInfo('No sensitive content detected in this translation.');
+        // Show notification
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-warning alert-dismissible fade show mt-2';
+        alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Highlighted ${rows.length} potentially sensitive sentence(s) for review.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const results = document.getElementById('accuracyResults');
+        if (results) {
+            results.insertBefore(alertDiv, results.firstChild);
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
         }
     }
 
-    // Utility functions
-    function getRiskColor(risk) {
-        switch (risk.toLowerCase()) {
-            case 'safe': return 'success';
-            case 'potentially sensitive': return 'warning';
-            case 'inappropriate': return 'danger';
-            default: return 'secondary';
-        }
-    }
-
-    function truncateText(text, maxLength) {
-        if (text.length <= maxLength) return escapeHtml(text);
-        return escapeHtml(text.substring(0, maxLength)) + '...';
-    }
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
+    // Error display helper
     function showError(message) {
-        // Bootstrap toast or alert
-        alert('Error: ' + message);
+        // Remove any existing error alerts first
+        const existingAlerts = document.querySelectorAll('.alert-danger');
+        existingAlerts.forEach(alert => alert.remove());
+
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger alert-dismissible fade show';
+        errorDiv.innerHTML = `
+            <i class="fas fa-exclamation-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const section = document.getElementById('accuracyCheckSection');
+        if (section) {
+            const cardBody = section.querySelector('.card-body');
+            cardBody.insertBefore(errorDiv, cardBody.firstChild);
+
+            // Auto-remove after 8 seconds if not manually dismissed
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 8000);
+        }
     }
 
-    function showInfo(message) {
-        // Bootstrap toast or alert
-        alert('Info: ' + message);
+    // Success notification helper
+    function showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success alert-dismissible fade show';
+        successDiv.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const section = document.getElementById('accuracyCheckSection');
+        if (section) {
+            const cardBody = section.querySelector('.card-body');
+            cardBody.insertBefore(successDiv, cardBody.firstChild);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (successDiv.parentNode) {
+                    successDiv.remove();
+                }
+            }, 5000);
+        }
     }
 </script>
