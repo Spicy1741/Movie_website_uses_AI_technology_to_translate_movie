@@ -55,7 +55,8 @@ namespace Film_website.Services
                 var sentenceResults = new List<SentenceAccuracy>();
                 var totalSimilarity = 0.0;
                 var totalAccuracy = 0;
-                var processedCount = 0;
+                var successfulSimilarityCount = 0;  // 🆕 Only count successful similarity calculations
+                var successfulAccuracyCount = 0;
 
                 // Process each sentence pair
                 for (int i = 0; i < Math.Min(originalTexts.Count, translatedTexts.Count); i++)
@@ -78,10 +79,21 @@ namespace Film_website.Services
                         // Layer 1: Semantic similarity
                         _logger.LogInformation($"Processing sentence {i + 1}: Layer 1 - Semantic similarity");
                         sentenceResult.SemanticSimilarity = await CalculateSemanticSimilarityAsync(originalText, translatedText);
-                        totalSimilarity += sentenceResult.SemanticSimilarity;
+
+                        // Only include successful similarity calculations in average
+                        if (sentenceResult.SemanticSimilarity >= 0)
+                        {
+                            totalSimilarity += sentenceResult.SemanticSimilarity;
+                            successfulSimilarityCount++;
+                            _logger.LogInformation($"Sentence {i + 1}: Valid similarity = {sentenceResult.SemanticSimilarity:F3}");
+                        }
+                        else
+                        {
+                            _logger.LogWarning($"Sentence {i + 1}: Failed similarity calculation (result: {sentenceResult.SemanticSimilarity})");
+                        }
 
                         // Layer 2: Accuracy check (only if similarity >= 0.8)
-                        if (sentenceResult.SemanticSimilarity >= 0.5) // CHANGED: Lowered from 0.8 to 0.5
+                        if (sentenceResult.SemanticSimilarity >= 0.2)
                         {
                             _logger.LogInformation($"Processing sentence {i + 1}: Layer 2 - Accuracy check (High confidence)");
                             var accuracyRequest = new AccuracyCheckRequest
@@ -95,20 +107,41 @@ namespace Film_website.Services
                             var accuracyResult = await CheckAccuracyWithGptAsync(accuracyRequest);
                             sentenceResult.AccuracyScore = accuracyResult.Score;
                             sentenceResult.Feedback = accuracyResult.Feedback;
-                            totalAccuracy += accuracyResult.Score;
+
+                            // 🆕 Only include successful accuracy calculations in average
+                            if (accuracyResult.Score > 0)
+                            {
+                                totalAccuracy += accuracyResult.Score;
+                                successfulAccuracyCount++;
+                                _logger.LogInformation($"Sentence {i + 1}: Valid accuracy = {accuracyResult.Score}%");
+                            }
+                            else
+                            {
+                                _logger.LogWarning($"Sentence {i + 1}: Failed accuracy calculation (result: {accuracyResult.Score})");
+                            }
                         }
                         else
                         {
                             _logger.LogInformation($"Processing sentence {i + 1}: Layer 2 - Accuracy check (Low confidence - using similarity-based score)");
-                            // CHANGED: Use similarity-based scoring instead of 0
                             var estimatedAccuracy = (int)(sentenceResult.SemanticSimilarity * 100);
-                            sentenceResult.AccuracyScore = Math.Max(estimatedAccuracy, 20); // Minimum 20% for any translation attempt
+                            sentenceResult.AccuracyScore = Math.Max(estimatedAccuracy, 20);
                             sentenceResult.Feedback = $"Low semantic similarity ({sentenceResult.SemanticSimilarity:P1}) - estimated accuracy based on similarity";
+
+                            // 🆕 Include estimated accuracy in count (these are valid calculations)
                             totalAccuracy += sentenceResult.AccuracyScore;
+                            successfulAccuracyCount++;
+                            _logger.LogInformation($"Sentence {i + 1}: Estimated accuracy = {sentenceResult.AccuracyScore}%");
                         }
 
-                        // Make sure we count all processed sentences
-                        processedCount++;
+                        // 🆕 Only add sentences that had successful processing
+                        if (sentenceResult.SemanticSimilarity > 0 || sentenceResult.AccuracyScore > 0)
+                        {
+                            sentenceResults.Add(sentenceResult);
+                        }
+
+
+
+
 
                         // Layer 3: Cultural sensitivity
                         _logger.LogInformation($"Processing sentence {i + 1}: Layer 3 - Cultural sensitivity");
@@ -127,7 +160,6 @@ namespace Film_website.Services
                         sentenceResult.SensitiveWords = culturalResult.SensitiveWords;
                         sentenceResult.IsSensitive = culturalResult.Risk != "Safe";
 
-                        processedCount++;
                     }
                     catch (Exception ex)
                     {
@@ -135,13 +167,13 @@ namespace Film_website.Services
                         sentenceResult.Feedback = $"Error during processing: {ex.Message}";
                     }
 
-                    sentenceResults.Add(sentenceResult);
+
                 }
 
                 // Calculate overall results
                 result.SentenceResults = sentenceResults;
-                result.SemanticSimilarity = processedCount > 0 ? totalSimilarity / processedCount : 0.0;
-                result.AccuracyScore = processedCount > 0 ? totalAccuracy / processedCount : 0;
+                result.SemanticSimilarity = successfulSimilarityCount > 0 ? totalSimilarity / successfulSimilarityCount : 0;
+                result.AccuracyScore = successfulAccuracyCount > 0 ? (int)(totalAccuracy / successfulAccuracyCount) : 0;
                 result.HasSensitiveContent = sentenceResults.Any(s => s.IsSensitive);
 
                 // Aggregate cultural risks
@@ -273,7 +305,7 @@ Respond ONLY with valid JSON in this exact format:
 
                 var requestBody = new
                 {
-                    model = "gpt-4o",
+                    model = "gpt-4.1-mini",
                     messages = new[]
                     {
                         new { role = "system", content = "You are a professional translation quality assessor. Always respond with valid JSON only. Do not include any text before or after the JSON." },
@@ -355,7 +387,7 @@ If no issues found, use ""Safe"" for risk and empty arrays for sensitiveWords.";
 
                 var requestBody = new
                 {
-                    model = "gpt-4o",
+                    model = "gpt-4.1",
                     messages = new[]
                     {
                         new { role = "system", content = "You are a cultural sensitivity expert. Always respond with valid JSON only. Do not include any text before or after the JSON." },
