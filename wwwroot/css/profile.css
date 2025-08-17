@@ -1,0 +1,38 @@
+﻿.bg-warning {
+    background: linear-gradient(45deg, #fbbf24, #f59e0b) !important;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #10b981;
+}
+
+.profile-subtitle {
+    color: var(--white);
+    font-family: 'Bangers', cursive;
+    font-size: 2rem;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    position: relative;
+    z-index: 2;
+    letter-spacing: 2px;
+}
+
+

@@ -1,6 +1,9 @@
-﻿@{
-    ViewData["Title"] = "Hero Movie Details - CineHub Comic Edition";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model Film_website.Models.Movie
+@{
+    ViewData["Title"] = Model.Title;
+    var comments = ViewBag.Comments as List<Film_website.Models.Comment> ?? new List<Film_website.Models.Comment>();
+    var commentCount = ViewBag.CommentCount ?? 0;
+    var isFavorite = ViewBag.IsFavorite as bool? ?? false;
 }
 
 <!DOCTYPE html>
@@ -8,534 +11,560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hero Movie Details - CineHub Comic Edition</title>
-    <link rel="stylesheet" href="~/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
-    <style>
-        /* Additional styles for the new layout */
-        .content-bottom-section {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 3rem;
-            margin-top: 3rem;
-        }
+    <title>@ViewData["Title"] - Film Website</title>
+    <meta name="movie-id" content="@Model.Id" />
+    @Html.AntiForgeryToken()
 
-        /* Recommendations Section */
-        .recommendations-section {
-            background: linear-gradient(145deg, #2c2c54 0%, #40407a 100%);
-            border: 4px solid #000;
-            border-radius: 20px;
-            padding: 2rem;
-            position: relative;
-            box-shadow: 8px 8px 0 #000;
-            height: fit-content;
-            color: #fff;
-        }
-
-        .recommendations-section::before {
-            content: '';
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            right: -4px;
-            bottom: -4px;
-            background: repeating-linear-gradient(
-                45deg,
-                #ff6b35 0%,
-                #ff6b35 8px,
-                #ffff00 8px,
-                #ffff00 16px
-            );
-            z-index: -1;
-            border-radius: 24px;
-        }
-
-        .recommendations-section h3 {
-            background: linear-gradient(45deg, #ffff00, #ff6b35);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 2rem;
-            text-align: center;
-            font-size: 1.8rem;
-            font-family: 'Impact', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            filter: drop-shadow(2px 2px 0 #000);
-        }
-
-        .recommendations-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-        }
-
-        .recommendation-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
-            padding: 1rem;
-            border-radius: 15px;
-            border: 3px solid #000;
-            position: relative;
-            box-shadow: 3px 3px 0 #000;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            color: #000;
-        }
-
-        .recommendation-item:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow:
-                5px 5px 0 #000,
-                0 0 15px rgba(255, 107, 53, 0.4);
-        }
-
-        .recommendation-rank {
-            background: linear-gradient(135deg, #ff6b35 0%, #ffff00 100%);
-            color: #000;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1rem;
-            border: 2px solid #000;
-            box-shadow: 2px 2px 0 #000;
-            flex-shrink: 0;
-            font-family: 'Impact', sans-serif;
-        }
-
-        .recommendation-poster {
-            width: 60px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid #000;
-            flex-shrink: 0;
-        }
-
-        .rec-poster-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-weight: bold;
-            font-size: 0.7rem;
-            text-align: center;
-            font-family: 'Impact', sans-serif;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 0 #000;
-        }
-
-        .recommendation-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .recommendation-info h4 {
-            background: linear-gradient(45deg, #ff6b35, #2c2c54);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            font-size: 1.1rem;
-            font-family: 'Impact', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            filter: drop-shadow(1px 1px 0 #000);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .recommendation-meta {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-        }
-
-        .rec-score {
-            background: linear-gradient(135deg, #ffff00 0%, #ff6b35 100%);
-            color: #000;
-            padding: 0.2rem 0.6rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            border: 2px solid #000;
-            font-weight: bold;
-            box-shadow: 1px 1px 0 #000;
-            font-family: 'Impact', sans-serif;
-        }
-
-        .rec-year {
-            color: #666;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-
-        .rec-badge {
-            background: #ff6b35;
-            color: #fff;
-            padding: 0.2rem 0.5rem;
-            border-radius: 8px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            border: 1px solid #000;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Responsive adjustments */
-        media (max-width: 768px) {
-            .content-bottom-section {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .recommendations-section {
-                order: -1;
-            }
-
-            .recommendation-item {
-                padding: 0.8rem;
-            }
-
-            .recommendation-poster {
-                width: 50px;
-                height: 70px;
-            }
-
-            .rec-poster-placeholder {
-                font-size: 0.6rem;
-            }
-
-            .recommendation-info h4 {
-                font-size: 1rem;
-            }
-
-            .recommendations-section h3 {
-                font-size: 1.5rem;
-            }
-        }
-
-        media (max-width: 480px) {
-            .recommendation-rank {
-                width: 30px;
-                height: 30px;
-                font-size: 0.9rem;
-            }
-
-            .recommendation-poster {
-                width: 45px;
-                height: 65px;
-            }
-
-            .recommendation-meta {
-                gap: 0.5rem;
-            }
-
-            .rec-score,
-            .rec-badge {
-                font-size: 0.7rem;
-                padding: 0.1rem 0.4rem;
-            }
-
-            .rec-year {
-                font-size: 0.8rem;
-            }
-        }
-    </style>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Bungee&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="~/css/Detail.css" rel="stylesheet" />
 </head>
+
 <body>
-    <!-- Comic Book Floating Elements -->
-    <div class="comic-elements" id="comicElements">
-        <!-- Dynamic comic elements will be added here -->
-    </div>
-
-    <!-- Side Navigation -->
-    <div class="side-nav" id="sideNav">
-        <div class="side-nav-header">
-            <div class="side-nav-avatar">🦸</div>
-            <div class="side-nav-name" id="sideNavName">Welcome, Hero!</div>
+    <div class="movie-details-container">
+        <!-- Header with back button -->
+        <div class="details-header">
+            <button class="back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+                Back
+            </button>
+            <h1>@Model.Title</h1>
         </div>
-        <nav class="side-nav-menu">
-            <a href="@Url.Action("Index", "Movie")" class="side-nav-item">
-                <div class="side-nav-icon">🏠</div>
-                <div class="side-nav-text">Home Base</div>
-            </a>
-            <a href="#recent" class="side-nav-item" onclick="showRecent()">
-                <div class="side-nav-icon">⚡</div>
-                <div class="side-nav-text">Recent Action</div>
-            </a>
-            <a href="@Url.Action("Index", "Movie")#favorites" class="side-nav-item">
-                <div class="side-nav-icon">💥</div>
-                <div class="side-nav-text">Hero Picks</div>
-            </a>
-            <a href="@Url.Action("Profile", "Account")" class="side-nav-item">
-                <div class="side-nav-icon">🎭</div>
-                <div class="side-nav-text">Hero Profile</div>
-            </a>
-            <a href="#theme" class="side-nav-item" onclick="toggleTheme()">
-                <div class="side-nav-icon">🌟</div>
-                <div class="side-nav-text">Power Mode</div>
-            </a>
-            <a href="@Url.Action("Contact", "Home")" class="side-nav-item">
-                <div class="side-nav-icon">📺</div>
-                <div class="side-nav-text">HQ Contact</div>
-            </a>
-        </nav>
-    </div>
+        <!-- Video Section -->
+        <section class="video-section">
+            <div class="video-container">
+                <video id="moviePlayer" controls preload="metadata" data-subtitle-path="@Model.SubtitlePath">
+                    @if (!string.IsNullOrEmpty(Model.FilePath))
+                    {
+                        <source src="@Model.FilePath" type="video/mp4">
+                    }
+                    @if (!string.IsNullOrEmpty(Model.SubtitlePath))
+                    {
+                        <track src="@Model.SubtitlePath" kind="subtitles" srclang="en" label="English" id="subtitleTrack">
+                    }
+                    Your browser does not support the video tag.
+                </video>
 
-    <!-- Side Navigation Overlay -->
-    <div class="side-nav-overlay" id="sideNavOverlay"></div>
+                @if (string.IsNullOrEmpty(Model.FilePath))
+                {
+                    <div class="no-video-message">
+                        <i class="fas fa-film fa-4x"></i>
+                        <h3>🎬 COMING SOON 🎬</h3>
+                        <p>This EPIC adventure will be available soon!</p>
+                    </div>
+                }
+            </div>
+        </section>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <button class="menu-toggle" onclick="toggleSideNav()">☰</button>
-                <div class="nav-logo">
-                    <h2>🎬 CINEHUB 🎬</h2>
-                </div>
+            <!-- NEW: Favorite Button Section -->
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="favorite-section">
+                @if (!isFavorite)
+                {
+                    <!-- Show Add to Favorite button when not favorited -->
+                    <button id="favoriteBtn" class="favorite-btn" data-movie-id="@Model.Id">
+                        <i class="far fa-heart"></i>
+                        <span class="favorite-text">Add to Favorite</span>
+                    </button>
+                }
+                else
+                {
+                    <!-- Show static "Favorite added" message when already favorited -->
+                    <div class="favorite-added-display">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Favorite added</span>
+                    </div>
+                }
             </div>
-            <div class="nav-links">
-                <a href="@Url.Action("Index", "Movie")" class="nav-link">HOME BASE</a>
-                <a href="@Url.Action("Index", "Movie")#favorites" class="nav-link">HERO PICKS</a>
-                <a href="@Url.Action("Contact", "Home")" class="nav-link">HQ CONTACT</a>
-            </div>
-            <div class="nav-actions">
-                <button class="search-btn" onclick="toggleSearch()">🔍</button>
-                <button class="theme-btn" onclick="toggleTheme()">🌙</button>
-                <button class="profile-btn" onclick="toggleProfile()">🦸</button>
-            </div>
-        </div>
-    </nav>
+        }
 
-    <!-- Search Bar -->
-    <div class="search-container" id="searchContainer">
-        <div class="search-box">
-            <input type="text" placeholder="Search for epic movies..." id="searchInput">
-            <div class="search-filters">
-                <select id="categoryFilter">
-                    <option value="">Category</option>
-                    <option value="action">ACTION! 💥</option>
-                    <option value="drama">DRAMA 🎭</option>
-                    <option value="comedy">COMEDY 😂</option>
-                    <option value="thriller">THRILLER ⚡</option>
-                </select>
-                <select id="timeFilter">
-                    <option value="">Era</option>
-                    <option value="2024">2024 🚀</option>
-                    <option value="2023">2023 ⭐</option>
-                    <option value="2022">2022 🎊</option>
-                </select>
-                <select id="languageFilter">
-                    <option value="">Language</option>
-                    <option value="english">English 🇺🇸</option>
-                    <option value="spanish">Spanish 🇪🇸</option>
-                    <option value="french">French 🇫🇷</option>
-                </select>
-                <select id="scoreFilter">
-                    <option value="">Power Level</option>
-                    <option value="9+">LEGENDARY! 9.0+</option>
-                    <option value="8+">EPIC! 8.0+</option>
-                    <option value="7+">AWESOME! 7.0+</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main id="mainContent">
-        <!-- Movie Details Section -->
-        <section class="section active">
-            <div class="movie-detail-section">
-                <h2 class="section-title" id="movieTitle">🎭 EPIC MOVIE DETAILS 🎭</h2>
-                <div class="movie-detail-container">
-                    <div class="movie-trailer">
-                        <div class="trailer-placeholder" id="trailerPlaceholder">🎬 EPIC TRAILER 🎬</div>
-                        <div class="trailer-controls">
-                            <button class="control-btn" onclick="playAct(1)">ACT 1 💥</button>
-                            <button class="control-btn" onclick="playAct(2)">ACT 2 ⚡</button>
-                            <button class="control-btn" onclick="playAct(3)">ACT 3 🔥</button>
-                            <button class="control-btn" onclick="playAct(4)">FINALE 🌟</button>
+            <div class="movie-metadata">
+                <div class="metadata-grid">
+                    <div class="metadata-item">
+                        <div class="metadata-label">Genre:</div>
+                        <div class="metadata-value">
+                            <span class="genre-tag">@Model.Genre</span>
                         </div>
                     </div>
-                    <div class="movie-info">
-                        <div class="movie-poster-large">
-                            <div class="poster-placeholder" id="posterPlaceholder">🦸 HERO POSTER 🦸</div>
-                            <div class="movie-score" id="movieScore">9.2</div>
-                        </div>
-                        <div class="movie-categories" id="movieCategories">
-                            <span class="category-tag">ACTION 💥</span>
-                            <span class="category-tag">ADVENTURE ⚡</span>
-                            <span class="category-tag">EPIC 🌟</span>
-                            <span class="category-tag">HERO 🦸</span>
-                        </div>
-                        <div class="movie-summary">
-                            <p id="movieSummary">AN INCREDIBLE EPIC ADVENTURE THAT WILL BLOW YOUR MIND! Join our heroes as they battle against impossible odds in the most spectacular showdown ever created! Packed with heart-pounding action, stunning visuals, and unforgettable characters that will leave you on the edge of your seat!</p>
-                        </div>
-                        <div class="movie-actions-detail">
-                            <button class="btn-primary" onclick="addToFavorites(this)">💥 ADD TO HERO COLLECTION</button>
-                            <button class="btn-secondary" onclick="ignoreMovie()">❌ NOT INTERESTED</button>
-                            <button class="btn-primary" onclick="watchMovie()">🎬 WATCH EPIC MOVIE</button>
-                            <button class="btn-secondary" onclick="rateMovie()">⭐ RATE THIS HERO</button>
+
+                    <div class="metadata-item">
+                        <div class="metadata-label">Release Year:</div>
+                        <div class="metadata-value">@Model.ReleaseYear</div>
+                    </div>
+
+                    <div class="metadata-item">
+                        <div class="metadata-label">Added:</div>
+                        <div class="metadata-value">@Model.CreatedAt.ToString("MMM dd, yyyy")</div>
+                    </div>
+
+                    <div class="metadata-item">
+                        <div class="metadata-label">Subtitles:</div>
+                        <div class="metadata-value">
+                            @if (!string.IsNullOrEmpty(Model.SubtitlePath))
+                            {
+                                <span class="subtitle-available">
+                                    <i class="fas fa-check"></i> Available
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="subtitle-unavailable">
+                                    <i class="fas fa-times"></i> Not Available
+                                </span>
+                            }
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- New Layout: Comments Left, Recommendations Right -->
-                <div class="content-bottom-section">
-                    <div class="comments-section">
-                        <h3>💬 HERO REVIEWS & REACTIONS 💬</h3>
-                        <div class="comments-list" id="commentsList">
-                            <div class="comment-item">
-                                <div class="comment-avatar">H1</div>
-                                <div class="comment-content">🔥 ABSOLUTELY MIND-BLOWING! The action sequences were INCREDIBLE and the story had me crying! This is what cinema is all about! 💥💥💥</div>
+        </section>
+
+        <!-- Comments Section -->
+        <section class="comments-section-details" data-movie-id="@Model.Id">
+            <div class="comments-container">
+                <h3>💬  REVIEWS 💬 <span class="comment-count">(@commentCount)</span></h3>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <!-- Comment Form -->
+                    <div class="comment-form">
+                        <div class="comment-input-container">
+                            <div class="user-avatar">
+                                @{
+                                    var userInitials = "U";
+                                    var userService = Context.RequestServices.GetService(typeof(Film_website.Services.UserService)) as Film_website.Services.UserService;
+                                    if (userService != null && User.Identity.Name != null)
+                                    {
+                                        var currentUser = await userService.GetUserByEmailOrUserNameAsync(User.Identity.Name);
+                                        if (currentUser != null)
+                                        {
+                                            userInitials = "";
+                                            if (!string.IsNullOrEmpty(currentUser.FirstName))
+                                                userInitials += currentUser.FirstName[0].ToString().ToUpper();
+                                            if (!string.IsNullOrEmpty(currentUser.LastName))
+                                                userInitials += currentUser.LastName[0].ToString().ToUpper();
+                                            if (string.IsNullOrEmpty(userInitials))
+                                                userInitials = "U";
+                                        }
+                                    }
+                                }
+                                @userInitials
                             </div>
-                            <div class="comment-item">
-                                <div class="comment-avatar">S2</div>
-                                <div class="comment-content">⚡ BEST SUPERHERO MOVIE OF ALL TIME! The character development was PHENOMENAL and the plot twists kept me guessing until the very end! LEGENDARY! ⚡⚡⚡</div>
-                            </div>
-                            <div class="comment-item">
-                                <div class="comment-avatar">A3</div>
-                                <div class="comment-content">🌟 VISUALLY STUNNING and emotionally CAPTIVATING! Every frame is a work of art! The soundtrack perfectly complements every epic moment! TRUE MASTERPIECE! 🌟🌟🌟</div>
-                            </div>
-                            <div class="comment-item">
-                                <div class="comment-avatar">M4</div>
-                                <div class="comment-content">💥 The special effects were OUT OF THIS WORLD! Great performances by all the heroes! Can't wait for the sequel! BRING ON THE NEXT ADVENTURE! 💥💥💥</div>
-                            </div>
+                            <textarea placeholder="Share your thoughts about this movie..."
+                                  id="newComment"
+                                  class="comment-textarea"
+                                  rows="3"
+                                  maxlength="1000"></textarea>
                         </div>
-                        <div class="comment-form">
-                            <textarea placeholder="Share your EPIC thoughts about this LEGENDARY movie..." id="newComment" rows="3"></textarea>
-                            <button class="btn-primary" onclick="addComment()">💥 POST HERO REVIEW 💥</button>
+                        <div class="comment-actions">
+                            <button class="action-btn primary" onclick="addComment()">💥POST </button>
                         </div>
-                    </div>
-
-                    <div class="recommendations-section">
-                        <h3>🎬 RECOMMENDED EPIC MOVIES 🎬</h3>
-                        <div class="recommendations-list" id="recommendationsList">
-                            <div class="recommendation-item" onclick="goToMoviePage('classic-legend')">
-                                <div class="recommendation-rank">#1</div>
-                                <div class="recommendation-poster">
-                                    <div class="rec-poster-placeholder">🌟 LEGEND 🌟</div>
-                                </div>
-                                <div class="recommendation-info">
-                                    <h4>Classic Legend</h4>
-                                    <div class="recommendation-meta">
-                                        <span class="rec-score">9.0</span>
-                                        <span class="rec-year">2023</span>
-                                        <span class="rec-badge">HD</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="recommendation-item" onclick="goToMoviePage('award-winner')">
-                                <div class="recommendation-rank">#2</div>
-                                <div class="recommendation-poster">
-                                    <div class="rec-poster-placeholder">🏆 WINNER 🏆</div>
-                                </div>
-                                <div class="recommendation-info">
-                                    <h4>Award Winner</h4>
-                                    <div class="recommendation-meta">
-                                        <span class="rec-score">8.9</span>
-                                        <span class="rec-year">2024</span>
-                                        <span class="rec-badge">HD</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="recommendation-item" onclick="goToMoviePage('action-thriller')">
-                                <div class="recommendation-rank">#3</div>
-                                <div class="recommendation-poster">
-                                    <div class="rec-poster-placeholder">💥 ACTION 💥</div>
-                                </div>
-                                <div class="recommendation-info">
-                                    <h4>Action Thriller</h4>
-                                    <div class="recommendation-meta">
-                                        <span class="rec-score">8.7</span>
-                                        <span class="rec-year">2024</span>
-                                        <span class="rec-badge">HD</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="recommendation-item" onclick="goToMoviePage('drama-story')">
-                                <div class="recommendation-rank">#4</div>
-                                <div class="recommendation-poster">
-                                    <div class="rec-poster-placeholder">🎭 DRAMA 🎭</div>
-                                </div>
-                                <div class="recommendation-info">
-                                    <h4>Drama Saga</h4>
-                                    <div class="recommendation-meta">
-                                        <span class="rec-score">8.5</span>
-                                        <span class="rec-year">2023</span>
-                                        <span class="rec-badge">HD</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="recommendation-item" onclick="goToMoviePage('comedy-hit')">
-                                <div class="recommendation-rank">#5</div>
-                                <div class="recommendation-poster">
-                                    <div class="rec-poster-placeholder">😂 COMEDY 😂</div>
-                                </div>
-                                <div class="recommendation-info">
-                                    <h4>Comedy Blast</h4>
-                                    <div class="recommendation-meta">
-                                        <span class="rec-score">8.3</span>
-                                        <span class="rec-year">2024</span>
-                                        <span class="rec-badge">HD</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="recommendation-item" onclick="goToMoviePage('thriller-mystery')">
-                                <div class="recommendation-rank">#6</div>
-                                <div class="recommendation-poster">
-                                    <div class="rec-poster-placeholder">⚡ THRILLER ⚡</div>
-                                </div>
-                                <div class="recommendation-info">
-                                    <h4>Thriller Mystery</h4>
-                                    <div class="recommendation-meta">
-                                        <span class="rec-score">8.8</span>
-                                        <span class="rec-year">2024</span>
-                                        <span class="rec-badge">HD</span>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="comment-help-text">
+                            <small>Share your thoughts! Maximum 1000 characters.</small>
                         </div>
                     </div>
+                }
+                else
+                {
+                    <!-- Login Prompt -->
+                    <div class="login-prompt">
+                        <p>🦸 <a href="@Url.Action("Login", "Account")">Login</a> or <a href="@Url.Action("Register", "Account")">Register</a> to share your EPIC thoughts! 🦸</p>
+                    </div>
+                }
+
+                <!-- Comments List -->
+                <div class="comments-list" id="commentsList">
+                    @if (comments.Any())
+                    {
+                        @foreach (var comment in comments)
+                        {
+                            var userCommentInitials = "U";
+                            if (!string.IsNullOrEmpty(comment.User.FirstName))
+                                userCommentInitials = comment.User.FirstName[0].ToString().ToUpper();
+                            if (!string.IsNullOrEmpty(comment.User.LastName))
+                                userCommentInitials += comment.User.LastName[0].ToString().ToUpper();
+                            if (userCommentInitials == "U" && !string.IsNullOrEmpty(comment.User.LastName))
+                                userCommentInitials = comment.User.LastName[0].ToString().ToUpper();
+
+                            var timeAgo = GetTimeAgo(comment.CreatedAt);
+                            var editedText = comment.IsEdited ? " (edited)" : "";
+                            var canEdit = User.Identity.IsAuthenticated && User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == comment.UserId;
+                            var canDelete = canEdit || User.IsInRole("Admin");
+
+                            <div class="comment-item" data-comment-id="@comment.Id">
+                                <div class="comment-header">
+                                    <div class="comment-avatar">@userCommentInitials</div>
+                                    <div class="comment-info">
+                                        <div class="comment-author">@comment.User.DisplayUserName</div>
+                                        <div class="comment-time">@timeAgo@editedText</div>
+                                    </div>
+                                    @if (canEdit || canDelete)
+                                    {
+                                        <div class="comment-options">
+                                            <button class="comment-option-btn" onclick="toggleCommentOptions(@comment.Id)">⋮</button>
+                                            <div class="comment-options-menu" id="options-@comment.Id" style="display: none;">
+                                                @if (canEdit)
+                                                {
+                                                    <button onclick="editComment(@comment.Id)">Edit</button>
+                                                }
+                                                @if (canDelete)
+                                                {
+                                                    <button onclick="deleteComment(@comment.Id)" class="delete-option">Delete</button>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="comment-content" id="content-@comment.Id">
+                                    @comment.Content
+                                </div>
+                                <div class="comment-actions-inline">
+                                    <button class="comment-action-btn" onclick="likeComment(@comment.Id)" id="like-btn-@comment.Id">
+                                        👍 <span id="like-count-@comment.Id">@comment.LikeCount</span>
+                                    </button>
+                                    <button class="comment-action-btn" onclick="replyComment(@comment.Id)">↩ Reply</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-comments-message">
+                            <p>🎬 Be the first to share your thoughts about this movie! 🎬</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Load More Comments -->
+                <div class="load-more-container">
+                    <button class="action-btn secondary load-more-btn" onclick="loadMoreComments()" style="display: @(comments.Count >= 10 ? "block" : "none")">⚡ LOAD MORE HERO REVIEWS ⚡</button>
                 </div>
             </div>
         </section>
-    </main>
-
-    <!-- Profile Modal -->
-    <div class="modal" id="profileModal">
-        <div class="modal-content profile-content">
-            <div class="profile-avatar">🦸</div>
-            <div class="profile-info">
-                <h3>Hello Hero</h3>
-                <div class="profile-actions">
-                    <button onclick="changeAvatar()">CHANGE HERO AVATAR</button>
-                    <button onclick="changePassword()">CHANGE SECRET CODE</button>
-                    <button onclick="logout()">EXIT HERO MODE</button>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Back to Home Button -->
-    <button class="fab" onclick="goHome()">🏠</button>
+    <!-- Scripts -->
+    <script src="~/js/movie-comments.js"></script>
+<script>
+    // Helper function for time ago calculation
+    @{
+        string GetTimeAgo(DateTime date)
+        {
+            var timeSpan = DateTime.UtcNow - date;
 
-    <script src="~/js/comic-details.js"></script>
+            if (timeSpan.TotalDays > 365)
+                return $"{(int)(timeSpan.TotalDays / 365)} year{((int)(timeSpan.TotalDays / 365) > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalDays > 30)
+                return $"{(int)(timeSpan.TotalDays / 30)} month{((int)(timeSpan.TotalDays / 30) > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalDays > 1)
+                return $"{(int)timeSpan.TotalDays} day{((int)timeSpan.TotalDays > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalHours > 1)
+                return $"{(int)timeSpan.TotalHours} hour{((int)timeSpan.TotalHours > 1 ? "s" : "")} ago";
+            if (timeSpan.TotalMinutes > 1)
+                return $"{(int)timeSpan.TotalMinutes} minute{((int)timeSpan.TotalMinutes > 1 ? "s" : "")} ago";
+
+            return "just now";
+        }
+    }
+
+    // Existing movie player functions
+    function playMovie() {
+        const video = document.getElementById('moviePlayer');
+        if (video) {
+            video.play();
+        }
+    }
+
+    function toggleSubtitles() {
+        const video = document.getElementById('moviePlayer');
+        if (video && video.textTracks.length > 0) {
+            const track = video.textTracks[0];
+            track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
+        }
+    }
+               // Video Player Functions
+            let video = document.getElementById('moviePlayer');
+            let isPlaying = false;
+            let controlsTimeout;
+
+            function playMovie() {
+                if (video) {
+                    video.play();
+                    updatePlayButton();
+                }
+            }
+
+            function togglePlay() {
+                if (video) {
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                    updatePlayButton();
+                }
+            }
+
+            function updatePlayButton() {
+                const playBtn = document.getElementById('playBtn');
+                if (playBtn) {
+                    if (video.paused) {
+                        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        isPlaying = false;
+                    } else {
+                        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        isPlaying = true;
+                    }
+                }
+            }
+
+            function skipBackward() {
+                if (video) {
+                    video.currentTime = Math.max(0, video.currentTime - 10);
+                }
+            }
+
+            function skipForward() {
+                if (video) {
+                    video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                }
+            }
+
+            function toggleMute() {
+                if (video) {
+                    video.muted = !video.muted;
+                    updateVolumeButton();
+                }
+            }
+
+            function updateVolumeButton() {
+                const volumeBtn = document.getElementById('volumeBtn');
+                if (volumeBtn) {
+                    if (video.muted || video.volume === 0) {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                    } else if (video.volume < 0.5) {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-down"></i>';
+                    } else {
+                        volumeBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                    }
+                }
+            }
+
+            function toggleSubtitles() {
+                if (video && video.textTracks.length > 0) {
+                    const track = video.textTracks[0];
+                    track.mode = track.mode === 'showing' ? 'hidden' : 'showing';
+
+                    const subtitleToggle = document.getElementById('subtitleToggle');
+                    if (subtitleToggle) {
+                        if (track.mode === 'showing') {
+                            subtitleToggle.style.background = 'rgba(255, 23, 68, 0.3)';
+                        } else {
+                            subtitleToggle.style.background = 'rgba(255, 255, 255, 0.2)';
+                        }
+                    }
+                }
+            }
+
+            function changeSpeed() {
+                const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+                const currentSpeed = video.playbackRate;
+                const currentIndex = speeds.indexOf(currentSpeed);
+                const nextIndex = (currentIndex + 1) % speeds.length;
+
+                video.playbackRate = speeds[nextIndex];
+
+                const speedBtn = document.getElementById('speedBtn');
+                if (speedBtn) {
+                    speedBtn.textContent = speeds[nextIndex] + 'x';
+                }
+            }
+
+            function toggleFullscreen() {
+                if (video) {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    } else if (video.webkitRequestFullscreen) {
+                        video.webkitRequestFullscreen();
+                    } else if (video.msRequestFullscreen) {
+                        video.msRequestFullscreen();
+                    }
+                }
+            }
+
+            function addToFavorites() {
+                showNotification('Added to favorites! ❤️', 'success');
+            }
+
+            // Video event listeners
+            if (video) {
+                video.addEventListener('loadedmetadata', function() {
+                    updateDuration();
+                });
+
+                video.addEventListener('timeupdate', function() {
+                    updateProgress();
+                    updateCurrentTime();
+                });
+
+                video.addEventListener('play', updatePlayButton);
+                video.addEventListener('pause', updatePlayButton);
+                video.addEventListener('volumechange', updateVolumeButton);
+
+                // Volume slider
+                const volumeSlider = document.getElementById('volumeSlider');
+                if (volumeSlider) {
+                    volumeSlider.addEventListener('input', function() {
+                        video.volume = this.value / 100;
+                    });
+                }
+
+                // Progress bar
+                const progressBar = document.querySelector('.progress-bar');
+                if (progressBar) {
+                    progressBar.addEventListener('click', function(e) {
+                        const rect = this.getBoundingClientRect();
+                        const clickX = e.clientX - rect.left;
+                        const width = rect.width;
+                        const percentage = clickX / width;
+                        video.currentTime = percentage * video.duration;
+                    });
+                }
+            }
+
+            function updateDuration() {
+                const durationElement = document.getElementById('duration');
+                if (durationElement && video.duration) {
+                    durationElement.textContent = formatTime(video.duration);
+                }
+            }
+
+            function updateCurrentTime() {
+                const currentTimeElement = document.getElementById('currentTime');
+                if (currentTimeElement) {
+                    currentTimeElement.textContent = formatTime(video.currentTime);
+                }
+            }
+
+            function updateProgress() {
+                const progressFilled = document.getElementById('progressFilled');
+                if (progressFilled && video.duration) {
+                    const percentage = (video.currentTime / video.duration) * 100;
+                    progressFilled.style.width = percentage + '%';
+                }
+            }
+
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = Math.floor(seconds % 60);
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
+            // Initialize video controls
+            if (video) {
+                updatePlayButton();
+                updateVolumeButton();
+            }
+
+                    document.addEventListener('DOMContentLoaded', function () {
+            const favoriteBtn = document.getElementById('favoriteBtn');
+
+            if (favoriteBtn) {
+                favoriteBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    const movieId = this.getAttribute('data-movie-id');
+                    const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                    // Disable button during request
+                    this.disabled = true;
+                    this.querySelector('.favorite-text').textContent = 'Adding...';
+
+                    fetch('/Movie/AddToFavorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: `movieId=${movieId}&__RequestVerificationToken=${encodeURIComponent(antiForgeryToken)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Replace button with static "Favorite added" message
+                            const favoriteSection = this.parentElement;
+                            favoriteSection.innerHTML = `
+                                <div class="favorite-added-display">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Favorite added</span>
+                                </div>
+                            `;
+
+                            // Show success message
+                            showMessage(data.message, 'success');
+                        } else {
+                            // Reset button on error
+                            this.disabled = false;
+                            this.querySelector('.favorite-text').textContent = 'Add to Favorite';
+                            showMessage(data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Reset button on error
+                        this.disabled = false;
+                        this.querySelector('.favorite-text').textContent = 'Add to Favorite';
+                        showMessage('An error occurred. Please try again.', 'error');
+                    });
+                });
+            }
+        });
+
+        function showMessage(message, type) {
+            // Create and show a temporary message
+            const messageDiv = document.createElement('div');
+            messageDiv.textContent = message;
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                ${type === 'success' ?
+                    'background: rgba(34, 197, 94, 0.9); border: 1px solid #22c55e;' :
+                    'background: rgba(220, 38, 38, 0.9); border: 1px solid #dc2626;'
+                }
+            `;
+
+            document.body.appendChild(messageDiv);
+
+            // Remove message after 3 seconds
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @@keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+
+</script>
 </body>
 </html>

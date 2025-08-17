@@ -1,0 +1,696 @@
+﻿@model Film_website.Models.Movie
+@{
+    ViewData["Title"] = @Model.Title + " - Admin";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/admin-styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="comic-elements" id="comicElements"></div>
+
+
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="user-info">
+                    <div class="user-avatar">🦸</div>
+                    <div class="user-details">
+                        <h3>ADMIN </h3>
+                        <p>Supreme </p>
+                    </div>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">DASHBOARD</span>
+                </a>
+                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active" data-section="movies">
+                    <span class="menu-icon">🎬</span>
+                    <span class="menu-text">MOVIE MANAGER</span>
+                </a>
+
+                <a href="@Url.Action("Translation", "Upload")" class="menu-item translator-link">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text">AI TRANSLATOR</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section class="content-section active">
+                <div class="section-header">
+                    <h2>🎬 @Model.Title</h2>
+                </div>
+                <div class="content-card">
+                    <div class="card-content">
+                        <div class="movie-details">
+                            <img src="@Model.ThumbnailPath" alt="@Model.Title" class="movie-thumbnail" />
+                            <div class="movie-info">
+                                <h3>@Model.Title</h3>
+                                <p><strong>Genre:</strong> @Model.Genre</p>
+                                <p><strong>Release Year:</strong> @Model.ReleaseYear</p>
+
+                                <!-- Display Categories -->
+                                @if (!string.IsNullOrEmpty(Model.Categories))
+                                {
+                                    <div class="movie-categories-section">
+                                        <strong>Categories:</strong>
+                                        <div class="category-tags">
+                                            @foreach (var category in Model.GetCategoriesList())
+                                            {
+                                                <span class="category-tag">@category</span>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                <p><strong>Description:</strong> @Model.Description</p>
+                                @if (!string.IsNullOrEmpty(Model.SubtitlePath))
+                                {
+                                    <p><strong>Subtitles:</strong> Available</p>
+                                }
+
+                                <div class="movie-metadata">
+                                    <p><strong>Added:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                                    @if (Model.UpdatedAt.HasValue)
+                                    {
+                                        <p><strong>Last Updated:</strong> @Model.UpdatedAt.Value.ToString("MMM dd, yyyy")</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="movie-player">
+                            <video id="moviePlayer" controls preload="metadata" data-subtitle-path="@Model.SubtitlePath">
+                                <source src="@Model.FilePath" type="video/mp4">
+                                @if (!string.IsNullOrEmpty(Model.SubtitlePath))
+                                {
+                                    <track src="@Model.SubtitlePath"
+                                           kind="subtitles"
+                                           srclang="en"
+                                           label="English"
+                                           id="subtitleTrack">
+                                }
+                                Your browser does not support the video tag.
+                            </video>
+
+                            <div class="video-controls-custom">
+                                @if (!string.IsNullOrEmpty(Model.SubtitlePath))
+                                {
+                                    <button id="toggleSubtitles" class="action-btn subtitle-btn">💬 Show Subtitles</button>
+                                    <button id="reloadSubtitles" class="action-btn subtitle-btn">🔄 Reload</button>
+                                }
+                                <div id="subtitleStatus" class="subtitle-status"></div>
+                            </div>
+                        </div>
+                        <div class="movie-actions">
+                            <a href="@Url.Action("EditMovie", "Admin", new { id = Model.Id })" class="action-btn">✏️ EDIT</a>
+                            <form asp-action="DeleteMovie" asp-route-id="@Model.Id" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this movie?');">
+                                <button type="submit" class="action-btn delete-btn">🗑️ DELETE</button>
+                            </form>
+                            <a href="@Url.Action("ManageMovies", "Admin")" class="action-btn">⬅ BACK</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="~/js/admin-dashboard.js"></script>
+    <script>
+        // Enhanced subtitle management for ViewMovie
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.getElementById('moviePlayer');
+            const toggleBtn = document.getElementById('toggleSubtitles');
+            const reloadBtn = document.getElementById('reloadSubtitles');
+            const statusDiv = document.getElementById('subtitleStatus');
+
+            if (!video) return;
+
+            let subtitleEnabled = false;
+
+            function updateStatus(message) {
+                if (statusDiv) {
+                    statusDiv.textContent = message;
+                    console.log('Subtitle:', message);
+                }
+            }
+
+            function updateToggleButton(isShowing) {
+                if (toggleBtn) {
+                    toggleBtn.textContent = isShowing ? '💬 Hide Subtitles' : '💬 Show Subtitles';
+                    subtitleEnabled = isShowing;
+                }
+            }
+
+            function enableSubtitles() {
+                const tracks = video.textTracks;
+
+                if (tracks.length === 0) {
+                    updateStatus('No subtitle tracks found');
+                    return false;
+                }
+
+                const track = tracks[0];
+                track.mode = 'showing';
+                updateToggleButton(true);
+                updateStatus('Subtitles enabled');
+                return true;
+            }
+
+            function toggleSubtitles() {
+                const tracks = video.textTracks;
+
+                if (tracks.length === 0) {
+                    updateStatus('No subtitle tracks available');
+                    return;
+                }
+
+                const track = tracks[0];
+                const isShowing = track.mode === 'showing';
+
+                track.mode = isShowing ? 'hidden' : 'showing';
+                updateToggleButton(!isShowing);
+                updateStatus(isShowing ? 'Subtitles hidden' : 'Subtitles shown');
+            }
+
+            function reloadSubtitles() {
+                const subtitlePath = video.dataset.subtitlePath;
+                if (!subtitlePath) {
+                    updateStatus('No subtitle file available');
+                    return;
+                }
+
+                // Remove existing tracks
+                const existingTracks = video.querySelectorAll('track');
+                existingTracks.forEach(track => track.remove());
+
+                // Create new track with cache busting
+                const track = document.createElement('track');
+                track.src = subtitlePath + '?v=' + Date.now();
+                track.kind = 'subtitles';
+                track.srclang = 'en';
+                track.label = 'English';
+                track.id = 'subtitleTrack';
+
+                // Add event listeners for the new track
+                track.addEventListener('load', function() {
+                    updateStatus('Subtitles reloaded successfully');
+                    if (subtitleEnabled) {
+                        setTimeout(() => enableSubtitles(), 100);
+                    }
+                });
+
+                track.addEventListener('error', function(e) {
+                    console.error('Subtitle loading error:', e);
+                    updateStatus('Error loading subtitles');
+                });
+
+                video.appendChild(track);
+                updateStatus('Reloading subtitles...');
+            }
+
+            // Event listeners
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', toggleSubtitles);
+            }
+
+            if (reloadBtn) {
+                reloadBtn.addEventListener('click', reloadSubtitles);
+            }
+
+            // Auto-enable subtitles when video metadata is loaded
+            video.addEventListener('loadedmetadata', function() {
+                setTimeout(() => {
+                    const enabled = enableSubtitles();
+                    if (!enabled) {
+                        // Try to check if subtitle file exists
+                        const subtitlePath = video.dataset.subtitlePath;
+                        if (subtitlePath) {
+                            fetch(subtitlePath)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        updateStatus(`Subtitle file error: ${response.status}`);
+                                    } else {
+                                        updateStatus('Subtitle file found but not loading');
+                                    }
+                                })
+                                .catch(error => {
+                                    updateStatus('Cannot access subtitle file');
+                                    console.error('Subtitle fetch error:', error);
+                                });
+                        }
+                    }
+                }, 500);
+            });
+
+            // Debug: Log all text tracks
+            video.addEventListener('loadstart', function() {
+                setTimeout(() => {
+                    const tracks = video.textTracks;
+                    console.log(`Video has ${tracks.length} text tracks`);
+
+                    for (let i = 0; i < tracks.length; i++) {
+                        const track = tracks[i];
+                        console.log(`Track ${i}:`, {
+                            kind: track.kind,
+                            language: track.language,
+                            label: track.label,
+                            mode: track.mode
+                        });
+                    }
+                }, 100);
+            });
+        });
+    </script>
+    <style>
+        .movie-player video {
+            width: 100%;
+            max-height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .video-controls-custom {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(45, 45, 45, 0.8);
+            border-radius: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .subtitle-btn {
+            background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
+            font-size: 0.9rem;
+            padding: 0.8rem 1.5rem;
+            min-width: auto;
+        }
+
+            .subtitle-btn:hover {
+                background: linear-gradient(45deg, var(--light-red), var(--primary-red));
+            }
+
+        .subtitle-status {
+            color: #ccc;
+            font-size: 0.85rem;
+            font-family: monospace;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-left: 10px;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        /* Enhanced subtitle styling */
+        video::cue {
+            background-color: rgba(0, 0, 0, 0.85);
+            color: white;
+            font-size: 18px;
+            font-family: Arial, sans-serif;
+            text-shadow: 2px 2px 4px black;
+            padding: 4px 12px;
+            border-radius: 4px;
+            line-height: 1.4;
+        }
+
+        video::cue(.large) {
+            font-size: 22px;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            video:: cue {
+                font-size: 16px;
+                padding: 3px 8px;
+            }
+
+            .video-controls-custom {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .subtitle-status {
+                margin-left: 0;
+                min-width: auto;
+                width: 100%;
+            }
+        }
+
+        @@keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+            .section-header h2 {
+                font-family: 'Bungee', cursive;
+                font-size: 2.5rem;
+                color: var(--white);
+                text-shadow: 2px 2px 4px var(--shadow-black);
+                background: linear-gradient(45deg, var(--white), var(--light-red));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+        /* Content Card */
+        .content-card {
+            background: linear-gradient(135deg, var(--gray-dark) 0%, var(--light-black) 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px var(--shadow-black);
+            border: 2px solid var(--primary-red);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .content-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, var(--primary-red), var(--light-red), var(--primary-red));
+                animation: shimmer 3s infinite;
+            }
+
+        @@keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Movie Details */
+        .movie-details {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            align-items: flex-start;
+        }
+
+        .movie-thumbnail {
+            width: 200px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px var(--shadow-black);
+            border: 2px solid var(--primary-red);
+            transition: transform 0.3s ease;
+        }
+
+            .movie-thumbnail:hover {
+                transform: scale(1.05);
+                box-shadow: 0 12px 35px var(--shadow-red);
+            }
+
+        .movie-info {
+            flex: 1;
+        }
+
+            .movie-info h3 {
+                font-family: 'Bangers', cursive;
+                font-size: 2rem;
+                color: var(--light-red);
+                margin-bottom: 1rem;
+                text-shadow: 2px 2px 4px var(--shadow-black);
+            }
+
+            .movie-info p {
+                color: var(--white);
+                font-size: 1.1rem;
+                margin-bottom: 0.8rem;
+                line-height: 1.6;
+            }
+
+            .movie-info strong {
+                color: var(--primary-red);
+                font-weight: 700;
+            }
+
+        /* Movie Player */
+        .movie-player {
+            margin-bottom: 2rem;
+        }
+
+            .movie-player video {
+                width: 100%;
+                max-height: 500px;
+                border-radius: 15px;
+                box-shadow: 0 8px 30px var(--shadow-black);
+                border: 2px solid var(--primary-red);
+                transition: all 0.3s ease;
+            }
+
+                .movie-player video:hover {
+                    box-shadow: 0 12px 40px var(--shadow-red);
+                    transform: translateY(-2px);
+                }
+
+        /* Movie Actions */
+        .movie-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: linear-gradient(45deg, var(--gray-dark), var(--gray-medium));
+            border: 2px solid var(--primary-red);
+            color: var(--white);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s ease;
+            }
+
+            .action-btn:hover::before {
+                left: 100%;
+            }
+
+            .action-btn:hover {
+                background: linear-gradient(45deg, var(--primary-red), var(--dark-red));
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px var(--shadow-red);
+            }
+
+        .delete-btn {
+            background: linear-gradient(45deg, var(--dark-red), #b71c1c);
+        }
+
+            .delete-btn:hover {
+                background: linear-gradient(45deg, #b71c1c, var(--dark-red));
+                box-shadow: 0 8px 25px rgba(183, 28, 28, 0.5);
+            }
+
+        /* Responsive Design */
+        @@media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+            }
+
+            .nav-center h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @@media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .movie-details {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .movie-thumbnail {
+                align-self: center;
+            }
+
+            .movie-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @@media (max-width: 480px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .sidebar {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .content-card {
+                padding: 1rem;
+            }
+
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Loading Animation */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-card,
+        .sidebar,
+        .main-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary-black);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary-red), var(--dark-red));
+            border-radius: 10px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(180deg, var(--light-red), var(--primary-red));
+            }
+
+        .movie-categories-section {
+            margin: 15px 0;
+        }
+
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .category-tag {
+            background: var(--primary-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .movie-metadata {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #333;
+        }
+
+            .movie-metadata p {
+                color: #999;
+                font-size: 14px;
+                margin: 5px 0;
+            }
+
+        .movie-info {
+            flex: 1;
+            padding-left: 20px;
+        }
+
+            .movie-info h3 {
+                color: var(--primary-red);
+                margin-bottom: 15px;
+                font-size: 24px;
+            }
+
+            .movie-info p {
+                margin: 10px 0;
+                line-height: 1.6;
+            }
+
+            .movie-info strong {
+                color: var(--primary-red);
+            }
+    </style>
+
+</body>
+</html>

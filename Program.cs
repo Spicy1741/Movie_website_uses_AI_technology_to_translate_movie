@@ -4,16 +4,43 @@ using Film_website.Repositories;
 using Film_website.Repositories.Interfaces;
 using Film_website.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Server.IISIntegration;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add after your existing service registrations
+builder.Services.AddHttpClient<ITranslationAccuracyService, TranslationAccuracyService>();
+builder.Services.AddScoped<ITranslationAccuracyService, TranslationAccuracyService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// *** NEW: Add Session Support ***
+builder.Services.AddDistributedMemoryCache(); // Add in-memory caching for sessions
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2); // Session timeout - 2 hours should be enough for translation results
+    options.Cookie.HttpOnly = true; // Security: Session cookie only accessible via HTTP
+    options.Cookie.IsEssential = true; // Required for GDPR compliance - session is essential for functionality
+    options.Cookie.Name = "FilmWebsite.Session"; // Custom session cookie name
+});
+
 // Database configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register HttpClient for services
+builder.Services.AddHttpClient<IWhisperService, WhisperService>();
+builder.Services.AddHttpClient<IGptTranslationService, GptTranslationService>();
+
+// Register application services
+builder.Services.AddScoped<IWhisperService, WhisperService>();
+builder.Services.AddScoped<IGptTranslationService, GptTranslationService>();
+builder.Services.AddScoped<IAudioExtractionService, AudioExtractionService>();
+builder.Services.AddScoped<ISrtGeneratorService, SrtGeneratorService>();
 
 // Identity configuration
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -53,10 +80,26 @@ builder.Services.ConfigureApplicationCookie(options =>
 // Register repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserActivityRepository, UserActivityRepository>();
+builder.Services.AddScoped<IMovieRepository, MovieRepository>();
 
 // Register services
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserActivityService>();
+builder.Services.AddScoped<MovieService>();
+
+// Configure file upload size for Whisper AI
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 524288000; // 500MB for large video files
+});
+
+// Configure request size limits
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 524288000; // 500MB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
 
 var app = builder.Build();
 
@@ -72,12 +115,51 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// *** NEW: Add Session Middleware - Must be added before UseAuthentication and UseAuthorization ***
+app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Add role seeding
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetRequiredService<UserManager<User>>();
+
+        // Create roles if they don't exist
+        string[] roleNames = { "Admin", "User" };
+        IdentityResult roleResult;
+
+        foreach (var roleName in roleNames)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding roles.");
+    }
+}
+
+// Ensure upload and download directories exist for Whisper AI
+var uploadsPath = Path.Combine(app.Environment.WebRootPath, "uploads");
+var downloadsPath = Path.Combine(app.Environment.WebRootPath, "downloads");
+
+Directory.CreateDirectory(uploadsPath);
+Directory.CreateDirectory(downloadsPath);
 
 // Tạo admin user mặc định
 using (var scope = app.Services.CreateScope())

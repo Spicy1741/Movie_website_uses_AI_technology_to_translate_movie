@@ -1,13 +1,13 @@
 ﻿@model Dictionary<Film_website.Models.User, IList<string>>
 @{
-    ViewData["Title"] = "Trang quản trị";
+    ViewData["Title"] = "AdminPage";
 }
-
+<link href="~/css/index.css" rel="stylesheet" />
 <!-- Main Admin Cards Section (Original Layout) -->
 <div class="container" id="mainAdminSection">
     <div class="row">
         <div class="col-12">
-            <h1>Trang quản trị</h1>
+            <h1>Admin Page</h1>
             <p class="lead">@ViewBag.Message</p>
         </div>
     </div>
@@ -16,11 +16,11 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Quản lý người dùng</h5>
+                    <h5>User management</h5>
                 </div>
                 <div class="card-body">
-                    <p>Xem và quản lý tài khoản người dùng.</p>
-                    <button class="btn btn-primary" onclick="showUserManagement()">Quản lý User</button>
+                    <p>Check and manage user account.</p>
+                    <button class="btn btn-primary" onclick="showUserManagement()">Manage user</button>
                 </div>
             </div>
         </div>
@@ -28,11 +28,11 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-header">
-                    <h5>Quản lý phim</h5>
+                    <h5>Film management</h5>
                 </div>
                 <div class="card-body">
-                    <p>Thêm, sửa, xóa phim trong hệ thống.</p>
-                    <button class="btn btn-primary">Quản lý phim</button>
+                    <p>Add, edit, delete film on system.</p>
+                    <a href="@Url.Action("ManageMovies", "Admin")" class="btn btn-primary">Manage film</a>
                 </div>
             </div>
         </div>
@@ -46,27 +46,28 @@
                     <h5>🌐 AI Translator</h5>
                 </div>
                 <div class="card-body">
-                    <p>Dịch phim tự động bằng công nghệ AI tiên tiến.</p>
-                    <a href="@Url.Action("Translator", "Admin")" class="btn btn-success translator-btn">
-                        🚀 Bắt đầu dịch
+                    <p>Translate film by high-end AI.</p>
+                    <a href="@Url.Action("Upload", "Translation")" class="btn btn-success translator-btn">
+                        🚀 Translation start
                     </a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Bảng điều khiển nâng cao</h5>
+            <div class="card srt-editor-card">
+                <div class="card-header bg-gradient-info text-white">
+                    <h5>📝 SRT Editor</h5>
                 </div>
                 <div class="card-body">
-                    <p>Truy cập trang quản trị đầy đủ tính năng.</p>
-                    <a href="@Url.Action("Dashboard", "Admin")" class="btn btn-info">
-                        🎛️ Dashboard
+                    <p>Edit and modify subtitle files directly.</p>
+                    <a href="@Url.Action("Index", "SrtEditor")" class="btn btn-info srt-editor-btn">
+                        ✏️ Start Editing
                     </a>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
@@ -495,567 +496,5 @@
     </div>
 </div>
 
-<style>
-    .translator-card {
-        border: 2px solid #28a745;
-        box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
-        position: relative;
-        overflow: hidden;
-    }
 
-    .translator-card::before {
-        content: '✨';
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        font-size: 1.5rem;
-        z-index: 1;
-    }
-
-    .translator-btn {
-        background: linear-gradient(45deg, #28a745, #20c997);
-        border: none;
-        font-weight: bold;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        transition: all 0.3s ease;
-    }
-
-    .translator-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-    }
-
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .table tbody tr:hover {
-        background-color: rgba(0, 123, 255, 0.05);
-    }
-
-    .btn-group-sm > .btn {
-        padding: 0.25rem 0.5rem;
-    }
-
-    .user-row.filtered-out {
-        display: none;
-    }
-
-    /* Modal Styles */
-    .avatar-circle-large {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-
-    .info-card {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        border-left: 4px solid #667eea;
-    }
-
-    .info-title {
-        font-weight: 600;
-        margin-bottom: 1rem;
-        color: #495057;
-        border-bottom: 1px solid #dee2e6;
-        padding-bottom: 0.5rem;
-    }
-
-    .info-item {
-        margin-bottom: 0.75rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .info-label {
-        font-weight: 500;
-        color: #6c757d;
-        margin-bottom: 0;
-        min-width: 100px;
-    }
-
-    .info-value {
-        font-weight: 500;
-        color: #212529;
-        text-align: right;
-        flex: 1;
-    }
-
-    .modal-content {
-        border: none;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-header {
-        border-radius: 12px 12px 0 0;
-        border-bottom: none;
-        padding: 1.5rem;
-    }
-
-    .modal-body {
-        padding: 2rem;
-    }
-
-    .modal-footer {
-        border-top: 1px solid #dee2e6;
-        padding: 1.5rem;
-        border-radius: 0 0 12px 12px;
-    }
-
-    /* Smooth transitions */
-    #mainAdminSection, #userManagementSection {
-        transition: all 0.3s ease-in-out;
-    }
-
-    /* Activity Modal Styles */
-    .activity-header {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 12px;
-        padding: 2rem;
-        border-left: 4px solid #667eea;
-    }
-
-    .activity-stats .stat-card {
-        background: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .stat-number {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #667eea;
-        margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-        color: #6c757d;
-        font-size: 0.9rem;
-        margin-bottom: 0;
-    }
-
-    .activity-filters {
-        background: #f8f9fa;
-        padding: 1.5rem;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-
-    .activities-container {
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        background: white;
-    }
-
-    .activity-item {
-        padding: 1.5rem;
-        border-bottom: 1px solid #f1f3f4;
-        transition: background-color 0.2s ease;
-    }
-
-    .activity-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-
-    .activity-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-
-    .activity-icon i {
-        color: white;
-        font-size: 1rem;
-    }
-
-    .activity-icon.bg-purple {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    .activity-details {
-        flex-grow: 1;
-    }
-
-    .activity-title {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: #212529;
-    }
-
-    .activity-description {
-        color: #6c757d;
-        margin-bottom: 0.75rem;
-        line-height: 1.4;
-    }
-
-    .activity-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .meta-item {
-        font-size: 0.85rem;
-        color: #8e9297;
-        display: flex;
-        align-items: center;
-    }
-
-    .meta-item i {
-        opacity: 0.7;
-    }
-
-    /* Responsive design for activity modal */
-    @@media (max-width: 768px) {
-        .activity-header .row {
-            text-align: center;
-        }
-
-        .activity-meta {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .activities-container {
-            max-height: 300px;
-        }
-    }
-</style>
-
-<script>
-    // Toggle between main admin view and user management view
-    function showUserManagement() {
-        document.getElementById('mainAdminSection').style.display = 'none';
-        document.getElementById('userManagementSection').style.display = 'block';
-
-        // Smooth scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function backToMainAdmin() {
-        document.getElementById('userManagementSection').style.display = 'none';
-        document.getElementById('mainAdminSection').style.display = 'block';
-
-        // Smooth scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // User management functionality (only loaded when user management is shown)
-    document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality
-        const searchInput = document.getElementById('userSearch');
-        const roleFilter = document.getElementById('roleFilter');
-        const userRows = document.querySelectorAll('.user-row');
-
-        function filterUsers() {
-            const searchTerm = searchInput?.value.toLowerCase() || '';
-            const selectedRole = roleFilter?.value || '';
-
-            userRows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                const roleColumn = row.querySelector('td:nth-child(4)')?.textContent || '';
-
-                const matchesSearch = text.includes(searchTerm);
-                const matchesRole = !selectedRole || roleColumn.includes(selectedRole);
-
-                if (matchesSearch && matchesRole) {
-                    row.classList.remove('filtered-out');
-                } else {
-                    row.classList.add('filtered-out');
-                }
-            });
-
-            updatePaginationInfo();
-        }
-
-        if (searchInput) searchInput.addEventListener('input', filterUsers);
-        if (roleFilter) roleFilter.addEventListener('change', filterUsers);
-
-        // Select all functionality
-        const selectAllCheckbox = document.getElementById('selectAll');
-        const userCheckboxes = document.querySelectorAll('.user-checkbox');
-
-        if (selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', function() {
-                userCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
-            });
-        }
-
-        function updatePaginationInfo() {
-            const visibleRows = document.querySelectorAll('.user-row:not(.filtered-out)').length;
-            const showingEndElement = document.getElementById('showingEnd');
-            const totalEntriesElement = document.getElementById('totalEntries');
-
-            if (showingEndElement) showingEndElement.textContent = visibleRows;
-            if (totalEntriesElement) totalEntriesElement.textContent = visibleRows;
-        }
-    });
-
-    // User action functions
-    function viewUser(userId) {
-        // Find user data from the table row
-        const userRow = document.querySelector(`tr[data-user-id="${userId}"]`);
-        if (!userRow) return;
-
-        // Extract user information from the table row
-        const userInfo = userRow.querySelector('td:nth-child(2)');
-        const contactInfo = userRow.querySelector('td:nth-child(3)');
-        const roleInfo = userRow.querySelector('td:nth-child(4)');
-        const statusInfo = userRow.querySelector('td:nth-child(5)');
-        const joinedInfo = userRow.querySelector('td:nth-child(6)');
-
-        // Get user details
-        const fullName = userInfo.querySelector('h6').textContent.trim();
-        const username = userInfo.querySelector('small').textContent.trim();
-        const email = contactInfo.querySelector('.fa-envelope').parentNode.textContent.replace('✉', '').trim();
-        const phone = contactInfo.querySelector('.fa-phone')?.parentNode.textContent.replace('📞', '').trim() || 'Not provided';
-        const roles = Array.from(roleInfo.querySelectorAll('.badge')).map(badge => badge.textContent.trim()).join(', ');
-        const status = statusInfo.querySelector('.badge').textContent.trim();
-        const joinDate = joinedInfo.textContent.trim();
-
-        // Populate modal - Header section
-        document.getElementById('viewUserName').textContent = fullName;
-        document.getElementById('viewUserUsername').textContent = username;
-        document.getElementById('viewUserRoles').innerHTML = roleInfo.innerHTML;
-
-        // Populate modal - Information cards
-        document.getElementById('viewUserName2').textContent = fullName;
-        document.getElementById('viewUserUsername2').textContent = username;
-        document.getElementById('viewUserEmail').textContent = email;
-        document.getElementById('viewUserPhone').textContent = phone;
-        document.getElementById('viewUserStatus').innerHTML = statusInfo.innerHTML;
-        document.getElementById('viewUserRoles2').innerHTML = roleInfo.innerHTML;
-        document.getElementById('viewUserJoined').textContent = joinDate;
-        document.getElementById('viewUserId').textContent = userId;
-
-        // Set avatar initials
-        const avatarText = userInfo.querySelector('.avatar-circle span').textContent;
-        document.getElementById('viewUserAvatar').textContent = avatarText;
-
-        // Store current user ID for modal actions
-        document.getElementById('viewUserModal').setAttribute('data-user-id', userId);
-
-        // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('viewUserModal'));
-        modal.show();
-    }
-
-    // Modal action functions
-    function editUserFromModal() {
-        const userId = document.getElementById('viewUserModal').getAttribute('data-user-id');
-        // Close the view modal first
-        const viewModal = bootstrap.Modal.getInstance(document.getElementById('viewUserModal'));
-        if (viewModal) {
-            viewModal.hide();
-        }
-
-        // Then call edit function
-        setTimeout(() => {
-            editUser(userId);
-        }, 300);
-    }
-
-    function viewUserActivity() {
-        const userId = document.getElementById('viewUserModal').getAttribute('data-user-id');
-
-        // Close the user details modal
-        const userModal = bootstrap.Modal.getInstance(document.getElementById('viewUserModal'));
-        if (userModal) {
-            userModal.hide();
-        }
-
-        // Load activities and show activity modal
-        setTimeout(() => {
-            loadUserActivities(userId);
-        }, 300);
-    }
-
-    // Load and display user activities
-    async function loadUserActivities(userId) {
-        try {
-            // Show loading state
-            document.getElementById('activityLoadingSpinner').style.display = 'block';
-            document.getElementById('activityContent').style.display = 'none';
-            document.getElementById('activityErrorMessage').style.display = 'none';
-
-            // Show the modal
-            const activityModal = new bootstrap.Modal(document.getElementById('userActivityModal'));
-            activityModal.show();
-
-            // Fetch activities
-            const response = await fetch(`/Admin/GetUserActivities?userId=${userId}`);
-
-            if (!response.ok) {
-                throw new Error('Failed to load activities');
-            }
-
-            const data = await response.json();
-
-            // Hide loading and show content
-            document.getElementById('activityLoadingSpinner').style.display = 'none';
-            document.getElementById('activityContent').style.display = 'block';
-
-            // Populate user info
-            if (data.user) {
-                document.getElementById('activityUserName').textContent = data.user.name;
-                document.getElementById('activityUserEmail').textContent = data.user.email;
-                document.getElementById('activityUserUsername').textContent = data.user.username;
-                document.getElementById('activityTotalCount').textContent = data.totalCount;
-            }
-
-            // Populate activities
-            const activitiesContainer = document.getElementById('activitiesContainer');
-            activitiesContainer.innerHTML = '';
-
-            if (data.activities && data.activities.length > 0) {
-                data.activities.forEach(activity => {
-                    const activityElement = createActivityElement(activity);
-                    activitiesContainer.appendChild(activityElement);
-                });
-            } else {
-                activitiesContainer.innerHTML = `
-                    <div class="text-center py-4">
-                        <i class="fas fa-history text-muted" style="font-size: 3rem;"></i>
-                        <h5 class="mt-3 text-muted">No Activities Found</h5>
-                        <p class="text-muted">This user has no recorded activities yet.</p>
-                    </div>
-                `;
-            }
-
-        } catch (error) {
-            console.error('Error loading activities:', error);
-
-            // Hide loading and show error
-            document.getElementById('activityLoadingSpinner').style.display = 'none';
-            document.getElementById('activityContent').style.display = 'none';
-            document.getElementById('activityErrorMessage').style.display = 'block';
-        }
-    }
-
-    // Create activity element
-    function createActivityElement(activity) {
-        const div = document.createElement('div');
-        div.className = 'activity-item';
-
-        // Get activity icon and color based on type
-        const { icon, color } = getActivityIconAndColor(activity.activityType);
-
-        div.innerHTML = `
-            <div class="d-flex align-items-start">
-                <div class="activity-icon ${color}">
-                    <i class="fas ${icon}"></i>
-                </div>
-                <div class="activity-details flex-grow-1">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <h6 class="activity-title">${activity.activityType}</h6>
-                            <p class="activity-description">${activity.description}</p>
-                            <div class="activity-meta">
-                                <span class="meta-item">
-                                    <i class="fas fa-clock me-1"></i>${activity.createdAt}
-                                </span>
-                                ${activity.ipAddress ? `
-                                    <span class="meta-item">
-                                        <i class="fas fa-globe me-1"></i>${activity.ipAddress}
-                                    </span>
-                                ` : ''}
-                                <span class="meta-item">
-                                    <i class="fas fa-map-marker-alt me-1"></i>${activity.location}
-                                </span>
-                            </div>
-                        </div>
-                        <span class="badge bg-secondary">${activity.activityType}</span>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        return div;
-    }
-
-    // Get icon and color for activity type
-    function getActivityIconAndColor(activityType) {
-        const iconMap = {
-            'Login': { icon: 'fa-sign-in-alt', color: 'bg-success' },
-            'Logout': { icon: 'fa-sign-out-alt', color: 'bg-secondary' },
-            'Register': { icon: 'fa-user-plus', color: 'bg-primary' },
-            'Profile Update': { icon: 'fa-user-edit', color: 'bg-info' },
-            'Password Change': { icon: 'fa-key', color: 'bg-warning' },
-            'Password Reset': { icon: 'fa-unlock-alt', color: 'bg-warning' },
-            'Role Changed': { icon: 'fa-shield-alt', color: 'bg-danger' },
-            'Admin Access': { icon: 'fa-crown', color: 'bg-purple' },
-            'Data Export': { icon: 'fa-download', color: 'bg-dark' },
-            'Movie Viewed': { icon: 'fa-play', color: 'bg-success' }
-        };
-
-        return iconMap[activityType] || { icon: 'fa-circle', color: 'bg-secondary' };
-    }
-
-    function editUser(userId) {
-        console.log('Edit user:', userId);
-        alert('Edit user functionality will be implemented in the next step');
-    }
-
-    function deleteUser(userId) {
-        if (confirm('Are you sure you want to delete this user?')) {
-            console.log('Delete user:', userId);
-            alert('Delete user functionality will be implemented in the next step');
-        }
-    }
-
-    function exportUsers() {
-        console.log('Export users');
-        alert('Export functionality will be implemented in the next step');
-    }
-
-    // Additional activity modal functions
-    function refreshActivities() {
-        const userId = document.getElementById('viewUserModal')?.getAttribute('data-user-id');
-        if (userId) {
-            loadUserActivities(userId);
-        }
-    }
-
-    function exportUserActivities() {
-        const userId = document.getElementById('viewUserModal')?.getAttribute('data-user-id');
-        console.log('Export activities for user:', userId);
-        alert('Export activities functionality will be implemented in a future update');
-    }
-</script>
+<script src="~/js/index.js"></script>

@@ -1,0 +1,176 @@
+﻿@model Film_website.Models.ViewModels.AddMovieViewModel
+@{
+    ViewData["Title"] = "Add Movie - Admin";
+    Layout = null;
+}
+<link href="~/css/admin-styles.css" rel="stylesheet" />
+<link href="~/css/Addmovie.css" rel="stylesheet" />
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Creepster&family=Bungee&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar">
+            <!-- Sidebar content -->
+            <div class="admin-header">
+                <h2>🎬 ADMIN</h2>
+                <p>ULTIMATE MOVIE CONTROL</p>
+            </div>
+            <nav class="sidebar-menu">
+                <a href="@Url.Action("Index", "Admin")" class="menu-item" data-section="dashboard">
+                    <span class="menu-icon">🏠</span>
+                    <span class="menu-text">DASHBOARD</span>
+                </a>
+                <a href="@Url.Action("ManageMovies", "Admin")" class="menu-item active" data-section="movies">
+                    <span class="menu-icon">🎬</span>
+                    <span class="menu-text">MOVIE MANAGER</span>
+                </a>
+
+                <a href="@Url.Action("Upload", "Translation")" class="menu-item translator-link">
+                    <span class="menu-icon">🌐</span>
+                    <span class="menu-text">AI TRANSLATOR</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <section class="content-section active">
+                <div class="section-header">
+                    <h2>➕ ADD NEW MOVIE</h2>
+                    <a href="@Url.Action("ManageMovies", "Admin")" class="action-btn secondary">
+                        ← BACK TO MOVIES
+                    </a>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-content">
+                        <form asp-action="AddMovie" method="post" enctype="multipart/form-data">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label asp-for="Title">Title</label>
+                                    <input asp-for="Title" class="form-control" />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Genre">Genre</label>
+                                    <input asp-for="Genre" class="form-control" />
+                                    <span asp-validation-for="Genre" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Description">Description</label>
+                                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label asp-for="ReleaseYear">Release Year</label>
+                                    <input asp-for="ReleaseYear" type="number" class="form-control" />
+                                    <span asp-validation-for="ReleaseYear" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Category Selection Section -->
+                            <div class="form-group category-section">
+                                <label class="category-header">📋 Movie Categories</label>
+                                <p class="category-description">Select all categories that apply to this movie:</p>
+
+                                <div class="category-grid">
+                                    <div class="category-item">
+                                        <input asp-for="IsNewRelease" type="checkbox" id="newRelease" />
+                                        <label for="newRelease" class="category-label">
+                                            🆕 New Releases
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsMostWatched" type="checkbox" id="mostWatched" />
+                                        <label for="mostWatched" class="category-label">
+                                            🔥 Most Watched
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsTopRated" type="checkbox" id="topRated" />
+                                        <label for="topRated" class="category-label">
+                                            ⭐ Top Rated
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsCinema" type="checkbox" id="cinema" />
+                                        <label for="cinema" class="category-label">
+                                            🎭 Cinema
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsOngoingTVSeries" type="checkbox" id="tvSeries" />
+                                        <label for="tvSeries" class="category-label">
+                                            📺 Ongoing TV Series
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsFeatureFilm" type="checkbox" id="featureFilm" />
+                                        <label for="featureFilm" class="category-label">
+                                            🎬 Feature Films
+                                        </label>
+                                    </div>
+
+                                    <div class="category-item">
+                                        <input asp-for="IsComingSoon" type="checkbox" id="comingSoon" />
+                                        <label for="comingSoon" class="category-label">
+                                            🚀 Coming Soon
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- File Upload Section -->
+                            <div class="file-upload-section">
+                                <h3>📁 File Uploads</h3>
+
+                                <div class="form-group">
+                                    <label for="movieFile">Movie File</label>
+                                    <input type="file" name="movieFile" class="form-control-file" accept="video/*" required />
+                                    <small class="form-text">Supported formats: MP4, AVI, MKV</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="thumbnailFile">Thumbnail</label>
+                                    <input type="file" name="thumbnailFile" class="form-control-file" accept="image/*" />
+                                    <small class="form-text">Recommended: JPG, PNG (16:9 aspect ratio)</small>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="subtitleFile">Subtitle File (.srt or .vtt)</label>
+                                    <input type="file" name="subtitleFile" class="form-control-file" accept=".srt,.vtt" />
+                                    <small class="form-text">Optional: SRT or VTT format</small>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="action-btn primary">💾 SAVE </button>
+                                <a href="@Url.Action("ManageMovies", "Admin")" class="action-btn secondary">❌ CANCEL</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

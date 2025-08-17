@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\Film_website.props" />
-</Project>

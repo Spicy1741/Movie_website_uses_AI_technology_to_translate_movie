@@ -1,0 +1,23 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+uploads/
+downloads/
+
+# Others
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.vscode/
+*.srt
+*.mp4
+
+appsettings.json
+appsettings.Development.json

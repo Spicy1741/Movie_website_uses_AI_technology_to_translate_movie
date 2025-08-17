@@ -1,0 +1,865 @@
+﻿/* Enhanced Edit Movie Styles - Modern Cinema UI */
+
+/* Inherit all styles from Addmovie.css for consistency */
+@import url('./Addmovie.css');
+
+/* Enhanced Form Group with Edit-specific styling */
+.form-group {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+    .form-group label {
+        display: block;
+        color: var(--primary-red);
+        font-weight: 700;
+        margin-bottom: 0.8rem;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+        .form-group label::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-red), var(--light-red));
+            border-radius: 1px;
+            transition: width 0.4s ease;
+        }
+
+    .form-group:hover label::after {
+        width: 50px;
+    }
+
+/* Enhanced Category Section for Edit Mode */
+.category-section {
+    border: 2px solid rgba(220, 38, 38, 0.3);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+    background: linear-gradient( 135deg, rgba(220, 38, 38, 0.05) 0%, rgba(220, 38, 38, 0.02) 100% );
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+    .category-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(220, 38, 38, 0.1), transparent );
+        transition: left 0.8s ease;
+    }
+
+    .category-section:hover::before {
+        left: 100%;
+    }
+
+    .category-section:hover {
+        border-color: rgba(220, 38, 38, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(220, 38, 38, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+/* Enhanced Category Header with Edit Icon */
+.category-header {
+    color: var(--primary-red);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    text-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+    .category-header::before {
+        content: '✏️';
+        font-size: 1.2rem;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    }
+
+    .category-header::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-red), var(--light-red));
+        border-radius: 2px;
+        animation: shimmer 2s infinite;
+    }
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-10px);
+        opacity: 0.8;
+    }
+
+    50% {
+        transform: translateX(10px);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-10px);
+        opacity: 0.8;
+    }
+}
+
+/* Enhanced Category Description for Edit Mode */
+.category-description {
+    display: block;
+    margin-bottom: 1.5rem;
+    color: var(--text-gray);
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.6;
+    opacity: 0.9;
+    position: relative;
+}
+
+    .category-description::before {
+        content: 'ℹ️';
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+/* Enhanced Category Items with Edit State Indicators */
+.category-item {
+    display: flex;
+    align-items: center;
+    padding: 1.2rem 1.5rem;
+    background: linear-gradient( 145deg, rgba(31, 41, 55, 0.8) 0%, rgba(17, 24, 39, 0.9) 100% );
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+    .category-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(220, 38, 38, 0.15), transparent );
+        transition: left 0.6s ease;
+    }
+
+    .category-item:hover::before {
+        left: 100%;
+    }
+
+    .category-item:hover {
+        background: linear-gradient( 145deg, rgba(220, 38, 38, 0.15) 0%, rgba(220, 38, 38, 0.08) 100% );
+        border-color: rgba(220, 38, 38, 0.4);
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 8px 25px rgba(220, 38, 38, 0.2), 0 0 0 1px rgba(220, 38, 38, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    /* Enhanced Checkbox with Edit State */
+    .category-item input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+        margin-right: 1rem;
+        accent-color: var(--primary-red);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .category-item input[type="checkbox"]:checked {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 8px rgba(220, 38, 38, 0.6));
+        }
+
+        .category-item input[type="checkbox"]:hover {
+            transform: scale(1.05);
+        }
+
+/* Enhanced Category Label for Edit Mode */
+.category-label {
+    color: var(--text-light);
+    font-weight: 600;
+    cursor: pointer;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    user-select: none;
+    position: relative;
+}
+
+.category-item:hover .category-label {
+    color: var(--white);
+    text-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+/* Enhanced Category Grid */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Enhanced Sidebar for Edit Mode */
+.sidebar {
+    width: 280px;
+    background: linear-gradient( 180deg, rgba(26, 26, 26, 0.95) 0%, rgba(13, 13, 13, 0.98) 100% );
+    border-right: 2px solid rgba(220, 38, 38, 0.3);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5), inset -1px 0 0 rgba(255, 255, 255, 0.1);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: var(--transition-smooth);
+    backdrop-filter: blur(20px);
+}
+
+    .sidebar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, var(--primary-red), var(--dark-red));
+        border-radius: 3px;
+        transition: var(--transition-smooth);
+    }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--light-red), var(--primary-red));
+        }
+
+/* Edit-specific File Upload Enhancement */
+.file-upload-section {
+    background: linear-gradient( 135deg, rgba(220, 38, 38, 0.05) 0%, rgba(220, 38, 38, 0.02) 100% );
+    border: 2px dashed rgba(220, 38, 38, 0.3);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2.5rem 0;
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+    .file-upload-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(220, 38, 38, 0.08), transparent );
+        transition: left 0.8s ease;
+    }
+
+    .file-upload-section:hover::before {
+        left: 100%;
+    }
+
+    .file-upload-section h3 {
+        color: var(--primary-red);
+        font-size: 1.3rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        text-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+        .file-upload-section h3::before {
+            content: '📁';
+            font-size: 1.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .file-upload-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-red), var(--light-red));
+            border-radius: 1px;
+        }
+
+/* Enhanced Form Text for Edit Mode */
+.form-text {
+    font-size: 0.85rem;
+    color: var(--text-gray);
+    margin-top: 0.5rem;
+    font-style: italic;
+    opacity: 0.9;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+    .form-text::before {
+        content: '💡';
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+.form-group:hover .form-text {
+    color: var(--text-light);
+    opacity: 1;
+}
+
+/* Enhanced Small Text for Edit Instructions */
+small.form-text {
+    display: block;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: rgba(220, 38, 38, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid rgba(220, 38, 38, 0.3);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    position: relative;
+}
+
+    small.form-text::before {
+        content: 'ℹ️';
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+/* Enhanced Form Actions for Edit Mode */
+.form-actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid rgba(220, 38, 38, 0.2);
+    flex-wrap: wrap;
+    position: relative;
+}
+
+    .form-actions::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary-red), var(--light-red));
+        border-radius: 1px;
+    }
+
+/* Enhanced Update Button */
+.action-btn:not(.secondary) {
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    color: var(--white);
+    padding: 1.2rem 2.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(220, 38, 38, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+    .action-btn:not(.secondary)::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.2), transparent );
+        transition: left 0.6s ease;
+    }
+
+    .action-btn:not(.secondary):hover::before {
+        left: 100%;
+    }
+
+    .action-btn:not(.secondary):hover {
+        background: linear-gradient(135deg, var(--light-red), var(--primary-red));
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(220, 38, 38, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+/* Enhanced Secondary Button (Cancel) */
+.action-btn.secondary {
+    background: linear-gradient(135deg, var(--light-gray), var(--medium-gray));
+    color: var(--text-light);
+    padding: 1.2rem 2.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+    .action-btn.secondary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient( 90deg, transparent, rgba(255, 255, 255, 0.1), transparent );
+        transition: left 0.6s ease;
+    }
+
+    .action-btn.secondary:hover::before {
+        left: 100%;
+    }
+
+    .action-btn.secondary:hover {
+        background: linear-gradient(135deg, var(--medium-gray), var(--light-gray));
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+
+/* Enhanced Pre-filled Form Indicators */
+.form-group.has-value label::before {
+    content: '✓';
+    position: absolute;
+    left: -25px;
+    color: var(--success-green);
+    font-weight: 700;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.form-group.has-value .form-control {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: linear-gradient( 145deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100% );
+}
+
+/* Enhanced Validation Messages for Edit Mode */
+.text-danger {
+    color: var(--danger-red);
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+    display: block;
+    background: rgba(239, 68, 68, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border-left: 3px solid var(--danger-red);
+    position: relative;
+}
+
+    .text-danger::before {
+        content: '⚠️';
+        margin-right: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+/* Enhanced Success Messages */
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    padding: 1.5rem 2rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .alert-success::before {
+        content: '✅';
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+    }
+
+    .alert-success::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+        animation: successShimmer 2s ease-in-out;
+    }
+
+@keyframes successShimmer {
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+/* Enhanced Error Messages */
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 1.5rem 2rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+    .alert-danger::before {
+        content: '❌';
+        font-size: 1.2rem;
+        margin-right: 0.5rem;
+    }
+
+/* Enhanced Category Checked State for Edit Mode */
+.category-item:has(input[type="checkbox"]:checked) {
+    background: linear-gradient( 145deg, rgba(220, 38, 38, 0.2) 0%, rgba(220, 38, 38, 0.1) 100% );
+    border-color: rgba(220, 38, 38, 0.5);
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3), inset 0 0 20px rgba(220, 38, 38, 0.1);
+    position: relative;
+}
+
+    .category-item:has(input[type="checkbox"]:checked)::after {
+        content: 'SELECTED';
+        position: absolute;
+        top: 0.5rem;
+        right: 0.75rem;
+        background: var(--primary-red);
+        color: var(--white);
+        padding: 0.25rem 0.5rem;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        opacity: 0.9;
+    }
+
+    .category-item:has(input[type="checkbox"]:checked) .category-label {
+        color: var(--white);
+        font-weight: 700;
+    }
+
+/* Enhanced File Upload States for Edit Mode */
+.form-control-file.has-file {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: linear-gradient( 145deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.04) 100% );
+}
+
+    .form-control-file.has-file::after {
+        content: 'File selected - will replace current file';
+        position: absolute;
+        bottom: -30px;
+        left: 0;
+        color: var(--success-green);
+        font-size: 0.8rem;
+        font-style: italic;
+    }
+
+/* Enhanced Progress Indicators */
+.edit-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(220, 38, 38, 0.2);
+    z-index: 9999;
+}
+
+.edit-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-red), var(--light-red));
+    width: 0%;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+}
+
+/* Enhanced Responsive Design for Edit Mode */
+@media (max-width: 1200px) {
+    .category-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .category-section {
+        padding: 2rem 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .category-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .category-item {
+        padding: 1rem 1.25rem;
+    }
+
+    .file-upload-section {
+        padding: 2rem 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .form-actions .action-btn {
+            width: 100%;
+            max-width: 300px;
+        }
+
+    .category-item:has(input[type="checkbox"]:checked)::after {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .category-section {
+        padding: 1.5rem 1rem;
+        margin: 1.5rem 0;
+        border-radius: 12px;
+    }
+
+    .category-header {
+        font-size: 1.2rem;
+        letter-spacing: 1px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .category-item {
+        padding: 0.875rem 1rem;
+        border-radius: 8px;
+    }
+
+    .category-label {
+        font-size: 0.9rem;
+    }
+
+    .file-upload-section {
+        padding: 1.5rem 1rem;
+        border-radius: 12px;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+    }
+}
+
+/* Enhanced Animation Effects for Edit Mode */
+@keyframes editModeEntry {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.category-item {
+    animation: editModeEntry 0.6s ease-out;
+}
+
+    .category-item:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .category-item:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .category-item:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .category-item:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .category-item:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .category-item:nth-child(6) {
+        animation-delay: 0.6s;
+    }
+
+    .category-item:nth-child(7) {
+        animation-delay: 0.7s;
+    }
+
+    /* Enhanced Focus States for Edit Mode */
+    .category-item:focus-within {
+        outline: 3px solid rgba(220, 38, 38, 0.5);
+        outline-offset: 2px;
+        transform: scale(1.02);
+    }
+
+.form-control:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15), 0 8px 25px rgba(220, 38, 38, 0.2);
+}
+
+/* Enhanced Loading State for Edit Form */
+.form-updating {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+    .form-updating .action-btn:not(.secondary) {
+        background: linear-gradient(135deg, var(--medium-gray), var(--light-gray));
+        cursor: not-allowed;
+        transform: none;
+        position: relative;
+    }
+
+        .form-updating .action-btn:not(.secondary)::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--white);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Enhanced Sidebar Enhancement for Edit Mode */
+.sidebar.edit-mode {
+    border-right-color: rgba(220, 38, 38, 0.4);
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6), inset -2px 0 0 rgba(220, 38, 38, 0.2);
+}
+
+/* Enhanced Form Section Styling */
+.file-upload-section .form-group {
+    margin-bottom: 1.5rem;
+}
+
+    .file-upload-section .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+/* Enhanced Tooltip System for Edit Mode */
+.category-item[data-tooltip]:hover::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: var(--white);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Print Styles for Edit Mode */
+@media print {
+    .category-section,
+    .file-upload-section {
+        border: 1px solid #ccc;
+        background: transparent;
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+    .category-item {
+        background: transparent;
+        border: 1px solid #ddd;
+        margin-bottom: 0.5rem;
+    }
+
+    .action-btn {
+        display: none;
+    }
+
+    .form-actions {
+        display: none;
+    }
+
+    .alert-success,
+    .alert-danger {
+        border: 1px solid #ccc;
+        background: transparent;
+        color: #000;
+    }
+}

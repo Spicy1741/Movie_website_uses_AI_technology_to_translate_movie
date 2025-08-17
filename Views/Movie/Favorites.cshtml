@@ -1,0 +1,195 @@
+﻿@model List<Film_website.Models.Movie>
+@{
+    ViewData["Title"] = "My Favorites";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var favoriteCount = ViewBag.FavoriteCount as int? ?? 0;
+}
+<link href="~/css/Favorite.css" rel="stylesheet" />
+
+<div class="favorites-page-container">
+    <div class="container-fluid">
+        <!-- Favorites Header -->
+        <div class="favorites-header">
+            <h1> My Favorites</h1>
+            <div class="favorites-count">
+                <span class="count-badge">@favoriteCount Movie@(favoriteCount != 1 ? "s" : "")</span>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="page-navigation">
+            <a href="@Url.Action("Index", "Home")" class="nav-link1">
+                <i class="fas fa-film"></i> Browse All Movies
+            </a>
+            <a href="@Url.Action("Search", "Movie")" class="nav-link1">
+                <i class="fas fa-search"></i> Search Movies
+            </a>
+        </div>
+
+        <!-- Favorites Content -->
+        <div class="favorites-content">
+            @if (Model.Any())
+            {
+                <div class="favorites-grid">
+                    @foreach (var movie in Model)
+                    {
+                        <div class="favorite-movie-card">
+                            <div class="movie-poster">
+                                <a href="@Url.Action("Details", "Movie", new { id = movie.Id })">
+                                    @if (!string.IsNullOrEmpty(movie.ThumbnailPath))
+                                    {
+                                        <img src="@movie.ThumbnailPath" alt="@movie.Title" class="poster-image" />
+                                    }
+                                    else
+                                    {
+                                        <div class="no-poster">
+                                            <i class="fas fa-film fa-3x"></i>
+                                            <p>No Image</p>
+                                        </div>
+                                    }
+                                </a>
+
+                                <!-- Remove from Favorites Button -->
+                                <button class="remove-favorite-btn" data-movie-id="@movie.Id" title="Remove from Favorites">
+                                    <i class="fas fa-heart-broken"></i>
+                                </button>
+                            </div>
+
+                            <div class="movie-info">
+                                <h3 class="movie-title">
+                                    <a href="@Url.Action("Details", "Movie", new { id = movie.Id })">@movie.Title</a>
+                                </h3>
+                                <div class="movie-meta">
+                                    <span class="genre">@movie.Genre</span>
+                                    <span class="year">@movie.ReleaseYear</span>
+                                </div>
+                               
+
+                                @if (!string.IsNullOrEmpty(movie.Categories))
+                                {
+                                    <div class="category-tags">
+                                        @foreach (var category in movie.GetCategoriesList().Take(3))
+                                        {
+                                            <span class="category-tag">@category</span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="movie-actions">
+                                <a href="@Url.Action("Details", "Movie", new { id = movie.Id })" class="watch-btn">
+                                    <i class="fas fa-play"></i> Watch Now
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-favorites">
+                    <div class="empty-icon">
+                        <i class="far fa-heart fa-5x"></i>
+                    </div>
+                    <h2>No Favorites Yet</h2>
+                    <p>Start building your epic movie collection by adding movies to your favorites!</p>
+                    <div class="empty-actions">
+                        <a href="@Url.Action("Index", "Home")" class="browse-btn">
+                            <i class="fas fa-film"></i> Browse Movies
+                        </a>
+                        <a href="@Url.Action("Search", "Movie")" class="search-btn">
+                            <i class="fas fa-search"></i> Search Movies
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@Html.AntiForgeryToken()
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle remove from favorites
+        document.querySelectorAll('.remove-favorite-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const movieId = this.getAttribute('data-movie-id');
+                const movieCard = this.closest('.favorite-movie-card');
+                const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                if (confirm('Are you sure you want to remove this movie from your favorites?')) {
+                    this.disabled = true;
+
+                    fetch('/Movie/RemoveFromFavorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: `movieId=${movieId}&__RequestVerificationToken=${encodeURIComponent(antiForgeryToken)}`
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Animate card removal
+                            movieCard.style.transition = 'all 0.5s ease';
+                            movieCard.style.transform = 'scale(0)';
+                            movieCard.style.opacity = '0';
+
+                            setTimeout(() => {
+                                movieCard.remove();
+
+                                // Check if no more favorites
+                                const remainingCards = document.querySelectorAll('.favorite-movie-card');
+                                if (remainingCards.length === 0) {
+                                    location.reload(); // Reload to show empty state
+                                }
+                            }, 500);
+
+                            showMessage(data.message, 'success');
+                        } else {
+                            showMessage(data.message, 'error');
+                            this.disabled = false;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showMessage('An error occurred. Please try again.', 'error');
+                        this.disabled = false;
+                    });
+                }
+            });
+        });
+    });
+
+    function showMessage(message, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.textContent = message;
+        messageDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            ${type === 'success' ? 'background: #2ed573;' : 'background: #ff3838;'}
+        `;
+
+        document.body.appendChild(messageDiv);
+
+        setTimeout(() => {
+            messageDiv.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => {
+                document.body.removeChild(messageDiv);
+            }, 300);
+        }, 3000);
+    }
+</script>
