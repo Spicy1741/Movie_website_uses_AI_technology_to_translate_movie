@@ -11,8 +11,22 @@ using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add after your existing service registrations
+builder.Services.AddHttpClient<ITranslationAccuracyService, TranslationAccuracyService>();
+builder.Services.AddScoped<ITranslationAccuracyService, TranslationAccuracyService>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// *** NEW: Add Session Support ***
+builder.Services.AddDistributedMemoryCache(); // Add in-memory caching for sessions
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(2); // Session timeout - 2 hours should be enough for translation results
+    options.Cookie.HttpOnly = true; // Security: Session cookie only accessible via HTTP
+    options.Cookie.IsEssential = true; // Required for GDPR compliance - session is essential for functionality
+    options.Cookie.Name = "FilmWebsite.Session"; // Custom session cookie name
+});
 
 // Database configuration
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -73,8 +87,6 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<UserActivityService>();
 builder.Services.AddScoped<MovieService>();
 
-
-
 // Configure file upload size for Whisper AI
 builder.Services.Configure<IISServerOptions>(options =>
 {
@@ -89,8 +101,6 @@ builder.Services.Configure<FormOptions>(options =>
     options.MultipartHeadersLengthLimit = int.MaxValue;
 });
 
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -99,68 +109,50 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-var provider = new FileExtensionContentTypeProvider();
-provider.Mappings[".srt"] = "text/plain; charset=utf-8";
-provider.Mappings[".vtt"] = "text/vtt; charset=utf-8";
-provider.Mappings[".ass"] = "text/plain; charset=utf-8";
-provider.Mappings[".ssa"] = "text/plain; charset=utf-8";
-
-app.UseStaticFiles(new StaticFileOptions
-{
-    ContentTypeProvider = provider,
-    OnPrepareResponse = context =>
-    {
-        var file = context.File;
-        var response = context.Context.Response;
-        var fileName = file.Name.ToLower();
-        // Handle subtitle files
-        if (fileName.EndsWith(".srt") || fileName.EndsWith(".vtt") ||
-            fileName.EndsWith(".ass") || fileName.EndsWith(".ssa"))
-        {
-            response.Headers["Access-Control-Allow-Origin"] = "*";
-            response.Headers["Access-Control-Allow-Methods"] = "GET";
-            response.Headers["Access-Control-Allow-Headers"] = "Content-Type";
-
-            if (fileName.EndsWith(".srt"))
-            {
-                response.Headers["Content-Type"] = "text/plain; charset=utf-8";
-            }
-            else if (fileName.EndsWith(".vtt"))
-            {
-                response.Headers["Content-Type"] = "text/vtt; charset=utf-8";
-            }
-            else
-            {
-                response.Headers["Content-Type"] = "text/plain; charset=utf-8";
-            }
-        }
-    }
-});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
+// *** NEW: Add Session Middleware - Must be added before UseAuthentication and UseAuthorization ***
+app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = context =>
-    {
-        var path = context.File.Name;
-        if (path.EndsWith(".srt", StringComparison.OrdinalIgnoreCase))
-        {
-            context.Context.Response.Headers.Add("Content-Type", "text/vtt; charset=utf-8");
-            // Add CORS headers if needed
-            context.Context.Response.Headers.Add("Access-Control-Allow-Origin", "*");
-        }
-    }
-});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Add role seeding
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = services.GetRequiredService<UserManager<User>>();
+
+        // Create roles if they don't exist
+        string[] roleNames = { "Admin", "User" };
+        IdentityResult roleResult;
+
+        foreach (var roleName in roleNames)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding roles.");
+    }
+}
 
 // Ensure upload and download directories exist for Whisper AI
 var uploadsPath = Path.Combine(app.Environment.WebRootPath, "uploads");
@@ -220,4 +212,5 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Lỗi khi tạo database.");
     }
 }
+
 app.Run();
