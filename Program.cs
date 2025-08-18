@@ -11,6 +11,16 @@ using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Register HttpClient for services
+builder.Services.AddHttpClient<IWhisperService, WhisperService>();
+builder.Services.AddHttpClient<IGptTranslationService, GptTranslationService>();
+
+// Register application services - ENSURE CORRECT MAPPINGS
+builder.Services.AddScoped<IWhisperService, WhisperService>();
+builder.Services.AddScoped<IGptTranslationService, GptTranslationService>(); // This is the one used in TranslationController
+builder.Services.AddScoped<IAudioExtractionService, AudioExtractionService>();
+builder.Services.AddScoped<ISrtGeneratorService, SrtGeneratorService>();
+
 // Add after your existing service registrations
 builder.Services.AddHttpClient<ITranslationAccuracyService, TranslationAccuracyService>();
 builder.Services.AddScoped<ITranslationAccuracyService, TranslationAccuracyService>();

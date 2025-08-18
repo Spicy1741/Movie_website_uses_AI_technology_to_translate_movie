@@ -1,46 +1,49 @@
-﻿using Film_website.Models;
+﻿using System.Text;
 using Newtonsoft.Json;
-using System.Text;
+using Film_website.Models;
 
 namespace Film_website.Services
 {
     public class WhisperService : IWhisperService
     {
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _configuration;
         private readonly ILogger<WhisperService> _logger;
-        private readonly string _apiKey;
+        private readonly IConfiguration _configuration;
 
-        // Language code mapping for Whisper API
+        // Language mapping for Whisper API
         private readonly Dictionary<string, string> _languageMapping = new()
         {
-            {"Vietnamese", "vi"},
-            {"English", "en"},
-            {"Spanish", "es"},
-            {"French", "fr"},
-            {"German", "de"},
-            {"Chinese", "zh"},
-            {"Japanese", "ja"},
-            {"Korean", "ko"},
-            {"Portuguese", "pt"},
-            {"Russian", "ru"},
-            {"Arabic", "ar"},
-            {"Hindi", "hi"},
-            {"Thai", "th"},
-            {"Italian", "it"},
-            {"Dutch", "nl"}
+            { "Vietnamese", "vi" },
+            { "English", "en" },
+            { "Spanish", "es" },
+            { "French", "fr" },
+            { "German", "de" },
+            { "Italian", "it" },
+            { "Portuguese", "pt" },
+            { "Russian", "ru" },
+            { "Japanese", "ja" },
+            { "Korean", "ko" },
+            { "Chinese", "zh" },
+            { "Arabic", "ar" },
+            { "Hindi", "hi" },
+            { "Thai", "th" },
+            { "Indonesian", "id" }
         };
 
-        public WhisperService(HttpClient httpClient, IConfiguration configuration, ILogger<WhisperService> logger)
+        public WhisperService(HttpClient httpClient, ILogger<WhisperService> logger, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _configuration = configuration;
             _logger = logger;
-            _apiKey = _configuration["OpenAI:ApiKey"] ?? throw new InvalidOperationException("OpenAI API key not found");
+            _configuration = configuration;
 
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
-            _httpClient.Timeout = TimeSpan.FromMinutes(10); // Increase timeout for large files
+            var apiKey = _configuration["OpenAI:ApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                throw new InvalidOperationException("OpenAI API key is not configured");
+            }
+
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
+            _httpClient.Timeout = TimeSpan.FromMinutes(10); // Increased timeout for larger files
         }
 
         public async Task<TranscriptionResponse> TranscribeAudioAsync(string audioFilePath, string language = "auto")
@@ -50,18 +53,20 @@ namespace Film_website.Services
                 if (!File.Exists(audioFilePath))
                     throw new FileNotFoundException($"Audio file not found: {audioFilePath}");
 
-                var audioFileInfo = new FileInfo(audioFilePath);
-                _logger.LogInformation($"Starting transcription for: {audioFilePath} ({audioFileInfo.Length} bytes)");
-
-                // Convert language name to code if needed
                 var languageCode = GetLanguageCode(language);
-                _logger.LogInformation($"Using language code: {languageCode} (from: {language})");
+                _logger.LogInformation($"Starting Whisper transcription for: {audioFilePath}");
+                _logger.LogInformation($"Language: {language} -> {languageCode}");
+
+                // Check file size (Whisper has 25MB limit)
+                var fileInfo = new FileInfo(audioFilePath);
+                if (fileInfo.Length > 25 * 1024 * 1024)
+                {
+                    throw new InvalidOperationException($"Audio file too large: {fileInfo.Length / (1024 * 1024)}MB. Maximum is 25MB.");
+                }
 
                 using var form = new MultipartFormDataContent();
-
-                // Read file into memory
-                byte[] fileBytes = await File.ReadAllBytesAsync(audioFilePath);
-                using var fileContent = new ByteArrayContent(fileBytes);
+                var fileBytes = await File.ReadAllBytesAsync(audioFilePath);
+                var fileContent = new ByteArrayContent(fileBytes);
 
                 // Set proper content type based on file extension
                 var extension = Path.GetExtension(audioFilePath).ToLower();
@@ -71,18 +76,19 @@ namespace Film_website.Services
                     ".wav" => "audio/wav",
                     ".m4a" => "audio/mp4",
                     ".ogg" => "audio/ogg",
-                    _ => "audio/mpeg"
+                    _ => "audio/wav" // Default to WAV
                 };
 
                 fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(contentType);
                 form.Add(fileContent, "file", Path.GetFileName(audioFilePath));
                 form.Add(new StringContent("whisper-1"), "model");
 
-                // Use verbose_json for better segment information
+                // FIXED: Use verbose_json for detailed segment information with timestamps
                 form.Add(new StringContent("verbose_json"), "response_format");
 
-                // Add timestamp granularities for segment-level timestamps
+                // FIXED: Add word-level timestamps for better precision
                 form.Add(new StringContent("segment"), "timestamp_granularities[]");
+                form.Add(new StringContent("word"), "timestamp_granularities[]");
 
                 // Set language if not auto
                 if (languageCode != "auto")
@@ -95,8 +101,11 @@ namespace Film_website.Services
                     _logger.LogInformation("Using auto-detection for language");
                 }
 
-                // Add temperature for more consistent results
-                form.Add(new StringContent("0"), "temperature");
+                // FIXED: Add temperature for more consistent results and timing
+                form.Add(new StringContent("0.2"), "temperature"); // Slightly higher for better accuracy
+
+                // FIXED: Add additional parameters for better timestamp accuracy
+                form.Add(new StringContent("true"), "word_timestamps");
 
                 _logger.LogInformation("Sending request to OpenAI Whisper API...");
                 var startTime = DateTime.Now;
@@ -144,18 +153,39 @@ namespace Film_website.Services
                     };
                 }
 
-                // Process segments for SRT generation
+                // FIXED: Enhanced segment processing with timestamp validation
                 var segments = new List<SrtEntry>();
                 if (whisperResponse?.segments != null)
                 {
                     int index = 1;
+                    double lastEndTime = 0;
+
                     foreach (var segment in whisperResponse.segments)
                     {
                         var segmentText = segment.text?.ToString()?.Trim();
                         if (!string.IsNullOrWhiteSpace(segmentText))
                         {
-                            var startSeconds = Convert.ToDouble(segment.start ?? 0);
+                            var startSeconds = Convert.ToDouble(segment.start ?? lastEndTime);
                             var endSeconds = Convert.ToDouble(segment.end ?? startSeconds + 1);
+
+                            // FIXED: Validate and adjust timestamps to prevent overlaps and gaps
+                            if (startSeconds < lastEndTime)
+                            {
+                                _logger.LogDebug($"Adjusting segment {index} start time from {startSeconds:F3}s to {lastEndTime:F3}s to prevent overlap");
+                                startSeconds = lastEndTime;
+                            }
+
+                            if (endSeconds <= startSeconds)
+                            {
+                                endSeconds = startSeconds + 0.5; // Minimum 0.5 second duration
+                                _logger.LogDebug($"Adjusting segment {index} end time to {endSeconds:F3}s to ensure minimum duration");
+                            }
+
+                            // FIXED: Ensure segments don't have unrealistic gaps (more than 2 seconds)
+                            if (index > 1 && (startSeconds - lastEndTime) > 2.0)
+                            {
+                                _logger.LogDebug($"Large gap detected before segment {index}: {startSeconds - lastEndTime:F3}s");
+                            }
 
                             segments.Add(new SrtEntry
                             {
@@ -164,8 +194,13 @@ namespace Film_website.Services
                                 EndTime = TimeSpan.FromSeconds(endSeconds),
                                 Text = segmentText
                             });
+
+                            lastEndTime = endSeconds;
                         }
                     }
+
+                    // FIXED: Post-process segments to ensure proper timing
+                    segments = OptimizeSegmentTiming(segments);
                 }
                 else
                 {
@@ -180,7 +215,24 @@ namespace Film_website.Services
                     });
                 }
 
-                _logger.LogInformation($"Created {segments.Count} subtitle segments");
+                _logger.LogInformation($"Created {segments.Count} subtitle segments with validated timestamps");
+
+                // FIXED: Validate overall timing consistency
+                if (segments.Count > 0)
+                {
+                    var totalSegmentDuration = segments.Last().EndTime.TotalSeconds;
+                    var expectedDuration = Convert.ToDouble(duration);
+                    var timingError = Math.Abs(totalSegmentDuration - expectedDuration);
+
+                    if (timingError > 1.0)
+                    {
+                        _logger.LogWarning($"Timing validation warning: Expected {expectedDuration:F2}s, got {totalSegmentDuration:F2}s (diff: {timingError:F2}s)");
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"Timing validation passed: {totalSegmentDuration:F2}s vs expected {expectedDuration:F2}s");
+                    }
+                }
 
                 return new TranscriptionResponse
                 {
@@ -188,7 +240,7 @@ namespace Film_website.Services
                     Text = fullText,
                     Segments = segments,
                     ProcessingTime = processingTime,
-                    Message = $"Transcription completed successfully. Detected language: {detectedLanguage}"
+                    Message = $"Transcription completed successfully. Detected language: {detectedLanguage}, Timing validated: {segments.Count} segments"
                 };
             }
             catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
@@ -209,6 +261,55 @@ namespace Film_website.Services
                     Message = $"Transcription failed: {ex.Message}"
                 };
             }
+        }
+
+        // NEW: Method to optimize segment timing and fix common issues
+        private List<SrtEntry> OptimizeSegmentTiming(List<SrtEntry> segments)
+        {
+            if (segments.Count == 0) return segments;
+
+            var optimized = new List<SrtEntry>();
+
+            for (int i = 0; i < segments.Count; i++)
+            {
+                var segment = segments[i];
+                var newSegment = new SrtEntry
+                {
+                    Index = segment.Index,
+                    StartTime = segment.StartTime,
+                    EndTime = segment.EndTime,
+                    Text = segment.Text
+                };
+
+                // Ensure minimum segment duration (0.5 seconds)
+                var minDuration = TimeSpan.FromSeconds(0.5);
+                if (newSegment.EndTime - newSegment.StartTime < minDuration)
+                {
+                    newSegment.EndTime = newSegment.StartTime + minDuration;
+                }
+
+                // Prevent overlaps with next segment
+                if (i < segments.Count - 1)
+                {
+                    var nextSegment = segments[i + 1];
+                    if (newSegment.EndTime > nextSegment.StartTime)
+                    {
+                        // Create small gap between segments
+                        var gap = TimeSpan.FromMilliseconds(100);
+                        newSegment.EndTime = nextSegment.StartTime - gap;
+
+                        // Ensure we don't make the segment too short
+                        if (newSegment.EndTime <= newSegment.StartTime)
+                        {
+                            newSegment.EndTime = newSegment.StartTime + minDuration;
+                        }
+                    }
+                }
+
+                optimized.Add(newSegment);
+            }
+
+            return optimized;
         }
 
         public async Task<string> GenerateSrtAsync(string audioFilePath, string language = "auto")

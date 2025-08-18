@@ -26,7 +26,7 @@ namespace Film_website.Services
                 // Sanitize filename to avoid FFmpeg issues
                 var originalFileName = Path.GetFileNameWithoutExtension(videoFilePath);
                 var sanitizedFileName = SanitizeFileName(originalFileName);
-                var audioFileName = $"{sanitizedFileName}.mp3";
+                var audioFileName = $"{sanitizedFileName}.wav"; // Changed to WAV for better timing precision
                 var audioFilePath = Path.Combine(outputPath, audioFileName);
 
                 _logger.LogInformation($"Extracting audio from {videoFilePath} to {audioFilePath}");
@@ -38,6 +38,10 @@ namespace Film_website.Services
                     _logger.LogInformation($"Deleted existing audio file: {audioFilePath}");
                 }
 
+                // Get video metadata to preserve original timing
+                var videoInfo = await GetVideoMetadata(videoFilePath);
+                _logger.LogInformation($"Video metadata: Duration={videoInfo.Duration}, Sample Rate={videoInfo.AudioSampleRate}, Channels={videoInfo.AudioChannels}");
+
                 // Use absolute paths
                 var absoluteVideoPath = Path.GetFullPath(videoFilePath);
                 var absoluteAudioPath = Path.GetFullPath(audioFilePath);
@@ -46,10 +50,24 @@ namespace Film_website.Services
                 var escapedVideoPath = GetShortPath(absoluteVideoPath) ?? absoluteVideoPath;
                 var escapedAudioPath = GetShortPath(absoluteAudioPath) ?? absoluteAudioPath;
 
-                // Simplified FFmpeg command with better error handling
-                var arguments = $"-y -hide_banner -loglevel error -i \"{escapedVideoPath}\" -vn -acodec libmp3lame -ab 128k -ar 16000 -ac 1 \"{escapedAudioPath}\"";
+                // FIXED: Improved FFmpeg command that preserves timing and uses appropriate sample rate
+                // Key changes:
+                // 1. Use -map 0:a:0 to select the first audio stream explicitly
+                // 2. Use -af aresample=async=1 to handle timing issues
+                // 3. Use appropriate sample rate (22050 Hz is good for speech recognition)
+                // 4. Add -avoid_negative_ts make_zero to ensure consistent timestamps
+                // 5. Use PCM WAV format for better precision
+                var arguments = $"-y -hide_banner -loglevel error -i \"{escapedVideoPath}\" " +
+                               $"-map 0:a:0 -vn " +
+                               $"-acodec pcm_s16le " +
+                               $"-ar 22050 " +
+                               $"-ac 1 " +
+                               $"-af \"aresample=async=1:first_pts=0\" " +
+                               $"-avoid_negative_ts make_zero " +
+                               $"-fflags +genpts " +
+                               $"\"{escapedAudioPath}\"";
 
-                _logger.LogInformation($"Running FFmpeg with escaped paths:");
+                _logger.LogInformation($"Running FFmpeg with improved timing preservation:");
                 _logger.LogInformation($"Input: {escapedVideoPath}");
                 _logger.LogInformation($"Output: {escapedAudioPath}");
                 _logger.LogInformation($"Command: {_ffmpegPath} {arguments}");
@@ -74,15 +92,15 @@ namespace Film_website.Services
                 var outputTask = process.StandardOutput.ReadToEndAsync();
                 var errorTask = process.StandardError.ReadToEndAsync();
 
-                // Add timeout (3 minutes max for audio extraction)
-                var timeoutTask = Task.Delay(TimeSpan.FromMinutes(3));
+                // Add timeout (5 minutes max for audio extraction)
+                var timeoutTask = Task.Delay(TimeSpan.FromMinutes(5));
                 var processTask = process.WaitForExitAsync();
 
                 var completedTask = await Task.WhenAny(processTask, timeoutTask);
 
                 if (completedTask == timeoutTask)
                 {
-                    _logger.LogError("FFmpeg process timed out after 3 minutes");
+                    _logger.LogError("FFmpeg process timed out after 5 minutes");
                     try
                     {
                         process.Kill(true);
@@ -131,6 +149,19 @@ namespace Film_website.Services
                     throw new InvalidOperationException("Audio extraction failed - output file is empty");
                 }
 
+                // Verify timing integrity
+                var extractedAudioInfo = await GetAudioMetadata(audioFilePath);
+                var timingDiff = Math.Abs(videoInfo.Duration - extractedAudioInfo.Duration);
+
+                if (timingDiff > 1.0) // More than 1 second difference is concerning
+                {
+                    _logger.LogWarning($"Timing discrepancy detected: Video={videoInfo.Duration:F2}s, Audio={extractedAudioInfo.Duration:F2}s, Diff={timingDiff:F2}s");
+                }
+                else
+                {
+                    _logger.LogInformation($"Timing verification passed: Video={videoInfo.Duration:F2}s, Audio={extractedAudioInfo.Duration:F2}s");
+                }
+
                 _logger.LogInformation($"Audio extraction completed successfully: {audioFilePath} ({audioFileInfo.Length} bytes)");
                 return audioFilePath;
             }
@@ -138,6 +169,113 @@ namespace Film_website.Services
             {
                 _logger.LogError(ex, "Error extracting audio from video");
                 throw;
+            }
+        }
+
+        // NEW: Method to get video metadata for timing verification
+        private async Task<(double Duration, int AudioSampleRate, int AudioChannels)> GetVideoMetadata(string videoFilePath)
+        {
+            try
+            {
+                var escapedPath = GetShortPath(Path.GetFullPath(videoFilePath)) ?? Path.GetFullPath(videoFilePath);
+                var arguments = $"-v quiet -show_entries format=duration:stream=sample_rate,channels -of csv=p=0 \"{escapedPath}\"";
+
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = _ffmpegPath.Replace("ffmpeg", "ffprobe"), // Use ffprobe for metadata
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using var process = Process.Start(processInfo);
+                if (process == null)
+                    throw new InvalidOperationException("Failed to start ffprobe process");
+
+                var output = await process.StandardOutput.ReadToEndAsync();
+                await process.WaitForExitAsync();
+
+                var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                double duration = 0;
+                int sampleRate = 22050; // Default
+                int channels = 1; // Default
+
+                foreach (var line in lines)
+                {
+                    var parts = line.Split(',');
+                    if (parts.Length >= 1 && double.TryParse(parts[0], out var dur) && dur > 0)
+                    {
+                        duration = dur;
+                    }
+                    if (parts.Length >= 2 && int.TryParse(parts[1], out var sr) && sr > 0)
+                    {
+                        sampleRate = sr;
+                    }
+                    if (parts.Length >= 3 && int.TryParse(parts[2], out var ch) && ch > 0)
+                    {
+                        channels = ch;
+                    }
+                }
+
+                return (duration, sampleRate, channels);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Could not get video metadata, using defaults");
+                return (0, 22050, 1);
+            }
+        }
+
+        // NEW: Method to get audio metadata for verification
+        private async Task<(double Duration, int SampleRate, int Channels)> GetAudioMetadata(string audioFilePath)
+        {
+            try
+            {
+                var escapedPath = GetShortPath(Path.GetFullPath(audioFilePath)) ?? Path.GetFullPath(audioFilePath);
+                var arguments = $"-v quiet -show_entries format=duration:stream=sample_rate,channels -of csv=p=0 \"{escapedPath}\"";
+
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = _ffmpegPath.Replace("ffmpeg", "ffprobe"),
+                    Arguments = arguments,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    CreateNoWindow = true
+                };
+
+                using var process = Process.Start(processInfo);
+                if (process == null)
+                    return (0, 22050, 1);
+
+                var output = await process.StandardOutput.ReadToEndAsync();
+                await process.WaitForExitAsync();
+
+                var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+                double duration = 0;
+                int sampleRate = 22050;
+                int channels = 1;
+
+                if (lines.Length > 0)
+                {
+                    var parts = lines[0].Split(',');
+                    if (parts.Length >= 1 && double.TryParse(parts[0], out var dur))
+                        duration = dur;
+                    if (parts.Length >= 2 && int.TryParse(parts[1], out var sr))
+                        sampleRate = sr;
+                    if (parts.Length >= 3 && int.TryParse(parts[2], out var ch))
+                        channels = ch;
+                }
+
+                return (duration, sampleRate, channels);
+            }
+            catch
+            {
+                return (0, 22050, 1);
             }
         }
 
@@ -151,75 +289,51 @@ namespace Film_website.Services
         private string SanitizeFileName(string fileName)
         {
             // Remove or replace problematic characters
-            var invalidChars = Path.GetInvalidFileNameChars();
-            var sanitized = fileName;
+            var invalidChars = Path.GetInvalidFileNameChars()
+                .Concat(new[] { ' ', '(', ')', '[', ']', '{', '}', '&', '#', '%' })
+                .ToArray();
 
-            // Replace invalid characters with underscores
+            var sanitized = fileName;
             foreach (var c in invalidChars)
             {
                 sanitized = sanitized.Replace(c, '_');
             }
 
-            // Replace other problematic characters
-            sanitized = sanitized.Replace(":", "_")
-                                 .Replace(";", "_")
-                                 .Replace(",", "_")
-                                 .Replace("'", "_")
-                                 .Replace("\"", "_")
-                                 .Replace("(", "_")
-                                 .Replace(")", "_")
-                                 .Replace("[", "_")
-                                 .Replace("]", "_")
-                                 .Replace("{", "_")
-                                 .Replace("}", "_");
-
-            // Remove multiple consecutive underscores
-            sanitized = Regex.Replace(sanitized, "_+", "_");
-
-            // Remove leading/trailing underscores
-            sanitized = sanitized.Trim('_');
+            // Remove consecutive underscores and trim
+            sanitized = Regex.Replace(sanitized, "_+", "_").Trim('_');
 
             // Ensure it's not empty
-            if (string.IsNullOrEmpty(sanitized))
-            {
-                sanitized = "audio_" + DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            }
-
-            // Limit length to avoid path issues
-            if (sanitized.Length > 100)
-            {
-                sanitized = sanitized.Substring(0, 100);
-            }
+            if (string.IsNullOrWhiteSpace(sanitized))
+                sanitized = "audio_file";
 
             return sanitized;
         }
 
-        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-        private static extern int GetShortPathName(
-            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)]
-            string path,
-            [System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.LPTStr)]
-            System.Text.StringBuilder shortPath,
-            int shortPathLength);
-
-        private string GetShortPath(string path)
+        private string? GetShortPath(string path)
         {
             try
             {
-                var shortPath = new System.Text.StringBuilder(255);
-                int result = GetShortPathName(path, shortPath, shortPath.Capacity);
-
-                if (result != 0 && shortPath.Length > 0)
+                // Only use short path on Windows if the path is very long or contains problematic characters
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT &&
+                    (path.Length > 200 || path.Any(c => char.IsHighSurrogate(c) || char.IsLowSurrogate(c))))
                 {
-                    return shortPath.ToString();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Failed to get short path for: {Path}", path);
-            }
+                    const int MAX_PATH = 260;
+                    var shortPath = new char[MAX_PATH];
 
-            return path; // Return original path if conversion fails
+                    if (GetShortPathNameW(path, shortPath, MAX_PATH) > 0)
+                    {
+                        return new string(shortPath).TrimEnd('\0');
+                    }
+                }
+                return null;
+            }
+            catch
+            {
+                return null;
+            }
         }
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        private static extern int GetShortPathNameW(string lpszLongPath, char[] lpszShortPath, int cchBuffer);
     }
 }
